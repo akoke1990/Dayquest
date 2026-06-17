@@ -1,0 +1,14 @@
+{
+  "name": "dayquest-quest-generator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DayQuest MVP — generates a storied, walkable scavenger hunt near a location.",
+  "scripts": {
+    "quest": "node generate-quest.js",
+    "serve": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.2"
+  }
+}

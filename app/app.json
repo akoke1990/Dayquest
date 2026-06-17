@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "DayQuest",
+    "slug": "dayquest",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "plugins": [
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "DayQuest uses your location to find a scavenger hunt nearby."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "DayQuest uses your camera so you can photograph each stop on your quest.",
+          "photosPermission": "DayQuest accesses your photos so you can pick an image for a stop."
+        }
+      ],
+      "expo-sharing"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    }
+  }
+}
