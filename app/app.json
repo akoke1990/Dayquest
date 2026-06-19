@@ -19,8 +19,7 @@
           "cameraPermission": "DayQuest uses your camera so you can photograph each stop on your quest.",
           "photosPermission": "DayQuest accesses your photos so you can pick an image for a stop."
         }
-      ],
-      "expo-sharing"
+      ]
     ],
     "ios": {
       "supportsTablet": true
