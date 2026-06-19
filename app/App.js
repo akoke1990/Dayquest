@@ -16,6 +16,10 @@ import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 import { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+// SDK 54 ships the new object-oriented FileSystem API at the package root
+// (File / Directory / Paths). We use it to copy captured photos out of the
+// ImagePicker cache — which iOS evicts — into the persistent document dir.
+import { File, Directory, Paths } from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE, TEASER } from "./config";
 // On iOS this uses Apple Maps (no API key needed — works in Expo Go).
@@ -30,6 +34,15 @@ const CHECKIN_RADIUS_M = 100; // how close you must be to check in
 // --- Local persistence (pause/resume) + anonymous analytics -----------------
 const STORE_KEY = "dayquest.activeQuest.v1"; // { quest, progress }
 const INSTALL_KEY = "dayquest.installId.v1";
+const HISTORY_KEY = "dayquest.history.v1"; // [{ id, completed_at, theme, origin_label, stops:[{name,photoUri,source_url}], points, quest, progress }]
+const SCORE_KEY = "dayquest.score.v1"; // { total, quests_completed, streak_weeks, last_week_index }
+
+// Light scoring knobs (no levels grind, no leaderboards — UX is "a little win").
+const POINTS_PER_QUEST = 100;
+const POINTS_PER_PHOTO = 25;
+
+// Persistent home for quest photos copied out of the ImagePicker cache.
+const PHOTO_DIR = "dayquest-photos";
 
 // One anonymous id per install, generated once. NO PII — just a random token.
 let _installId = null;
@@ -79,6 +92,116 @@ function sendFeedback(payload) {
       /* best-effort */
     }
   })();
+}
+
+// Copy a captured photo from the ImagePicker cache into the app's persistent
+// document directory and return the durable file:// uri. iOS evicts cache-dir
+// uris, so saved quests would otherwise lose their photos across restarts.
+// Best-effort: on any failure we fall back to the original (cache) uri so the
+// in-session flow never breaks.
+async function persistPhoto(cacheUri) {
+  try {
+    const dir = new Directory(Paths.document, PHOTO_DIR);
+    dir.create({ intermediates: true, idempotent: true });
+    // Keep the original extension; name by time + randomness to avoid collisions.
+    const dot = cacheUri.lastIndexOf(".");
+    const ext = dot > cacheUri.lastIndexOf("/") ? cacheUri.slice(dot) : ".jpg";
+    const name = `dq_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}${ext}`;
+    const src = new File(cacheUri);
+    const dest = new File(dir, name);
+    src.copy(dest);
+    return dest.uri;
+  } catch {
+    return cacheUri; // fall back to the cache uri — better than no photo
+  }
+}
+
+// A monotonic week index: snap a date to the Monday of its ISO week and divide
+// by 7 days. This increments by exactly 1 each week and never resets at a year
+// boundary, so "consecutive weeks" math stays correct (unlike ISO week NUMBER).
+function weekIndex(date = new Date()) {
+  const d = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  // getDay(): 0=Sun..6=Sat. Shift so Monday is the start of the week.
+  const dow = (d.getDay() + 6) % 7;
+  d.setDate(d.getDate() - dow); // back up to Monday
+  return Math.floor(d.getTime() / (7 * 24 * 60 * 60 * 1000));
+}
+
+// Read the lifetime score, tolerating a missing/corrupt blob.
+async function readScore() {
+  try {
+    const raw = await AsyncStorage.getItem(SCORE_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      return {
+        total: s.total || 0,
+        quests_completed: s.quests_completed || 0,
+        streak_weeks: s.streak_weeks || 0,
+        last_week_index: s.last_week_index ?? null,
+      };
+    }
+  } catch {
+    /* corrupt — start fresh */
+  }
+  return { total: 0, quests_completed: 0, streak_weeks: 0, last_week_index: null };
+}
+
+// Apply one completed quest to the score: add points, bump the count, and roll
+// the WEEKLY streak (consecutive ISO weeks with ≥1 completion — per product
+// decision, weekly NOT daily). Returns the new score so the caller can render.
+async function recordScore(pointsEarned) {
+  const prev = await readScore();
+  const wk = weekIndex();
+  let streak = prev.streak_weeks;
+  if (prev.last_week_index == null) streak = 1; // first ever completion
+  else if (wk === prev.last_week_index) streak = prev.streak_weeks || 1; // same week — no change
+  else if (wk === prev.last_week_index + 1) streak = prev.streak_weeks + 1; // next week — extend
+  else streak = 1; // a gap — streak resets
+  const next = {
+    total: prev.total + pointsEarned,
+    quests_completed: prev.quests_completed + 1,
+    streak_weeks: streak,
+    last_week_index: wk,
+  };
+  await AsyncStorage.setItem(SCORE_KEY, JSON.stringify(next)).catch(() => {});
+  return next;
+}
+
+// Read the saved quest history (newest-first list), tolerating missing/corrupt.
+async function readHistory() {
+  try {
+    const raw = await AsyncStorage.getItem(HISTORY_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) return list;
+    }
+  } catch {
+    /* corrupt — treat as empty */
+  }
+  return [];
+}
+
+// Append one completed quest to the history log (prepended so it reads
+// newest-first). Stores the lean summary the spec asks for PLUS a full quest +
+// progress snapshot so the existing recap card can re-render unchanged.
+async function appendHistory(record) {
+  const list = await readHistory();
+  list.unshift(record);
+  await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(list)).catch(() => {});
+  return list;
+}
+
+// A short, human date for a history row, e.g. "Jun 19, 2026".
+function formatHistoryDate(iso) {
+  try {
+    return new Date(iso).toLocaleDateString(undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return iso;
+  }
 }
 
 // Distance between two lat/lng points, in metres.
@@ -201,6 +324,10 @@ export default function App() {
   const [feedbackText, setFeedbackText] = useState("");
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [flagged, setFlagged] = useState({}); // { [order_index]: true } — stop reported
+  const [score, setScore] = useState({ total: 0, quests_completed: 0, streak_weeks: 0 }); // lifetime, shown on Welcome
+  const [pointsEarned, setPointsEarned] = useState(0); // points from the just-finished quest (recap badge)
+  const [history, setHistory] = useState([]); // saved past quests, newest-first
+  const [historyRecord, setHistoryRecord] = useState(null); // a past quest opened from "My Quests"
   const recapRef = useRef(null); // the recap card we turn into a shareable image
   const completedFiredRef = useRef(false); // guard so quest_completed fires once
 
@@ -210,6 +337,8 @@ export default function App() {
   useEffect(() => {
     (async () => {
       getInstallId();
+      // Load lifetime score so Welcome can show the running total + streak.
+      readScore().then(setScore).catch(() => {});
       try {
         const raw = await AsyncStorage.getItem(STORE_KEY);
         if (raw) {
@@ -257,6 +386,40 @@ export default function App() {
     if (done === quest.stops.length && !completedFiredRef.current) {
       completedFiredRef.current = true;
       track("quest_completed", { stops: quest.stops.length });
+
+      // --- Light scoring + history (all ON-DEVICE, no login/server) --------
+      const photoCount = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
+      const earned = POINTS_PER_QUEST + photoCount * POINTS_PER_PHOTO;
+      setPointsEarned(earned);
+
+      (async () => {
+        // Append to the persisted history log. We store the lean summary the
+        // spec asks for AND a full quest+progress snapshot so the recap card
+        // re-renders unchanged when this quest is reopened from "My Quests".
+        const record = {
+          id: `q_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`,
+          completed_at: new Date().toISOString(),
+          theme: quest.theme,
+          origin_label: quest.origin?.label || "",
+          stops: quest.stops.map((s) => ({
+            name: s.place?.name || "",
+            photoUri: progress[s.order_index]?.photoUri || null,
+            source_url: s.place?.source_url || null,
+          })),
+          points: earned,
+          quest, // full snapshot — recap needs lat/lng, lore_hook, intro
+          progress, // { [order_index]: { photoUri, ... } } — recap reads this
+        };
+        const list = await appendHistory(record);
+        setHistory(list);
+
+        // Roll the lifetime total, count, and weekly streak.
+        const next = await recordScore(earned);
+        setScore(next);
+        // Local data only — but fire an analytics ping that points were earned.
+        track("points_earned", { points: earned, total: next.total, streak_weeks: next.streak_weeks });
+      })();
+
       // Completed quests should not reappear as a "Resume" offer.
       AsyncStorage.removeItem(STORE_KEY).catch(() => {});
     }
@@ -271,6 +434,7 @@ export default function App() {
     setFeedbackText("");
     setFeedbackSent(false);
     setFlagged({});
+    setPointsEarned(0);
     completedFiredRef.current = false;
     try {
       const { status: perm } = await Location.requestForegroundPermissionsAsync();
@@ -307,6 +471,7 @@ export default function App() {
     setFeedbackText("");
     setFeedbackSent(false);
     setFlagged({});
+    setPointsEarned(0);
     const done = saved.quest.stops.filter((s) => saved.progress?.[s.order_index]?.photoUri).length;
     completedFiredRef.current = done === saved.quest.stops.length;
     setSaved(null);
@@ -376,10 +541,22 @@ export default function App() {
       result = await ImagePicker.launchImageLibraryAsync({ quality: 0.5 });
     }
     if (result && !result.canceled && result.assets?.[0]) {
-      const uri = result.assets[0].uri;
+      // Copy the photo out of the (evictable) ImagePicker cache into the app's
+      // persistent document dir, then store THAT uri so saved quests keep their
+      // photos across restarts. Falls back to the cache uri on any failure.
+      const uri = await persistPhoto(result.assets[0].uri);
       setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true, photoUri: uri } }));
       track("stop_photo", { order_index: orderIndex });
     }
+  }
+
+  // Open the "My Quests" history screen, loading the saved list fresh from disk.
+  async function openHistory() {
+    const list = await readHistory();
+    setHistory(list);
+    setHistoryRecord(null);
+    setScreen("history");
+    track("history_opened", { count: list.length });
   }
 
   async function shareRecap() {
@@ -397,16 +574,24 @@ export default function App() {
   // The 9:16 share-magnet recap (UX-SPEC §3). Built to pull in a stranger:
   // hero photo, brag-worthy fact caption, quest identity, route-trace proof,
   // one light stat, signature, and a filmstrip of the other photos.
-  function renderRecap() {
-    const photoStops = quest.stops.filter((s) => progress[s.order_index]?.photoUri);
+  // Renders the 9:16 share-magnet recap. Defaults to the live quest/progress,
+  // but accepts an explicit quest + progress so a past quest opened from the
+  // "My Quests" history screen re-renders with this exact same card.
+  function renderRecap(q = quest, prog = progress, earned = pointsEarned) {
+    const photoStops = q.stops.filter((s) => prog[s.order_index]?.photoUri);
     // Hero = first completed stop's photo (the spec's default).
-    const heroStop = photoStops[0] || quest.stops[0];
-    const heroUri = progress[heroStop.order_index]?.photoUri;
+    const heroStop = photoStops[0] || q.stops[0];
+    const heroUri = prog[heroStop.order_index]?.photoUri;
     const filmstrip = photoStops.filter((s) => s.order_index !== heroStop.order_index);
-    const km = (totalWalkedM(quest.stops) / 1000).toFixed(1);
+    const km = (totalWalkedM(q.stops) / 1000).toFixed(1);
 
     return (
       <View style={styles.recapWrap}>
+        {earned > 0 ? (
+          <View style={styles.pointsBadge}>
+            <Text style={styles.pointsBadgeText}>You earned {earned} points!</Text>
+          </View>
+        ) : null}
         {/* This 9:16 view is what captureRef exports as the shareable image. */}
         <View ref={recapRef} collapsable={false} style={styles.recapCard}>
           {/* Hero: the user's photography, full-bleed and large. */}
@@ -427,22 +612,22 @@ export default function App() {
           {/* Lower panel: quest identity, journey proof, stat, signature. */}
           <View style={styles.recapPanel}>
             <Text style={styles.recapTheme} numberOfLines={2}>
-              {quest.theme}
+              {q.theme}
             </Text>
             <Text style={styles.recapPlace} numberOfLines={1}>
-              {quest.origin.label}
+              {q.origin.label}
             </Text>
 
             <View style={styles.recapProofRow}>
               {/* Journey proof: a compact route trace (View-based, so it survives captureRef). */}
-              <RouteTrace stops={quest.stops} />
+              <RouteTrace stops={q.stops} />
 
               {/* Filmstrip of the other photos, subordinate to the hero. */}
               <View style={styles.recapFilmstrip}>
                 {filmstrip.slice(0, 3).map((s) => (
                   <Image
                     key={s.order_index}
-                    source={{ uri: progress[s.order_index].photoUri }}
+                    source={{ uri: prog[s.order_index].photoUri }}
                     style={styles.recapFilm}
                   />
                 ))}
@@ -451,7 +636,7 @@ export default function App() {
 
             <View style={styles.recapFooter}>
               <Text style={styles.recapStat}>
-                {quest.stops.length} stops · {km} km explored
+                {q.stops.length} stops · {km} km explored
               </Text>
               <Text style={styles.recapMark}>DayQuest</Text>
             </View>
@@ -481,6 +666,24 @@ export default function App() {
         <StatusBar style="dark" />
         <Text style={styles.logo}>DayQuest</Text>
         <Text style={styles.tagline}>Find a little adventure near you.</Text>
+
+        {/* Lifetime score + weekly streak — shown once anything's been earned. */}
+        {score.total > 0 ? (
+          <View style={styles.scoreRow}>
+            <View style={styles.scoreStat}>
+              <Text style={styles.scoreNum}>{score.total}</Text>
+              <Text style={styles.scoreLabel}>points</Text>
+            </View>
+            <View style={styles.scoreStat}>
+              <Text style={styles.scoreNum}>{score.quests_completed}</Text>
+              <Text style={styles.scoreLabel}>quests</Text>
+            </View>
+            <View style={styles.scoreStat}>
+              <Text style={styles.scoreNum}>🔥 {score.streak_weeks}</Text>
+              <Text style={styles.scoreLabel}>week streak</Text>
+            </View>
+          </View>
+        ) : null}
 
         {/* Resume sits above the fold when a quest is in progress (UX-SPEC §1.1). */}
         {savedQuest ? (
@@ -514,6 +717,68 @@ export default function App() {
         <Text style={styles.permNote}>
           We'll use your location to find places to explore — only while you're on a quest.
         </Text>
+
+        {/* Entry point to the on-device saved-quest history. */}
+        <Text style={styles.historyLink} onPress={openHistory}>
+          📜 My Quests
+        </Text>
+      </ScrollView>
+    );
+  }
+
+  if (screen === "history") {
+    // Detail view: reuse the exact recap card for a saved quest.
+    if (historyRecord) {
+      return (
+        <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+          <StatusBar style="dark" />
+          <Text style={styles.backLink} onPress={() => setHistoryRecord(null)}>
+            ← My Quests
+          </Text>
+          <Text style={styles.theme}>{historyRecord.theme}</Text>
+          <Text style={styles.progress}>{formatHistoryDate(historyRecord.completed_at)}</Text>
+          {/* Pass the saved snapshot + its earned points into the shared recap. */}
+          {renderRecap(historyRecord.quest, historyRecord.progress, historyRecord.points || 0)}
+          <View style={{ height: 40 }} />
+        </ScrollView>
+      );
+    }
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>My Quests</Text>
+        {history.length === 0 ? (
+          <Text style={styles.intro}>
+            No quests yet. Finish one and it'll be saved here — with your photos.
+          </Text>
+        ) : (
+          history.map((rec) => {
+            const thumb = rec.stops?.find((s) => s.photoUri)?.photoUri || null;
+            return (
+              <TouchableOpacity
+                key={rec.id}
+                style={styles.histRow}
+                onPress={() => setHistoryRecord(rec)}
+              >
+                {thumb ? (
+                  <Image source={{ uri: thumb }} style={styles.histThumb} />
+                ) : (
+                  <View style={[styles.histThumb, styles.histThumbEmpty]} />
+                )}
+                <View style={styles.histRowText}>
+                  <Text style={styles.histTheme} numberOfLines={2}>{rec.theme}</Text>
+                  <Text style={styles.histMeta}>
+                    {formatHistoryDate(rec.completed_at)} · {rec.points} pts
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            );
+          })
+        )}
+        <View style={{ height: 40 }} />
       </ScrollView>
     );
   }
@@ -707,6 +972,26 @@ const styles = StyleSheet.create({
   teaserFact: { fontSize: 15, color: INK, opacity: 0.82, marginTop: 8, lineHeight: 22 },
   teaserArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 10 },
   permNote: { fontSize: 12, color: INK, opacity: 0.55, textAlign: "center", marginTop: 14, lineHeight: 17 },
+  // Lifetime score + weekly streak strip on Welcome
+  scoreRow: { flexDirection: "row", marginTop: 20, width: "100%", justifyContent: "space-around", backgroundColor: "#fff", borderRadius: 16, paddingVertical: 14, borderWidth: 1, borderColor: "#e6dfd2" },
+  scoreStat: { alignItems: "center" },
+  scoreNum: { fontSize: 22, fontWeight: "800", color: INK },
+  scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
+  historyLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 24, textDecorationLine: "underline" },
+
+  // Points-earned badge on the completion recap
+  pointsBadge: { backgroundColor: GREEN, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 20, marginBottom: 14 },
+  pointsBadgeText: { color: "#fff", fontSize: 17, fontWeight: "800" },
+
+  // My Quests history screen
+  backLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginBottom: 10 },
+  histRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: "#e6dfd2" },
+  histThumb: { width: 56, height: 56, borderRadius: 10, marginRight: 14 },
+  histThumbEmpty: { backgroundColor: "#e6dfd2" },
+  histRowText: { flex: 1 },
+  histTheme: { fontSize: 16, fontWeight: "800", color: INK },
+  histMeta: { fontSize: 13, color: INK, opacity: 0.6, marginTop: 4 },
+
   resumeBox: { backgroundColor: "#fff", borderRadius: 18, padding: 18, marginTop: 24, width: "100%", borderWidth: 1, borderColor: GREEN, alignItems: "center" },
   resumeLabel: { fontSize: 13, fontWeight: "700", color: GREEN },
   resumeTheme: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 4, textAlign: "center" },

@@ -167,6 +167,8 @@ A high score that doesn't serve the bet still waits.
 | D-024 ✓ | **First test anchored on Stony Brook Village** (proven hero zone: 32 POIs, real 1.2km loop). Smithtown/St. James too sparse in open data (18/8, 7/4) → joins later via a light curation pass | Avoid a coverage false-negative; testers start at the village center | 2026-06-19 |
 | D-025 ✓ | **Not walking-only (post-MVP):** add travel modes (walk/bike/drive) so spread-out suburban areas (Smithtown, LI) become viable. MVP + first test stay walking | CEO insight; driving/biking between stops dissolves the low-density coverage problem | 2026-06-19 |
 | D-026 ✓ | **Green-light paid APIs / API keys / OSS** where they make the product better (budget-aware: lean on caching + free tiers). Headline use: **Google Places as the 3rd data source** | Loosens the keyless constraint; Places solves suburban coverage (Smithtown/LI) + the "new/quirky" layer Wikipedia/OSM miss | 2026-06-19 |
+| D-027 ✓ | **First real device test PASSED** — app runs on a physical phone (Expo Go, SDK 54); CEO verdict: "the overall idea is there, UI needs work" | Concept validated on-device. Feasibility + appeal both confirmed → next focus is a UI/UX polish pass | 2026-06-19 |
+| D-028 ✓ | Build **quest history + saved data + light scoring** — on-device (AsyncStorage), anonymous (reuse install id), **NO login wall**, no leaderboards; photos persisted durably. | CEO clarified the goal is saving/history + light gamification, NOT auth — stays discovery-first & ungated. Full accounts still deferred (P1) | 2026-06-19 |
 
 ## 13. Open decisions (need CEO input)
 
