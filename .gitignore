@@ -1,5 +1,6 @@
 node_modules/
 .env
 quest.json
+data/
 *.log
 .DS_Store

@@ -6,7 +6,8 @@
   "description": "DayQuest MVP — generates a storied, walkable scavenger hunt near a location.",
   "scripts": {
     "quest": "node generate-quest.js",
-    "serve": "node server.js"
+    "serve": "node server.js",
+    "ingest:gv": "node scripts/ingest-gv.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2"

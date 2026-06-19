@@ -29,7 +29,7 @@ const server = createServer(async (req, res) => {
   if (url.pathname === "/" || url.pathname === "/health") {
     return send(res, 200, {
       service: "dayquest",
-      usage: "GET /quest?lat=55.9496&lng=-3.1883",
+      usage: "GET /quest?lat=40.7308&lng=-73.9973",
       key_configured: Boolean(process.env.ANTHROPIC_API_KEY),
     });
   }
@@ -63,6 +63,6 @@ const server = createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`\n  DayQuest API on http://localhost:${PORT}`);
-  console.log(`  Try: http://localhost:${PORT}/quest?lat=55.9496&lng=-3.1883`);
+  console.log(`  Try: http://localhost:${PORT}/quest?lat=40.7308&lng=-73.9973`);
   console.log(`  Key configured: ${Boolean(process.env.ANTHROPIC_API_KEY)}\n`);
 });

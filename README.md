@@ -13,12 +13,12 @@ npm install                  # one time
 cp .env.example .env         # then paste your Anthropic key into .env
 
 # As a one-off command:
-npm run quest                # Edinburgh Royal Mile (a rich demo location)
+npm run quest                # Greenwich Village, NYC (a rich demo location)
 npm run quest -- 40.7128 -74.0060   # or pass your own lat lng
 
 # Or as an API the app will call:
 npm run serve                # starts http://localhost:8787
-#   GET /quest?lat=55.9496&lng=-3.1883  -> the quest JSON
+#   GET /quest?lat=40.7308&lng=-73.9973  -> the quest JSON
 ```
 
 You need an Anthropic API key: https://console.anthropic.com/settings/keys
