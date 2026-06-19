@@ -169,6 +169,7 @@ A high score that doesn't serve the bet still waits.
 | D-026 ✓ | **Green-light paid APIs / API keys / OSS** where they make the product better (budget-aware: lean on caching + free tiers). Headline use: **Google Places as the 3rd data source** | Loosens the keyless constraint; Places solves suburban coverage (Smithtown/LI) + the "new/quirky" layer Wikipedia/OSM miss | 2026-06-19 |
 | D-027 ✓ | **First real device test PASSED** — app runs on a physical phone (Expo Go, SDK 54); CEO verdict: "the overall idea is there, UI needs work" | Concept validated on-device. Feasibility + appeal both confirmed → next focus is a UI/UX polish pass | 2026-06-19 |
 | D-028 ✓ | Build **quest history + saved data + light scoring** — on-device (AsyncStorage), anonymous (reuse install id), **NO login wall**, no leaderboards; photos persisted durably. | CEO clarified the goal is saving/history + light gamification, NOT auth — stays discovery-first & ungated. Full accounts still deferred (P1) | 2026-06-19 |
+| D-029 ✓ | **Auth + profiles via Supabase**, **web-redirect OAuth** (Google + Apple, Expo-Go-compatible). Sign-in is **OPTIONAL** (anonymous-first, not a gate); app degrades gracefully if Supabase unconfigured. Native buttons + dev build deferred to pre-launch. | CEO pulled accounts forward; chose open-source Supabase (also the planned backend, D-013) + web-OAuth to keep Expo Go testing. Apple native needs a $99 dev acct → later | 2026-06-19 |
 
 ## 13. Open decisions (need CEO input)
 

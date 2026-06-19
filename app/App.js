@@ -22,6 +22,20 @@ import * as Sharing from "expo-sharing";
 import { File, Directory, Paths } from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_BASE, TEASER } from "./config";
+// Optional, anonymous-first auth layer. `authConfigured` is false by default
+// (empty Supabase keys), in which case every auth helper is a safe no-op and the
+// sign-in UI is hidden — the app runs exactly as it does today.
+import { authConfigured } from "./lib/supabase";
+import {
+  signInWithProvider,
+  signOut,
+  getCurrentUser,
+  onAuthChange,
+  profileFromUser,
+  upsertProfile,
+  loadProfile,
+  pushScore,
+} from "./lib/auth";
 // On iOS this uses Apple Maps (no API key needed — works in Expo Go).
 // Android / a production build needs a Google Maps API key wired into app.json
 // under `android.config.googleMaps.apiKey` (and PROVIDER_GOOGLE). We deliberately
@@ -331,6 +345,14 @@ export default function App() {
   const recapRef = useRef(null); // the recap card we turn into a shareable image
   const completedFiredRef = useRef(false); // guard so quest_completed fires once
 
+  // --- Optional auth (anonymous-first; all null/no-op when unconfigured) ------
+  const [user, setUser] = useState(null); // Supabase auth user, or null
+  const [profile, setProfile] = useState(null); // row from the `profiles` table
+  const [authBusy, setAuthBusy] = useState(false); // sign-in/out in flight
+  const [authError, setAuthError] = useState(""); // last sign-in error, if any
+  const userRef = useRef(null); // latest user for the completion effect (avoids re-subscribing)
+  userRef.current = user;
+
   // On launch: ensure an install id exists, then check for an in-progress quest
   // to offer a Resume. We do this BEFORE showing Welcome to avoid a flash of the
   // no-resume state. "In progress" = saved quest exists and not all stops done.
@@ -353,6 +375,24 @@ export default function App() {
       }
       setScreen("welcome");
     })();
+  }, []);
+
+  // Restore an existing Supabase session (if signed in) and keep `user` in sync
+  // with auth changes. Entirely skipped when auth isn't configured.
+  useEffect(() => {
+    if (!authConfigured) return;
+    (async () => {
+      const u = await getCurrentUser();
+      if (u) {
+        setUser(u);
+        loadProfile(u.id).then((p) => p && setProfile(p)).catch(() => {});
+      }
+    })();
+    const unsub = onAuthChange((u) => {
+      setUser(u);
+      if (!u) setProfile(null);
+    });
+    return unsub;
   }, []);
 
   // Persist the active quest + progress whenever it changes while playing, so
@@ -418,6 +458,16 @@ export default function App() {
         setScore(next);
         // Local data only — but fire an analytics ping that points were earned.
         track("points_earned", { points: earned, total: next.total, streak_weeks: next.streak_weeks });
+
+        // If signed in, push the fresh totals up to the cloud profile. Best-
+        // effort: pushScore swallows all errors and is a no-op when unconfigured
+        // or signed out, so this never affects the local quest flow.
+        if (userRef.current) {
+          pushScore(userRef.current, next)
+            .then(() => loadProfile(userRef.current.id))
+            .then((p) => p && setProfile(p))
+            .catch(() => {});
+        }
       })();
 
       // Completed quests should not reappear as a "Resume" offer.
@@ -557,6 +607,59 @@ export default function App() {
     setHistoryRecord(null);
     setScreen("history");
     track("history_opened", { count: list.length });
+  }
+
+  // Open the optional Profile screen.
+  function openProfile() {
+    setAuthError("");
+    setScreen("profile");
+    track("profile_opened");
+  }
+
+  // Run web-redirect OAuth for a provider, then upsert + load the profile,
+  // merging the local score totals up. All failures are surfaced gently and
+  // never crash the app.
+  async function handleSignIn(provider) {
+    if (!authConfigured || authBusy) return;
+    setAuthBusy(true);
+    setAuthError("");
+    track("sign_in_started", { provider });
+    try {
+      const res = await signInWithProvider(provider);
+      if (res.canceled) {
+        return; // user backed out — no error
+      }
+      if (res.error || !res.user) {
+        setAuthError(res.error || "Sign-in failed. Please try again.");
+        track("sign_in_failed", { provider });
+        return;
+      }
+      setUser(res.user);
+      track("sign_in_succeeded", { provider });
+      // Merge local totals into the profile, then load it back as the truth.
+      const merged = await upsertProfile(res.user, score);
+      if (merged) setProfile(merged);
+      else {
+        const p = await loadProfile(res.user.id);
+        if (p) setProfile(p);
+      }
+    } catch (e) {
+      setAuthError(e?.message || "Sign-in failed. Please try again.");
+    } finally {
+      setAuthBusy(false);
+    }
+  }
+
+  async function handleSignOut() {
+    setAuthBusy(true);
+    try {
+      await signOut();
+    } finally {
+      setUser(null);
+      setProfile(null);
+      setAuthBusy(false);
+      track("sign_out");
+    }
   }
 
   async function shareRecap() {
@@ -722,6 +825,114 @@ export default function App() {
         <Text style={styles.historyLink} onPress={openHistory}>
           📜 My Quests
         </Text>
+
+        {/* OPTIONAL sign-in entry — NOT a gate. Hidden entirely unless Supabase
+            is configured. Shows the signed-in name once signed in, otherwise a
+            gentle "save your profile" invite. The whole app works without it. */}
+        {authConfigured ? (
+          user ? (
+            <Text style={styles.profileLink} onPress={openProfile}>
+              👤 {profile?.display_name || profileFromUser(user)?.display_name || "Your profile"}
+            </Text>
+          ) : (
+            <Text style={styles.profileLink} onPress={openProfile}>
+              ✨ Sign in to save your profile
+            </Text>
+          )
+        ) : (
+          <Text style={styles.profileLinkDisabled}>Profiles coming soon</Text>
+        )}
+      </ScrollView>
+    );
+  }
+
+  if (screen === "profile") {
+    const display = profile?.display_name || profileFromUser(user)?.display_name;
+    const email = profile?.email || profileFromUser(user)?.email;
+    const avatar = profile?.avatar_url || profileFromUser(user)?.avatar_url;
+    const pts = profile?.total_points ?? score.total;
+    const quests = profile?.quests_completed ?? score.quests_completed;
+    const streak = profile?.streak_weeks ?? score.streak_weeks;
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Profile</Text>
+
+        {user ? (
+          <>
+            {/* Signed-in identity from the provider. */}
+            <View style={styles.profileCard}>
+              {avatar ? (
+                <Image source={{ uri: avatar }} style={styles.profileAvatar} />
+              ) : (
+                <View style={[styles.profileAvatar, styles.profileAvatarEmpty]}>
+                  <Text style={styles.profileAvatarInitial}>
+                    {(display || email || "?").slice(0, 1).toUpperCase()}
+                  </Text>
+                </View>
+              )}
+              <View style={{ flex: 1 }}>
+                {display ? <Text style={styles.profileName}>{display}</Text> : null}
+                {email ? <Text style={styles.profileEmail}>{email}</Text> : null}
+              </View>
+            </View>
+
+            {/* Their score, synced to the cloud profile. */}
+            <View style={styles.scoreRow}>
+              <View style={styles.scoreStat}>
+                <Text style={styles.scoreNum}>{pts}</Text>
+                <Text style={styles.scoreLabel}>points</Text>
+              </View>
+              <View style={styles.scoreStat}>
+                <Text style={styles.scoreNum}>{quests}</Text>
+                <Text style={styles.scoreLabel}>quests</Text>
+              </View>
+              <View style={styles.scoreStat}>
+                <Text style={styles.scoreNum}>🔥 {streak}</Text>
+                <Text style={styles.scoreLabel}>week streak</Text>
+              </View>
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, authBusy && styles.actionBtnDisabled]}
+              onPress={handleSignOut}
+              disabled={authBusy}
+            >
+              <Text style={styles.buttonText}>Sign out</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <Text style={styles.intro}>
+              Sign in to save your points, quests and streak to your account — so they
+              follow you to a new phone. Your quests keep working either way.
+            </Text>
+
+            <TouchableOpacity
+              style={[styles.oauthBtn, authBusy && styles.actionBtnDisabled]}
+              onPress={() => handleSignIn("google")}
+              disabled={authBusy}
+            >
+              <Text style={styles.oauthBtnText}>Continue with Google</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.oauthBtn, styles.oauthBtnApple, authBusy && styles.actionBtnDisabled]}
+              onPress={() => handleSignIn("apple")}
+              disabled={authBusy}
+            >
+              <Text style={[styles.oauthBtnText, styles.oauthBtnTextApple]}>
+                Continue with Apple
+              </Text>
+            </TouchableOpacity>
+
+            {authBusy ? <ActivityIndicator style={{ marginTop: 16 }} color={ACCENT} /> : null}
+            {authError ? <Text style={styles.error}>{authError}</Text> : null}
+          </>
+        )}
+        <View style={{ height: 40 }} />
       </ScrollView>
     );
   }
@@ -978,6 +1189,22 @@ const styles = StyleSheet.create({
   scoreNum: { fontSize: 22, fontWeight: "800", color: INK },
   scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
   historyLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 24, textDecorationLine: "underline" },
+
+  // Optional sign-in / profile entry on Welcome
+  profileLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 16, textDecorationLine: "underline" },
+  profileLinkDisabled: { fontSize: 13, color: INK, opacity: 0.4, marginTop: 16 },
+
+  // Profile screen
+  profileCard: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 16, borderWidth: 1, borderColor: "#e6dfd2" },
+  profileAvatar: { width: 56, height: 56, borderRadius: 28, marginRight: 14 },
+  profileAvatarEmpty: { backgroundColor: ACCENT, alignItems: "center", justifyContent: "center" },
+  profileAvatarInitial: { color: "#fff", fontSize: 24, fontWeight: "800" },
+  profileName: { fontSize: 18, fontWeight: "800", color: INK },
+  profileEmail: { fontSize: 14, color: INK, opacity: 0.6, marginTop: 2 },
+  oauthBtn: { backgroundColor: "#fff", borderRadius: 12, paddingVertical: 15, alignItems: "center", marginTop: 14, borderWidth: 1, borderColor: "#d8cfc0" },
+  oauthBtnText: { color: INK, fontSize: 16, fontWeight: "700" },
+  oauthBtnApple: { backgroundColor: "#000", borderColor: "#000" },
+  oauthBtnTextApple: { color: "#fff" },
 
   // Points-earned badge on the completion recap
   pointsBadge: { backgroundColor: GREEN, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 20, marginBottom: 14 },
