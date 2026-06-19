@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   Linking,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -14,15 +16,70 @@ import * as Location from "expo-location";
 import * as ImagePicker from "expo-image-picker";
 import { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_BASE, TEASER } from "./config";
 // On iOS this uses Apple Maps (no API key needed — works in Expo Go).
 // Android / a production build needs a Google Maps API key wired into app.json
 // under `android.config.googleMaps.apiKey` (and PROVIDER_GOOGLE). We deliberately
 // leave the provider as the platform default so Expo Go testing needs no key.
 import MapView, { Marker, Polyline } from "react-native-maps";
-import { API_BASE } from "./config";
 
 const QUEST_EMOJI = { photo: "📷", find_detail: "🔍", question: "❓", collect: "✨" };
 const CHECKIN_RADIUS_M = 100; // how close you must be to check in
+
+// --- Local persistence (pause/resume) + anonymous analytics -----------------
+const STORE_KEY = "dayquest.activeQuest.v1"; // { quest, progress }
+const INSTALL_KEY = "dayquest.installId.v1";
+
+// One anonymous id per install, generated once. NO PII — just a random token.
+let _installId = null;
+async function getInstallId() {
+  if (_installId) return _installId;
+  try {
+    let id = await AsyncStorage.getItem(INSTALL_KEY);
+    if (!id) {
+      id = `dq_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`;
+      await AsyncStorage.setItem(INSTALL_KEY, id);
+    }
+    _installId = id;
+    return id;
+  } catch {
+    return null;
+  }
+}
+
+// Fire-and-forget analytics. A dead server must NEVER break the quest flow —
+// every failure is swallowed so check-in / photo / share keep working offline.
+function track(event, props = {}) {
+  (async () => {
+    try {
+      const install_id = await getInstallId();
+      await fetch(`${API_BASE}/event`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ event, install_id, props, ts: new Date().toISOString() }),
+      });
+    } catch {
+      /* offline / no server — analytics is best-effort only */
+    }
+  })();
+}
+
+// Same fire-and-forget contract for tester feedback.
+function sendFeedback(payload) {
+  (async () => {
+    try {
+      const install_id = await getInstallId();
+      await fetch(`${API_BASE}/feedback`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...payload, install_id, ts: new Date().toISOString() }),
+      });
+    } catch {
+      /* best-effort */
+    }
+  })();
+}
 
 // Distance between two lat/lng points, in metres.
 function distanceM(lat1, lng1, lat2, lng2) {
@@ -134,31 +191,87 @@ function RouteTrace({ stops }) {
 }
 
 export default function App() {
-  const [screen, setScreen] = useState("welcome"); // welcome | loading | ready | error
+  const [screen, setScreen] = useState("hydrating"); // hydrating | welcome | loading | ready | error
   const [quest, setQuest] = useState(null);
   const [error, setError] = useState("");
   const [coords, setCoords] = useState(null); // live position
   const [progress, setProgress] = useState({}); // { [order_index]: { checkedIn, photoUri } }
+  const [saved, setSaved] = useState(null); // an in-progress quest restored from disk (for Resume)
+  const [feedbackRating, setFeedbackRating] = useState(null); // "up" | "down"
+  const [feedbackText, setFeedbackText] = useState("");
+  const [feedbackSent, setFeedbackSent] = useState(false);
+  const [flagged, setFlagged] = useState({}); // { [order_index]: true } — stop reported
   const recapRef = useRef(null); // the recap card we turn into a shareable image
+  const completedFiredRef = useRef(false); // guard so quest_completed fires once
+
+  // On launch: ensure an install id exists, then check for an in-progress quest
+  // to offer a Resume. We do this BEFORE showing Welcome to avoid a flash of the
+  // no-resume state. "In progress" = saved quest exists and not all stops done.
+  useEffect(() => {
+    (async () => {
+      getInstallId();
+      try {
+        const raw = await AsyncStorage.getItem(STORE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const q = parsed?.quest;
+          const prog = parsed?.progress || {};
+          const done = q ? q.stops.filter((s) => prog[s.order_index]?.photoUri).length : 0;
+          if (q && done < q.stops.length) setSaved(parsed);
+        }
+      } catch {
+        /* corrupt/missing — just start fresh */
+      }
+      setScreen("welcome");
+    })();
+  }, []);
+
+  // Persist the active quest + progress whenever it changes while playing, so
+  // the quest survives an app close (UX-SPEC §1.7).
+  useEffect(() => {
+    if (screen !== "ready" || !quest) return;
+    AsyncStorage.setItem(STORE_KEY, JSON.stringify({ quest, progress })).catch(() => {});
+  }, [screen, quest, progress]);
 
   // Watch the user's location while a quest is active, so distances stay live.
   useEffect(() => {
     if (screen !== "ready") return;
     let sub;
     (async () => {
-      sub = await Location.watchPositionAsync(
-        { accuracy: Location.Accuracy.Balanced, distanceInterval: 10 },
-        (loc) => setCoords(loc.coords)
-      );
+      try {
+        sub = await Location.watchPositionAsync(
+          { accuracy: Location.Accuracy.Balanced, distanceInterval: 10 },
+          (loc) => setCoords(loc.coords)
+        );
+      } catch {
+        /* permission may not be granted on a resumed quest — distances just stay null */
+      }
     })();
     return () => sub && sub.remove();
   }, [screen]);
+
+  // Fire quest_completed exactly once, when the last stop's photo lands.
+  useEffect(() => {
+    if (screen !== "ready" || !quest) return;
+    const done = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
+    if (done === quest.stops.length && !completedFiredRef.current) {
+      completedFiredRef.current = true;
+      track("quest_completed", { stops: quest.stops.length });
+      // Completed quests should not reappear as a "Resume" offer.
+      AsyncStorage.removeItem(STORE_KEY).catch(() => {});
+    }
+  }, [screen, quest, progress]);
 
   async function startQuest() {
     setScreen("loading");
     setError("");
     setProgress({});
     setCoords(null);
+    setFeedbackRating(null);
+    setFeedbackText("");
+    setFeedbackSent(false);
+    setFlagged({});
+    completedFiredRef.current = false;
     try {
       const { status: perm } = await Location.requestForegroundPermissionsAsync();
       if (perm !== "granted") {
@@ -175,15 +288,74 @@ export default function App() {
       if (!res.ok) throw new Error(data.error || "Could not build a quest here.");
 
       setQuest(data);
+      setSaved(null);
       setScreen("ready");
+      track("quest_started", { stops: data.stops?.length });
     } catch (e) {
       setError(`${e.message}\n\nIs the server running (npm run serve)?\nTrying: ${API_BASE}`);
       setScreen("error");
     }
   }
 
+  // Restore an in-progress quest from disk (UX-SPEC §1.1 / §1.7).
+  function resumeQuest() {
+    if (!saved?.quest) return;
+    setQuest(saved.quest);
+    setProgress(saved.progress || {});
+    setCoords(null);
+    setFeedbackRating(null);
+    setFeedbackText("");
+    setFeedbackSent(false);
+    setFlagged({});
+    const done = saved.quest.stops.filter((s) => saved.progress?.[s.order_index]?.photoUri).length;
+    completedFiredRef.current = done === saved.quest.stops.length;
+    setSaved(null);
+    setScreen("ready");
+    track("quest_resumed", { stops: saved.quest.stops?.length });
+  }
+
+  // Clear saved state — a deliberate abandon (UX-SPEC §1.7, an abandonment signal).
+  function commitAbandon() {
+    track("quest_abandoned");
+    AsyncStorage.removeItem(STORE_KEY).catch(() => {});
+    setSaved(null);
+    setQuest(null);
+    setProgress({});
+    setScreen("welcome");
+  }
+
+  // One gentle confirm before we throw away an in-progress quest (UX-SPEC §1.7).
+  function abandonQuest() {
+    Alert.alert(
+      "Abandon this quest?",
+      "Your progress and photos for this quest will be cleared.",
+      [
+        { text: "Keep going", style: "cancel" },
+        { text: "Abandon", style: "destructive", onPress: commitAbandon },
+      ]
+    );
+  }
+
+  function flagStop(stop) {
+    if (flagged[stop.order_index]) return;
+    setFlagged((f) => ({ ...f, [stop.order_index]: true }));
+    sendFeedback({
+      kind: "stop_flag",
+      stop_name: stop.place?.name,
+      source_url: stop.place?.source_url,
+      reason: "Tester flagged this stop from the stop card.",
+      theme: quest?.theme,
+    });
+  }
+
+  function submitFeedback() {
+    sendFeedback({ kind: "quest", rating: feedbackRating, text: feedbackText.trim() || null, theme: quest?.theme });
+    setFeedbackSent(true);
+  }
+
   function checkIn(orderIndex) {
     setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true } }));
+    track("stop_checked_in", { order_index: orderIndex });
   }
 
   async function takePhoto(orderIndex) {
@@ -206,10 +378,12 @@ export default function App() {
     if (result && !result.canceled && result.assets?.[0]) {
       const uri = result.assets[0].uri;
       setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true, photoUri: uri } }));
+      track("stop_photo", { order_index: orderIndex });
     }
   }
 
   async function shareRecap() {
+    track("shared");
     try {
       const uri = await captureRef(recapRef, { format: "png", quality: 0.95 });
       if (await Sharing.isAvailableAsync()) {
@@ -291,17 +465,56 @@ export default function App() {
     );
   }
 
-  if (screen === "welcome" || screen === "error") {
+  if (screen === "hydrating") {
     return (
       <View style={styles.center}>
         <StatusBar style="dark" />
+        <ActivityIndicator size="large" color={ACCENT} />
+      </View>
+    );
+  }
+
+  if (screen === "welcome" || screen === "error") {
+    const savedQuest = saved?.quest;
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.welcomeContent}>
+        <StatusBar style="dark" />
         <Text style={styles.logo}>DayQuest</Text>
         <Text style={styles.tagline}>Find a little adventure near you.</Text>
+
+        {/* Resume sits above the fold when a quest is in progress (UX-SPEC §1.1). */}
+        {savedQuest ? (
+          <View style={styles.resumeBox}>
+            <Text style={styles.resumeLabel}>You have a quest in progress</Text>
+            <Text style={styles.resumeTheme} numberOfLines={2}>{savedQuest.theme}</Text>
+            <TouchableOpacity style={styles.button} onPress={resumeQuest}>
+              <Text style={styles.buttonText}>Resume your quest</Text>
+            </TouchableOpacity>
+            <Text style={styles.abandonLink} onPress={abandonQuest}>
+              Abandon quest
+            </Text>
+          </View>
+        ) : null}
+
+        {/* Delight before any ask: a permission-free "surprising place near you"
+            teaser (UX-SPEC §2). Static — does NOT call /quest. */}
+        <View style={styles.teaserCard}>
+          <Text style={styles.teaserKicker}>A surprising place near you</Text>
+          <Text style={styles.teaserPlace}>{TEASER.place}</Text>
+          <Text style={styles.teaserFact}>{TEASER.fact}</Text>
+          <Text style={styles.teaserArea}>{TEASER.area}</Text>
+        </View>
+
         {screen === "error" ? <Text style={styles.error}>{error}</Text> : null}
+
         <TouchableOpacity style={styles.button} onPress={startQuest}>
           <Text style={styles.buttonText}>{screen === "error" ? "Try again" : "Start a Quest"}</Text>
         </TouchableOpacity>
-      </View>
+        {/* Plain-language permission framing, shown before the OS dialog. */}
+        <Text style={styles.permNote}>
+          We'll use your location to find places to explore — only while you're on a quest.
+        </Text>
+      </ScrollView>
     );
   }
 
@@ -322,7 +535,11 @@ export default function App() {
   return (
     <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
       <StatusBar style="dark" />
-      <Text style={styles.theme}>{quest.theme}</Text>
+      <View style={styles.headerRow}>
+        <Text style={[styles.theme, { flex: 1 }]}>{quest.theme}</Text>
+        {/* Always-available pause/abandon (UX-SPEC §1.7). */}
+        <Text style={styles.abandonHeader} onPress={abandonQuest}>Abandon</Text>
+      </View>
       <Text style={styles.intro}>{quest.intro}</Text>
       <Text style={styles.progress}>
         {allDone ? "🎉 Quest complete!" : `${doneCount} of ${quest.stops.length} stops done`}
@@ -358,6 +575,48 @@ export default function App() {
       </View>
 
       {allDone ? renderRecap() : null}
+
+      {/* Quick delight signal + optional note after completion (UX-SPEC §1.8). */}
+      {allDone ? (
+        <View style={styles.feedbackCard}>
+          {feedbackSent ? (
+            <Text style={styles.feedbackThanks}>Thanks — that helps us pick better places. 🙏</Text>
+          ) : (
+            <>
+              <Text style={styles.feedbackQ}>How was this quest?</Text>
+              <View style={styles.feedbackThumbs}>
+                <Text
+                  style={[styles.thumb, feedbackRating === "up" && styles.thumbActive]}
+                  onPress={() => setFeedbackRating("up")}
+                >
+                  👍
+                </Text>
+                <Text
+                  style={[styles.thumb, feedbackRating === "down" && styles.thumbActive]}
+                  onPress={() => setFeedbackRating("down")}
+                >
+                  👎
+                </Text>
+              </View>
+              <TextInput
+                style={styles.feedbackInput}
+                placeholder="Anything we should know? (optional)"
+                placeholderTextColor="#9a8e80"
+                value={feedbackText}
+                onChangeText={setFeedbackText}
+                maxLength={500}
+              />
+              <TouchableOpacity
+                style={[styles.actionBtn, feedbackRating == null && !feedbackText.trim() && styles.actionBtnDisabled]}
+                onPress={submitFeedback}
+                disabled={feedbackRating == null && !feedbackText.trim()}
+              >
+                <Text style={styles.actionText}>Send feedback</Text>
+              </TouchableOpacity>
+            </>
+          )}
+        </View>
+      ) : null}
 
       {quest.stops.map((s) => {
         const state = progress[s.order_index] || {};
@@ -409,9 +668,15 @@ export default function App() {
               </>
             )}
 
-            <Text style={styles.source} onPress={() => Linking.openURL(s.place.source_url)}>
-              source ↗
-            </Text>
+            <View style={styles.cardFooter}>
+              <Text style={styles.source} onPress={() => Linking.openURL(s.place.source_url)}>
+                source ↗
+              </Text>
+              {/* Per-stop flag (UX-SPEC learning loop) — records name + source + reason. */}
+              <Text style={styles.flagLink} onPress={() => flagStop(s)}>
+                {flagged[s.order_index] ? "✓ flagged — thanks" : "something off with this stop?"}
+              </Text>
+            </View>
           </View>
         );
       })}
@@ -433,6 +698,36 @@ const styles = StyleSheet.create({
   center: { flex: 1, backgroundColor: CREAM, alignItems: "center", justifyContent: "center", padding: 28 },
   scroll: { flex: 1, backgroundColor: CREAM },
   scrollContent: { padding: 20, paddingTop: 64 },
+  welcomeContent: { padding: 24, paddingTop: 88, alignItems: "center" },
+
+  // Welcome teaser + resume
+  teaserCard: { backgroundColor: "#fff", borderRadius: 18, padding: 20, marginTop: 28, width: "100%", borderWidth: 1, borderColor: "#e6dfd2" },
+  teaserKicker: { fontSize: 12, fontWeight: "800", color: ACCENT, letterSpacing: 1, textTransform: "uppercase" },
+  teaserPlace: { fontSize: 22, fontWeight: "800", color: INK, marginTop: 6, letterSpacing: -0.3 },
+  teaserFact: { fontSize: 15, color: INK, opacity: 0.82, marginTop: 8, lineHeight: 22 },
+  teaserArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 10 },
+  permNote: { fontSize: 12, color: INK, opacity: 0.55, textAlign: "center", marginTop: 14, lineHeight: 17 },
+  resumeBox: { backgroundColor: "#fff", borderRadius: 18, padding: 18, marginTop: 24, width: "100%", borderWidth: 1, borderColor: GREEN, alignItems: "center" },
+  resumeLabel: { fontSize: 13, fontWeight: "700", color: GREEN },
+  resumeTheme: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 4, textAlign: "center" },
+  abandonLink: { fontSize: 13, color: ACCENT, textDecorationLine: "underline", marginTop: 12 },
+
+  // Active-screen header + abandon
+  headerRow: { flexDirection: "row", alignItems: "flex-start" },
+  abandonHeader: { fontSize: 13, color: ACCENT, fontWeight: "700", marginTop: 8, marginLeft: 12 },
+
+  // Feedback card
+  feedbackCard: { backgroundColor: "#fff", borderRadius: 16, padding: 18, marginBottom: 16 },
+  feedbackQ: { fontSize: 17, fontWeight: "700", color: INK },
+  feedbackThumbs: { flexDirection: "row", marginTop: 10, marginBottom: 4 },
+  thumb: { fontSize: 30, marginRight: 18, opacity: 0.4 },
+  thumbActive: { opacity: 1 },
+  feedbackInput: { borderWidth: 1, borderColor: "#e6dfd2", borderRadius: 10, padding: 12, fontSize: 15, color: INK, marginTop: 10, backgroundColor: CREAM },
+  feedbackThanks: { fontSize: 15, color: GREEN, fontWeight: "700" },
+
+  // Per-stop flag
+  cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 },
+  flagLink: { fontSize: 12, color: INK, opacity: 0.5, textDecorationLine: "underline" },
   logo: { fontSize: 44, fontWeight: "800", color: INK, letterSpacing: -1 },
   tagline: { fontSize: 17, color: INK, opacity: 0.7, marginTop: 8, textAlign: "center" },
   error: { color: ACCENT, marginTop: 20, textAlign: "center", lineHeight: 20 },
@@ -455,7 +750,7 @@ const styles = StyleSheet.create({
   actionText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   override: { fontSize: 13, color: ACCENT, textAlign: "center", marginTop: 10, textDecorationLine: "underline" },
   photo: { width: "100%", height: 180, borderRadius: 12, marginTop: 12 },
-  source: { fontSize: 12, color: ACCENT, marginTop: 10 },
+  source: { fontSize: 12, color: ACCENT },
 
   // Overview map
   mapWrap: { height: 220, borderRadius: 16, overflow: "hidden", marginBottom: 16 },

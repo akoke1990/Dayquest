@@ -17,3 +17,17 @@ function detectApiBase() {
 }
 
 export const API_BASE = detectApiBase();
+
+// The configured test area for the first friendly tester round.
+// Used as a coarse, permission-FREE default so the Welcome teaser can render
+// before we ever ask for GPS (UX-SPEC §2).
+export const TEST_AREA = { lat: 40.9165, lng: -73.1412, label: "Stony Brook Village, NY" };
+
+// A curated "surprising place near you" teaser shown on Welcome before any ask.
+// This is STATIC on purpose — it must NOT hit /quest (the paid AI path) just to
+// delight someone who hasn't started yet. Refresh per test round if desired.
+export const TEASER = {
+  place: "Stony Brook Grist Mill",
+  fact: "Built in 1699, it literally reshaped the land — carving out the Mill Pond that still defines the village waterfront. One of the oldest surviving buildings on Long Island.",
+  area: TEST_AREA.label,
+};
