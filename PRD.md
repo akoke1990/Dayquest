@@ -163,6 +163,9 @@ A high score that doesn't serve the bet still waits.
 | D-021 ✓ | **Sonnet 4.6 quality confirmed** on a live GV quest (rich, accurate, well-written) → default stays Sonnet | Don't need Opus for good quests; ~40% cheaper | 2026-06-19 |
 | D-022 ✓ | **Exclude tragedy/disaster/death-defined sites from MVP quests**, but KEEP them in the POI DB marked `maybe` (deferred) for a future respectful "history" mode | Joyful-adventure tone for MVP; don't lose the data. POI `status` enum becomes pending/approved/**maybe**/flagged. Fix = AI-mode pre-filter + prompt guardrail now; curation marks sensitive sites `maybe` | 2026-06-19 |
 | D-017a (finding) | Spread retry **works** but clustered icons (Arch+Elm, ~150m) can't always hit the 250m floor without dropping the best content → kept-best fell back to a 150m leg | Reinforces that the **curated DB is the real fix**, not prompt-tuning | 2026-06-19 |
+| D-023 ✓ | **Defer curation** — not MVP/first-tester-blocking. AI-over-open-data + the automated guardrails (tone filter, spread retry) carry the first *friendly* tester round | CEO call. Tradeoff: quests are good-not-perfect (occasional clustering; tone filter is an automated stand-in for a curator). **Curation returns before public/store launch & before scaling cities** | 2026-06-19 |
+| D-024 ✓ | **First test anchored on Stony Brook Village** (proven hero zone: 32 POIs, real 1.2km loop). Smithtown/St. James too sparse in open data (18/8, 7/4) → joins later via a light curation pass | Avoid a coverage false-negative; testers start at the village center | 2026-06-19 |
+| D-025 ✓ | **Not walking-only (post-MVP):** add travel modes (walk/bike/drive) so spread-out suburban areas (Smithtown, LI) become viable. MVP + first test stay walking | CEO insight; driving/biking between stops dissolves the low-density coverage problem | 2026-06-19 |
 
 ## 13. Open decisions (need CEO input)
 
