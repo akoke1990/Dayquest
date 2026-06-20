@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Animated,
+  Dimensions,
   Image,
   Linking,
   ScrollView,
@@ -44,6 +46,7 @@ import MapView, { Marker, Polyline } from "react-native-maps";
 
 const QUEST_EMOJI = { photo: "📷", find_detail: "🔍", question: "❓", collect: "✨" };
 const CHECKIN_RADIUS_M = 100; // how close you must be to check in
+const SCREEN_H = Dimensions.get("window").height; // for sheet peek/expanded sizing
 
 // --- Local persistence (pause/resume) + anonymous analytics -----------------
 const STORE_KEY = "dayquest.activeQuest.v1"; // { quest, progress }
@@ -344,6 +347,37 @@ export default function App() {
   const [historyRecord, setHistoryRecord] = useState(null); // a past quest opened from "My Quests"
   const recapRef = useRef(null); // the recap card we turn into a shareable image
   const completedFiredRef = useRef(false); // guard so quest_completed fires once
+
+  // --- Map-first active screen: bottom-sheet + selected stop -------------------
+  // `selectedStop` is the order_index of the stop whose detail is expanded in the
+  // sheet, or null for the collapsed "peek" list. It is intentionally kept OUT of
+  // the completion effect's deps so it never re-fires scoring/history.
+  const [selectedStop, setSelectedStop] = useState(null);
+  // 0 = peek (list), 1 = expanded (one stop's detail / completion). A plain
+  // Animated.Value driven by Animated.timing — no gesture-handler / reanimated,
+  // so it's rock-solid in Expo Go SDK 54.
+  const sheetAnim = useRef(new Animated.Value(0)).current;
+  const [sheetExpanded, setSheetExpanded] = useState(false);
+
+  // Animate the sheet between peek and expanded whenever the target changes.
+  useEffect(() => {
+    Animated.timing(sheetAnim, {
+      toValue: sheetExpanded ? 1 : 0,
+      duration: 240,
+      useNativeDriver: false, // animating height — not transform-only
+    }).start();
+  }, [sheetExpanded, sheetAnim]);
+
+  // Tapping a map dot or a list row selects a stop and expands the sheet.
+  function selectStop(orderIndex) {
+    setSelectedStop(orderIndex);
+    setSheetExpanded(true);
+  }
+  // Collapse back to the peek list (drag handle / back affordance).
+  function collapseSheet() {
+    setSheetExpanded(false);
+    setSelectedStop(null);
+  }
 
   // --- Optional auth (anonymous-first; all null/no-op when unconfigured) ------
   const [user, setUser] = useState(null); // Supabase auth user, or null
@@ -1004,56 +1038,101 @@ export default function App() {
     );
   }
 
-  // screen === "ready"
+  // screen === "ready" — MAP-FIRST layout: a full-screen map with selectable
+  // numbered stop dots, overlaid by a custom Animated bottom sheet that toggles
+  // between a "peek" list and a single stop's expanded detail (and completion).
   const doneCount = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
   const allDone = doneCount === quest.stops.length;
+  // The stop whose detail is shown when expanded (and not yet complete).
+  const activeStop =
+    selectedStop != null ? quest.stops.find((s) => s.order_index === selectedStop) : null;
 
-  return (
-    <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-      <StatusBar style="dark" />
-      <View style={styles.headerRow}>
-        <Text style={[styles.theme, { flex: 1 }]}>{quest.theme}</Text>
-        {/* Always-available pause/abandon (UX-SPEC §1.7). */}
-        <Text style={styles.abandonHeader} onPress={abandonQuest}>Abandon</Text>
-      </View>
-      <Text style={styles.intro}>{quest.intro}</Text>
-      <Text style={styles.progress}>
-        {allDone ? "🎉 Quest complete!" : `${doneCount} of ${quest.stops.length} stops done`}
-      </Text>
+  // Sheet height interpolates between a compact peek and a tall expanded panel.
+  const peekHeight = Math.round(SCREEN_H * 0.34);
+  const expandedHeight = Math.round(SCREEN_H * 0.74);
+  const sheetHeight = sheetAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [peekHeight, expandedHeight],
+  });
 
-      {/* Overview map: numbered pins in walking order, the route line, and "you are here".
-          Interactive (never captured), so a live MapView is safe here. */}
-      <View style={styles.mapWrap}>
-        <MapView
-          style={styles.map}
-          initialRegion={regionForStops(quest.stops, coords)}
-          showsUserLocation
-          showsMyLocationButton={false}
-        >
-          <Polyline
-            coordinates={quest.stops.map((s) => ({ latitude: s.place.lat, longitude: s.place.lng }))}
-            strokeColor={ACCENT}
-            strokeWidth={4}
-          />
-          {quest.stops.map((s) => (
-            <Marker
-              key={s.order_index}
-              coordinate={{ latitude: s.place.lat, longitude: s.place.lng }}
-              title={s.place.name}
-              anchor={{ x: 0.5, y: 0.5 }}
+  // --- Renderers for the sheet body (peek list / stop detail / completion) -----
+  function renderStopDetail(s) {
+    const state = progress[s.order_index] || {};
+    const dist = coords ? distanceM(coords.latitude, coords.longitude, s.place.lat, s.place.lng) : null;
+    const inRange = dist != null && dist <= CHECKIN_RADIUS_M;
+    const completed = Boolean(state.photoUri);
+    return (
+      <ScrollView
+        style={styles.sheetScroll}
+        contentContainerStyle={styles.sheetScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.stopTitle}>
+          {completed ? "✓ " : ""}
+          {s.order_index}. {s.place.name}
+        </Text>
+        <Text style={styles.distance}>
+          {dist != null ? `${dist} m away` : `${s.place.distance_m} m from start`}
+          {inRange ? " · you're here!" : ""}
+        </Text>
+        <Text style={styles.body}>{s.description}</Text>
+        <Text style={styles.why}>Why: {s.reason}</Text>
+        {s.lore_hook ? <Text style={styles.lore}>{s.lore_hook}</Text> : null}
+        <View style={styles.questBox}>
+          <Text style={styles.questText}>
+            {QUEST_EMOJI[s.quest_type] || "🎯"}  {s.quest_prompt}
+          </Text>
+        </View>
+
+        {/* Check-in → photo flow (unchanged behavior). */}
+        {state.photoUri ? (
+          <Image source={{ uri: state.photoUri }} style={styles.photo} />
+        ) : state.checkedIn ? (
+          <TouchableOpacity style={styles.actionBtn} onPress={() => takePhoto(s.order_index)}>
+            <Text style={styles.actionText}>📷 Take your photo</Text>
+          </TouchableOpacity>
+        ) : (
+          <>
+            <TouchableOpacity
+              style={[styles.actionBtn, !inRange && styles.actionBtnDisabled]}
+              onPress={() => checkIn(s.order_index)}
+              disabled={!inRange}
             >
-              <View style={styles.pin}>
-                <Text style={styles.pinText}>{s.order_index}</Text>
-              </View>
-            </Marker>
-          ))}
-        </MapView>
-      </View>
+              <Text style={styles.actionText}>
+                {inRange ? "📍 Check in here" : "Walk closer to check in"}
+              </Text>
+            </TouchableOpacity>
+            {/* Manual override so bad GPS never dead-ends the user */}
+            <Text style={styles.override} onPress={() => checkIn(s.order_index)}>
+              Can't check in? I'm here →
+            </Text>
+          </>
+        )}
 
-      {allDone ? renderRecap() : null}
+        <View style={styles.cardFooter}>
+          <Text style={styles.source} onPress={() => Linking.openURL(s.place.source_url)}>
+            source ↗
+          </Text>
+          {/* Per-stop flag (UX-SPEC learning loop) — records name + source + reason. */}
+          <Text style={styles.flagLink} onPress={() => flagStop(s)}>
+            {flagged[s.order_index] ? "✓ flagged — thanks" : "something off with this stop?"}
+          </Text>
+        </View>
+        <View style={{ height: 8 }} />
+      </ScrollView>
+    );
+  }
 
-      {/* Quick delight signal + optional note after completion (UX-SPEC §1.8). */}
-      {allDone ? (
+  function renderCompletion() {
+    return (
+      <ScrollView
+        style={styles.sheetScroll}
+        contentContainerStyle={styles.sheetScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {renderRecap()}
+
+        {/* Quick delight signal + optional note after completion (UX-SPEC §1.8). */}
         <View style={styles.feedbackCard}>
           {feedbackSent ? (
             <Text style={styles.feedbackThanks}>Thanks — that helps us pick better places. 🙏</Text>
@@ -1092,76 +1171,147 @@ export default function App() {
             </>
           )}
         </View>
-      ) : null}
 
-      {quest.stops.map((s) => {
-        const state = progress[s.order_index] || {};
-        const dist = coords ? distanceM(coords.latitude, coords.longitude, s.place.lat, s.place.lng) : null;
-        const inRange = dist != null && dist <= CHECKIN_RADIUS_M;
-        const completed = Boolean(state.photoUri);
+        <TouchableOpacity style={styles.button} onPress={startQuest}>
+          <Text style={styles.buttonText}>New Quest</Text>
+        </TouchableOpacity>
+        <View style={{ height: 16 }} />
+      </ScrollView>
+    );
+  }
 
-        return (
-          <View key={s.order_index} style={[styles.card, completed && styles.cardDone]}>
-            <Text style={styles.stopTitle}>
-              {completed ? "✓ " : ""}
-              {s.order_index}. {s.place.name}
-            </Text>
-            <Text style={styles.distance}>
-              {dist != null ? `${dist} m away` : `${s.place.distance_m} m from start`}
-              {inRange ? " · you're here!" : ""}
-            </Text>
-            <Text style={styles.body}>{s.description}</Text>
-            <Text style={styles.why}>Why: {s.reason}</Text>
-            {s.lore_hook ? <Text style={styles.lore}>{s.lore_hook}</Text> : null}
-            <View style={styles.questBox}>
-              <Text style={styles.questText}>
-                {QUEST_EMOJI[s.quest_type] || "🎯"}  {s.quest_prompt}
-              </Text>
-            </View>
+  function renderPeek() {
+    return (
+      <ScrollView
+        style={styles.sheetScroll}
+        contentContainerStyle={styles.sheetScrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.peekTheme} numberOfLines={2}>{quest.theme}</Text>
+        <Text style={styles.intro}>{quest.intro}</Text>
+        <Text style={styles.progress}>
+          {allDone ? "🎉 Quest complete!" : `${doneCount} of ${quest.stops.length} stops done`}
+        </Text>
 
-            {/* Check-in → photo flow */}
-            {state.photoUri ? (
-              <Image source={{ uri: state.photoUri }} style={styles.photo} />
-            ) : state.checkedIn ? (
-              <TouchableOpacity style={styles.actionBtn} onPress={() => takePhoto(s.order_index)}>
-                <Text style={styles.actionText}>📷 Take your photo</Text>
-              </TouchableOpacity>
-            ) : (
-              <>
-                <TouchableOpacity
-                  style={[styles.actionBtn, !inRange && styles.actionBtnDisabled]}
-                  onPress={() => checkIn(s.order_index)}
-                  disabled={!inRange}
-                >
-                  <Text style={styles.actionText}>
-                    {inRange ? "📍 Check in here" : "Walk closer to check in"}
-                  </Text>
-                </TouchableOpacity>
-                {/* Manual override so bad GPS never dead-ends the user */}
-                <Text style={styles.override} onPress={() => checkIn(s.order_index)}>
-                  Can't check in? I'm here →
+        {allDone ? (
+          <TouchableOpacity style={styles.actionBtn} onPress={() => setSheetExpanded(true)}>
+            <Text style={styles.actionText}>🎉 See your recap</Text>
+          </TouchableOpacity>
+        ) : null}
+
+        {quest.stops.map((s) => {
+          const state = progress[s.order_index] || {};
+          const dist = coords
+            ? distanceM(coords.latitude, coords.longitude, s.place.lat, s.place.lng)
+            : null;
+          const completed = Boolean(state.photoUri);
+          return (
+            <TouchableOpacity
+              key={s.order_index}
+              style={[styles.listRow, completed && styles.listRowDone]}
+              onPress={() => selectStop(s.order_index)}
+            >
+              <View style={[styles.listDot, completed && styles.listDotDone]}>
+                <Text style={styles.listDotText}>{completed ? "✓" : s.order_index}</Text>
+              </View>
+              <View style={styles.listRowText}>
+                <Text style={styles.listName} numberOfLines={1}>{s.place.name}</Text>
+                <Text style={styles.listDist}>
+                  {dist != null ? `${dist} m away` : `${s.place.distance_m} m from start`}
                 </Text>
-              </>
-            )}
+              </View>
+              <Text style={styles.listChevron}>›</Text>
+            </TouchableOpacity>
+          );
+        })}
 
-            <View style={styles.cardFooter}>
-              <Text style={styles.source} onPress={() => Linking.openURL(s.place.source_url)}>
-                source ↗
-              </Text>
-              {/* Per-stop flag (UX-SPEC learning loop) — records name + source + reason. */}
-              <Text style={styles.flagLink} onPress={() => flagStop(s)}>
-                {flagged[s.order_index] ? "✓ flagged — thanks" : "something off with this stop?"}
-              </Text>
-            </View>
-          </View>
-        );
-      })}
+        {/* Always-available "New Quest" (mirrors the original, always-visible button). */}
+        <TouchableOpacity style={styles.newQuestLink} onPress={startQuest}>
+          <Text style={styles.newQuestLinkText}>+ New Quest</Text>
+        </TouchableOpacity>
+        <View style={{ height: 8 }} />
+      </ScrollView>
+    );
+  }
 
-      <TouchableOpacity style={styles.button} onPress={startQuest}>
-        <Text style={styles.buttonText}>New Quest</Text>
-      </TouchableOpacity>
-      <View style={{ height: 40 }} />
-    </ScrollView>
+  // What fills the EXPANDED sheet: completion takes priority, otherwise the
+  // selected stop's detail (fall back to peek list if nothing is selected).
+  const expandedBody = allDone
+    ? renderCompletion()
+    : activeStop
+    ? renderStopDetail(activeStop)
+    : renderPeek();
+
+  return (
+    <View style={styles.mapScreen}>
+      <StatusBar style="dark" />
+
+      {/* FULL-SCREEN map: numbered dots in walking order, route line, "you are here". */}
+      <MapView
+        style={StyleSheet.absoluteFill}
+        initialRegion={regionForStops(quest.stops, coords)}
+        showsUserLocation
+        showsMyLocationButton={false}
+      >
+        <Polyline
+          coordinates={quest.stops.map((s) => ({ latitude: s.place.lat, longitude: s.place.lng }))}
+          strokeColor={ACCENT}
+          strokeWidth={4}
+        />
+        {quest.stops.map((s) => {
+          const completed = Boolean(progress[s.order_index]?.photoUri);
+          const isSelected = selectedStop === s.order_index;
+          return (
+            <Marker
+              // Key folds in completed/selected so the custom marker re-renders
+              // its style when those change (RN-maps caches marker children).
+              key={`${s.order_index}-${completed ? "d" : "o"}-${isSelected ? "s" : "n"}`}
+              coordinate={{ latitude: s.place.lat, longitude: s.place.lng }}
+              title={s.place.name}
+              anchor={{ x: 0.5, y: 0.5 }}
+              onPress={() => selectStop(s.order_index)}
+            >
+              <View
+                style={[
+                  styles.pin,
+                  completed && styles.pinDone,
+                  isSelected && styles.pinSelected,
+                ]}
+              >
+                <Text style={styles.pinText}>{completed ? "✓" : s.order_index}</Text>
+              </View>
+            </Marker>
+          );
+        })}
+      </MapView>
+
+      {/* Floating top bar: quest identity + always-available Abandon (pause). */}
+      <View style={styles.topBar} pointerEvents="box-none">
+        <View style={styles.topBarPill}>
+          <Text style={styles.topBarTheme} numberOfLines={1}>{quest.theme}</Text>
+        </View>
+        <TouchableOpacity style={styles.topBarAbandon} onPress={abandonQuest}>
+          <Text style={styles.topBarAbandonText}>Abandon</Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Custom Animated bottom sheet — peek (list) ↔ expanded (one stop / recap). */}
+      <Animated.View style={[styles.sheet, { height: sheetHeight }]}>
+        {/* Drag handle / back affordance: collapses the expanded sheet to the list. */}
+        <TouchableOpacity
+          style={styles.sheetHandleZone}
+          activeOpacity={0.7}
+          onPress={() => (sheetExpanded ? collapseSheet() : setSheetExpanded(true))}
+        >
+          <View style={styles.sheetHandle} />
+          {sheetExpanded && !allDone ? (
+            <Text style={styles.sheetBack}>‹ All stops</Text>
+          ) : null}
+        </TouchableOpacity>
+
+        {sheetExpanded ? expandedBody : renderPeek()}
+      </Animated.View>
+    </View>
   );
 }
 
@@ -1224,10 +1374,6 @@ const styles = StyleSheet.create({
   resumeTheme: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 4, textAlign: "center" },
   abandonLink: { fontSize: 13, color: ACCENT, textDecorationLine: "underline", marginTop: 12 },
 
-  // Active-screen header + abandon
-  headerRow: { flexDirection: "row", alignItems: "flex-start" },
-  abandonHeader: { fontSize: 13, color: ACCENT, fontWeight: "700", marginTop: 8, marginLeft: 12 },
-
   // Feedback card
   feedbackCard: { backgroundColor: "#fff", borderRadius: 16, padding: 18, marginBottom: 16 },
   feedbackQ: { fontSize: 17, fontWeight: "700", color: INK },
@@ -1264,20 +1410,125 @@ const styles = StyleSheet.create({
   photo: { width: "100%", height: 180, borderRadius: 12, marginTop: 12 },
   source: { fontSize: 12, color: ACCENT },
 
-  // Overview map
-  mapWrap: { height: 220, borderRadius: 16, overflow: "hidden", marginBottom: 16 },
-  map: { ...StyleSheet.absoluteFillObject },
+  // --- Map-first active screen --------------------------------------------------
+  mapScreen: { flex: 1, backgroundColor: CREAM },
+
+  // Numbered stop dots (terracotta), with completed/selected variants.
   pin: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: ACCENT,
-    borderWidth: 2,
+    borderWidth: 2.5,
     borderColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 1 },
   },
-  pinText: { color: "#fff", fontSize: 13, fontWeight: "800" },
+  pinDone: { backgroundColor: GREEN },
+  pinSelected: {
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    borderColor: INK,
+    borderWidth: 3,
+  },
+  pinText: { color: "#fff", fontSize: 14, fontWeight: "800" },
+
+  // Floating top bar over the map.
+  topBar: {
+    position: "absolute",
+    top: 56,
+    left: 16,
+    right: 16,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  topBarPill: {
+    flex: 1,
+    backgroundColor: "rgba(244,241,234,0.94)",
+    borderRadius: 22,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderWidth: 1,
+    borderColor: "#e6dfd2",
+    marginRight: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
+  },
+  topBarTheme: { fontSize: 15, fontWeight: "800", color: INK, letterSpacing: -0.2 },
+  topBarAbandon: {
+    backgroundColor: "rgba(244,241,234,0.94)",
+    borderRadius: 22,
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderWidth: 1,
+    borderColor: "#e6dfd2",
+  },
+  topBarAbandonText: { fontSize: 13, color: ACCENT, fontWeight: "700" },
+
+  // Bottom sheet
+  sheet: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: CREAM,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingHorizontal: 20,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: -3 },
+    elevation: 12,
+  },
+  sheetHandleZone: { alignItems: "center", paddingTop: 10, paddingBottom: 6 },
+  sheetHandle: {
+    width: 44,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: "#cbbfae",
+  },
+  sheetBack: { fontSize: 14, color: ACCENT, fontWeight: "700", marginTop: 8, alignSelf: "flex-start" },
+  sheetScroll: { flex: 1 },
+  sheetScrollContent: { paddingBottom: 24 },
+  peekTheme: { fontSize: 22, fontWeight: "800", color: INK, letterSpacing: -0.4, marginTop: 4 },
+
+  // Compact peek list of stops
+  listRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 14,
+    padding: 12,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: "#e6dfd2",
+  },
+  listRowDone: { borderColor: GREEN },
+  listDot: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: ACCENT,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 12,
+  },
+  listDotDone: { backgroundColor: GREEN },
+  listDotText: { color: "#fff", fontSize: 14, fontWeight: "800" },
+  listRowText: { flex: 1 },
+  listName: { fontSize: 16, fontWeight: "700", color: INK },
+  listDist: { fontSize: 13, color: ACCENT, fontWeight: "600", marginTop: 2 },
+  listChevron: { fontSize: 24, color: "#cbbfae", fontWeight: "700", marginLeft: 8 },
+  newQuestLink: { alignSelf: "center", marginTop: 16, paddingVertical: 8, paddingHorizontal: 16 },
+  newQuestLinkText: { fontSize: 15, color: ACCENT, fontWeight: "700", textDecorationLine: "underline" },
 
   // 9:16 share-magnet recap
   recapWrap: { marginBottom: 20, alignItems: "center" },
