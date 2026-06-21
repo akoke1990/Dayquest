@@ -1187,6 +1187,11 @@ export default function App() {
         contentContainerStyle={styles.sheetScrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Area label affordance (resolved server-side from GPS). Non-functional
+            for now — the area-picker/override UI is a later increment. */}
+        {quest.origin?.label ? (
+          <Text style={styles.peekArea} numberOfLines={1}>Exploring {quest.origin.label} ▾</Text>
+        ) : null}
         <Text style={styles.peekTheme} numberOfLines={2}>{quest.theme}</Text>
         <Text style={styles.intro}>{quest.intro}</Text>
         <Text style={styles.progress}>
@@ -1498,6 +1503,7 @@ const styles = StyleSheet.create({
   sheetBack: { fontSize: 14, color: ACCENT, fontWeight: "700", marginTop: 8, alignSelf: "flex-start" },
   sheetScroll: { flex: 1 },
   sheetScrollContent: { paddingBottom: 24 },
+  peekArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 2 },
   peekTheme: { fontSize: 22, fontWeight: "800", color: INK, letterSpacing: -0.4, marginTop: 4 },
 
   // Compact peek list of stops

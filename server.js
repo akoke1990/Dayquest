@@ -12,6 +12,7 @@
 import { createServer } from "node:http";
 import { appendFileSync, mkdirSync } from "node:fs";
 import { buildQuest, loadEnv } from "./lib/quest.js";
+import { resolveArea } from "./lib/area.js";
 
 loadEnv();
 const PORT = process.env.PORT || 8787;
@@ -127,8 +128,16 @@ const server = createServer(async (req, res) => {
     }
     try {
       console.log(`  → quest request for ${lat}, ${lng}`);
-      const quest = await buildQuest(lat, lng);
-      console.log(`  ← ${quest.stops.length} stops: ${quest.theme}`);
+      // Resolve to an Area: if the caller passed an explicit label, honour it;
+      // otherwise reverse-geocode coords into a human neighbourhood/town name so
+      // origin.label is a real place (never raw coordinates). resolveArea never
+      // throws — worst case it returns a generic "Your Area".
+      const labelRaw = url.searchParams.get("label");
+      const label = labelRaw && labelRaw.trim()
+        ? labelRaw.trim()
+        : (await resolveArea(lat, lng)).name;
+      const quest = await buildQuest(lat, lng, label);
+      console.log(`  ← ${quest.stops.length} stops: ${quest.theme} (area: ${label})`);
       return send(res, 200, quest);
     } catch (err) {
       if (err.code === "NO_KEY") return send(res, 503, { error: "Server has no ANTHROPIC_API_KEY configured." });
