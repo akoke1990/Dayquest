@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import * as Location from "expo-location";
+import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
@@ -53,6 +54,12 @@ const STORE_KEY = "dayquest.activeQuest.v1"; // { quest, progress }
 const INSTALL_KEY = "dayquest.installId.v1";
 const HISTORY_KEY = "dayquest.history.v1"; // [{ id, completed_at, theme, origin_label, stops:[{name,photoUri,source_url}], points, quest, progress }]
 const SCORE_KEY = "dayquest.score.v1"; // { total, quests_completed, streak_weeks, last_week_index }
+// Per-Area discovery log (Collections). Honest running count — no fake denominator.
+// { [areaLabel]: { discovered: { [placeKey]: { name, source_url, first_seen } } } }
+const COLLECTIONS_KEY = "dayquest.collections.v1";
+// Per-Area personal bests for the async scorecard.
+// { [areaLabel]: { best_points, fastest_time_s, quests, last_at } }
+const BESTS_KEY = "dayquest.bests.v1";
 
 // Light scoring knobs (no levels grind, no leaderboards — UX is "a little win").
 const POINTS_PER_QUEST = 100;
@@ -109,6 +116,29 @@ function sendFeedback(payload) {
       /* best-effort */
     }
   })();
+}
+
+// Fire-and-forget completion score to the cross-user board sink (data/scores.jsonl).
+// Separate from the `points_earned` analytics ping — this is the durable board
+// capture. Like track(), a dead server must never break the quest flow.
+function postScore({ area, theme, points, time_s }) {
+  (async () => {
+    try {
+      const install_id = await getInstallId();
+      await fetch(`${API_BASE}/score`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ area, theme, points, time_s, install_id, ts: new Date().toISOString() }),
+      });
+    } catch {
+      /* offline / no server — board capture is best-effort only */
+    }
+  })();
+}
+
+// A stable id for a discovered place: prefer its source_url, else its name.
+function placeKey(place) {
+  return place?.source_url || place?.name || null;
 }
 
 // Copy a captured photo from the ImagePicker cache into the app's persistent
@@ -206,6 +236,94 @@ async function appendHistory(record) {
   list.unshift(record);
   await AsyncStorage.setItem(HISTORY_KEY, JSON.stringify(list)).catch(() => {});
   return list;
+}
+
+// --- Collections (per-Area discovery sets) ----------------------------------
+// Read the collections map, tolerating missing/corrupt.
+async function readCollections() {
+  try {
+    const raw = await AsyncStorage.getItem(COLLECTIONS_KEY);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if (obj && typeof obj === "object") return obj;
+    }
+  } catch {
+    /* corrupt — start fresh */
+  }
+  return {};
+}
+
+// Record a completed quest's stops into the discovery set for its Area. Returns
+// { collections, newCount } where newCount is how many places were NOT already
+// discovered — that's the "+N new spots discovered" recap line. The delta is
+// computed against the EXISTING set before merging.
+async function recordCollections(areaLabel, stops) {
+  const area = areaLabel || "Your Area";
+  const collections = await readCollections();
+  const entry = collections[area] || { discovered: {} };
+  const discovered = { ...entry.discovered };
+  const now = new Date().toISOString();
+  let newCount = 0;
+  for (const s of stops) {
+    const key = placeKey(s.place);
+    if (!key) continue;
+    if (!discovered[key]) {
+      newCount += 1;
+      discovered[key] = { name: s.place?.name || "", source_url: s.place?.source_url || null, first_seen: now };
+    }
+  }
+  collections[area] = { ...entry, discovered };
+  await AsyncStorage.setItem(COLLECTIONS_KEY, JSON.stringify(collections)).catch(() => {});
+  return { collections, newCount };
+}
+
+// --- Personal bests (per-Area, for the scorecard) ----------------------------
+async function readBests() {
+  try {
+    const raw = await AsyncStorage.getItem(BESTS_KEY);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if (obj && typeof obj === "object") return obj;
+    }
+  } catch {
+    /* corrupt — start fresh */
+  }
+  return {};
+}
+
+// Fold one completion into the per-Area bests. `timeS` may be null (a quest
+// started before we tracked start time, or a corrupt blob) — then we only
+// consider the points best. Returns { bests, isPointsBest, isTimeBest }.
+async function recordBest(areaLabel, points, timeS) {
+  const area = areaLabel || "Your Area";
+  const bests = await readBests();
+  const prev = bests[area] || { best_points: 0, fastest_time_s: null, quests: 0 };
+  // Only celebrate a "best" when there's a prior record to beat in this area —
+  // the first quest in a new area sets the baseline, it doesn't "break" one.
+  const hadPrior = (prev.quests || 0) > 0;
+  const isPointsBest = hadPrior && points > (prev.best_points || 0);
+  const validTime = Number.isFinite(timeS) && timeS > 0;
+  const isTimeBest = validTime && prev.fastest_time_s != null && timeS < prev.fastest_time_s;
+  bests[area] = {
+    best_points: Math.max(prev.best_points || 0, points),
+    fastest_time_s: isTimeBest ? timeS : (prev.fastest_time_s ?? (validTime ? timeS : null)),
+    quests: (prev.quests || 0) + 1,
+    last_at: new Date().toISOString(),
+  };
+  await AsyncStorage.setItem(BESTS_KEY, JSON.stringify(bests)).catch(() => {});
+  return { bests, isPointsBest, isTimeBest };
+}
+
+// Format an elapsed-seconds value as a compact "12m 34s" / "1h 03m".
+function formatDuration(s) {
+  if (!Number.isFinite(s) || s <= 0) return "—";
+  const sec = Math.round(s);
+  const h = Math.floor(sec / 3600);
+  const m = Math.floor((sec % 3600) / 60);
+  const r = sec % 60;
+  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m`;
+  if (m > 0) return `${m}m ${String(r).padStart(2, "0")}s`;
+  return `${r}s`;
 }
 
 // A short, human date for a history row, e.g. "Jun 19, 2026".
@@ -330,6 +448,146 @@ function RouteTrace({ stops }) {
   );
 }
 
+// --- Celebration (hand-rolled with Animated; no reanimated/gesture-handler) --
+// A lightweight, Expo-Go-safe completion celebration: a burst of confetti
+// (absolutely-positioned Views falling + spinning + fading) plus an animated
+// count-up to the points earned and a pop-in badge. Chosen over a confetti lib
+// to keep the only new dep at expo-haptics and avoid native surface risk —
+// per the spec's "when in doubt, hand-roll with Animated."
+const CONFETTI_COLORS = ["#b5562e", "#4a7c59", "#e0a449", "#d98452", "#6b8f71"];
+const CONFETTI_N = 22;
+
+function Confetti({ width }) {
+  // Build the particles once. Each falls from above the card to past its bottom,
+  // drifting sideways and spinning, fading out near the end.
+  const pieces = useRef(
+    Array.from({ length: CONFETTI_N }).map((_, i) => ({
+      key: i,
+      left: Math.random() * Math.max(width - 12, 40),
+      size: 7 + Math.random() * 7,
+      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      drift: (Math.random() - 0.5) * 80,
+      delay: Math.random() * 250,
+      duration: 1100 + Math.random() * 700,
+      spins: 1 + Math.random() * 2,
+      anim: new Animated.Value(0),
+    }))
+  ).current;
+
+  useEffect(() => {
+    const anims = pieces.map((p) =>
+      Animated.timing(p.anim, {
+        toValue: 1,
+        duration: p.duration,
+        delay: p.delay,
+        useNativeDriver: true,
+      })
+    );
+    Animated.parallel(anims).start();
+  }, [pieces]);
+
+  return (
+    <View pointerEvents="none" style={styles.confettiLayer}>
+      {pieces.map((p) => {
+        const translateY = p.anim.interpolate({ inputRange: [0, 1], outputRange: [-40, 260] });
+        const translateX = p.anim.interpolate({ inputRange: [0, 1], outputRange: [0, p.drift] });
+        const rotate = p.anim.interpolate({
+          inputRange: [0, 1],
+          outputRange: ["0deg", `${p.spins * 360}deg`],
+        });
+        const opacity = p.anim.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] });
+        return (
+          <Animated.View
+            key={p.key}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: p.left,
+              width: p.size,
+              height: p.size * 0.6,
+              borderRadius: 2,
+              backgroundColor: p.color,
+              opacity,
+              transform: [{ translateY }, { translateX }, { rotate }],
+            }}
+          />
+        );
+      })}
+    </View>
+  );
+}
+
+// The headline "you did it" banner: confetti + an animated count-up to the
+// points earned + a pop-in scale, plus the streak / new-spots reveal.
+function Celebration({ play = true, points, streakWeeks, newSpots, elapsedS, isBest }) {
+  const [shown, setShown] = useState(play ? 0 : points); // displayed count-up number
+  const counter = useRef(new Animated.Value(play ? 0 : points)).current;
+  const pop = useRef(new Animated.Value(play ? 0 : 1)).current;
+  const [width, setWidth] = useState(320);
+
+  useEffect(() => {
+    if (!play) return; // re-open: render the banner statically, no buzz / no replay
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+    // Pop-in the banner.
+    Animated.spring(pop, { toValue: 1, friction: 5, tension: 80, useNativeDriver: true }).start();
+    // Count up to the points total over ~900ms.
+    const id = counter.addListener(({ value }) => setShown(Math.round(value)));
+    Animated.timing(counter, { toValue: points, duration: 900, useNativeDriver: false }).start();
+    return () => counter.removeListener(id);
+  }, [play, points]);
+
+  const scale = pop.interpolate({ inputRange: [0, 1], outputRange: [0.6, 1] });
+  return (
+    <View style={styles.celebrateWrap} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
+      {play ? <Confetti width={width} /> : null}
+      <Animated.View style={[styles.celebrateBanner, { opacity: pop, transform: [{ scale }] }]}>
+        <Text style={styles.celebrateTitle}>🎉 Quest complete!</Text>
+        <Text style={styles.celebratePoints}>+{shown} points</Text>
+        <View style={styles.celebrateChips}>
+          {newSpots > 0 ? (
+            <Text style={styles.celebrateChip}>
+              ✦ {newSpots} new spot{newSpots === 1 ? "" : "s"}
+            </Text>
+          ) : null}
+          {elapsedS != null ? (
+            <Text style={styles.celebrateChip}>⏱ {formatDuration(elapsedS)}</Text>
+          ) : null}
+          {streakWeeks > 0 ? (
+            <Text style={styles.celebrateChip}>🔥 {streakWeeks}-week streak</Text>
+          ) : null}
+        </View>
+        {isBest ? <Text style={styles.celebrateBest}>⭐ New personal best!</Text> : null}
+      </Animated.View>
+    </View>
+  );
+}
+
+// A game-like numbered map pin with a little scale-pop when it becomes the
+// selected stop. Hand-rolled Animated (no gesture stack) — Expo-Go safe.
+function MapPin({ orderIndex, completed, selected }) {
+  const scale = useRef(new Animated.Value(selected ? 1 : 0.92)).current;
+  useEffect(() => {
+    Animated.spring(scale, {
+      toValue: selected ? 1.18 : 1,
+      friction: 5,
+      tension: 90,
+      useNativeDriver: true,
+    }).start();
+  }, [selected, scale]);
+  return (
+    <Animated.View
+      style={[
+        styles.pin,
+        completed && styles.pinDone,
+        selected && styles.pinSelected,
+        { transform: [{ scale }] },
+      ]}
+    >
+      <Text style={styles.pinText}>{completed ? "✓" : orderIndex}</Text>
+    </Animated.View>
+  );
+}
+
 export default function App() {
   const [screen, setScreen] = useState("hydrating"); // hydrating | welcome | loading | ready | error
   const [quest, setQuest] = useState(null);
@@ -347,6 +605,17 @@ export default function App() {
   const [historyRecord, setHistoryRecord] = useState(null); // a past quest opened from "My Quests"
   const recapRef = useRef(null); // the recap card we turn into a shareable image
   const completedFiredRef = useRef(false); // guard so quest_completed fires once
+  const startedAtRef = useRef(null); // epoch ms when the active quest went live (for completion time)
+  const celebratedRef = useRef(false); // guard so confetti + success haptic play once per quest
+
+  // --- Collections + scorecard (single-player game layer) ----------------------
+  const [collections, setCollections] = useState({}); // { [area]: { discovered: {...} } }
+  const [bests, setBests] = useState({}); // { [area]: { best_points, fastest_time_s, quests } }
+  const [expandedArea, setExpandedArea] = useState(null); // which Area's place list is open in Collections
+  // Per-completion celebration facts, surfaced in the recap.
+  const [newSpots, setNewSpots] = useState(0); // new places discovered this quest
+  const [elapsedS, setElapsedS] = useState(null); // seconds to complete this quest
+  const [bestFlags, setBestFlags] = useState({ points: false, time: false }); // "New personal best!"
 
   // --- Map-first active screen: bottom-sheet + selected stop -------------------
   // `selectedStop` is the order_index of the stop whose detail is expanded in the
@@ -395,6 +664,9 @@ export default function App() {
       getInstallId();
       // Load lifetime score so Welcome can show the running total + streak.
       readScore().then(setScore).catch(() => {});
+      // Load the single-player game-layer state (collections + bests).
+      readCollections().then(setCollections).catch(() => {});
+      readBests().then(setBests).catch(() => {});
       try {
         const raw = await AsyncStorage.getItem(STORE_KEY);
         if (raw) {
@@ -433,7 +705,10 @@ export default function App() {
   // the quest survives an app close (UX-SPEC §1.7).
   useEffect(() => {
     if (screen !== "ready" || !quest) return;
-    AsyncStorage.setItem(STORE_KEY, JSON.stringify({ quest, progress })).catch(() => {});
+    AsyncStorage.setItem(
+      STORE_KEY,
+      JSON.stringify({ quest, progress, startedAt: startedAtRef.current })
+    ).catch(() => {});
   }, [screen, quest, progress]);
 
   // Watch the user's location while a quest is active, so distances stay live.
@@ -460,11 +735,20 @@ export default function App() {
     if (done === quest.stops.length && !completedFiredRef.current) {
       completedFiredRef.current = true;
       track("quest_completed", { stops: quest.stops.length });
+      // The success haptic fires from the Celebration banner on mount (the
+      // visible "you did it" moment) — not here — so it never double-buzzes.
 
       // --- Light scoring + history (all ON-DEVICE, no login/server) --------
       const photoCount = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
       const earned = POINTS_PER_QUEST + photoCount * POINTS_PER_PHOTO;
       setPointsEarned(earned);
+
+      // Completion time: elapsed since the quest went live. null if we never
+      // captured a start (quest predating this feature) — bests skip it cleanly.
+      const startedAt = startedAtRef.current;
+      const timeS = startedAt ? Math.round((Date.now() - startedAt) / 1000) : null;
+      setElapsedS(timeS);
+      const areaLabel = quest.origin?.label || "Your Area";
 
       (async () => {
         // Append to the persisted history log. We store the lean summary the
@@ -493,6 +777,20 @@ export default function App() {
         // Local data only — but fire an analytics ping that points were earned.
         track("points_earned", { points: earned, total: next.total, streak_weeks: next.streak_weeks });
 
+        // Collections: record this quest's stops into the Area's discovery set,
+        // computing the "+N new spots" delta against the pre-merge set.
+        const { collections: nextCollections, newCount } = await recordCollections(areaLabel, quest.stops);
+        setCollections(nextCollections);
+        setNewSpots(newCount);
+
+        // Personal bests: best points + fastest time per Area, for the scorecard.
+        const { bests: nextBests, isPointsBest, isTimeBest } = await recordBest(areaLabel, earned, timeS);
+        setBests(nextBests);
+        setBestFlags({ points: isPointsBest, time: isTimeBest });
+
+        // Capture this completion to the cross-user board sink (built out later).
+        postScore({ area: areaLabel, theme: quest.theme, points: earned, time_s: timeS });
+
         // If signed in, push the fresh totals up to the cloud profile. Best-
         // effort: pushScore swallows all errors and is a no-op when unconfigured
         // or signed out, so this never affects the local quest flow.
@@ -519,7 +817,12 @@ export default function App() {
     setFeedbackSent(false);
     setFlagged({});
     setPointsEarned(0);
+    setNewSpots(0);
+    setElapsedS(null);
+    setBestFlags({ points: false, time: false });
     completedFiredRef.current = false;
+    celebratedRef.current = false;
+    startedAtRef.current = Date.now();
     try {
       const { status: perm } = await Location.requestForegroundPermissionsAsync();
       if (perm !== "granted") {
@@ -556,8 +859,15 @@ export default function App() {
     setFeedbackSent(false);
     setFlagged({});
     setPointsEarned(0);
+    setNewSpots(0);
+    setElapsedS(null);
+    setBestFlags({ points: false, time: false });
+    // Restore the original start time so the completion timer survives a resume.
+    // Falls back to now() for quests saved before we tracked start time.
+    startedAtRef.current = saved.startedAt || Date.now();
     const done = saved.quest.stops.filter((s) => saved.progress?.[s.order_index]?.photoUri).length;
     completedFiredRef.current = done === saved.quest.stops.length;
+    celebratedRef.current = completedFiredRef.current; // already-complete resume shouldn't re-celebrate
     setSaved(null);
     setScreen("ready");
     track("quest_resumed", { stops: saved.quest.stops?.length });
@@ -603,6 +913,7 @@ export default function App() {
   }
 
   function checkIn(orderIndex) {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true } }));
     track("stop_checked_in", { order_index: orderIndex });
   }
@@ -629,6 +940,7 @@ export default function App() {
       // persistent document dir, then store THAT uri so saved quests keep their
       // photos across restarts. Falls back to the cache uri on any failure.
       const uri = await persistPhoto(result.assets[0].uri);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true, photoUri: uri } }));
       track("stop_photo", { order_index: orderIndex });
     }
@@ -641,6 +953,24 @@ export default function App() {
     setHistoryRecord(null);
     setScreen("history");
     track("history_opened", { count: list.length });
+  }
+
+  // Open the Collections view (per-Area discovery sets), loading fresh from disk.
+  async function openCollections() {
+    const c = await readCollections();
+    setCollections(c);
+    setExpandedArea(null);
+    setScreen("collections");
+    track("collections_opened", { areas: Object.keys(c).length });
+  }
+
+  // Open the Scorecard view (lifetime score + per-Area bests), fresh from disk.
+  async function openScorecard() {
+    const [c, b] = await Promise.all([readScore(), readBests()]);
+    setScore(c);
+    setBests(b);
+    setScreen("scorecard");
+    track("scorecard_opened", { areas: Object.keys(b).length });
   }
 
   // Open the optional Profile screen.
@@ -855,7 +1185,15 @@ export default function App() {
           We'll use your location to find places to explore — only while you're on a quest.
         </Text>
 
-        {/* Entry point to the on-device saved-quest history. */}
+        {/* Entry points to the single-player game layer + saved history. */}
+        <View style={styles.navRow}>
+          <Text style={styles.navLink} onPress={openCollections}>
+            🗺️ Collections
+          </Text>
+          <Text style={styles.navLink} onPress={openScorecard}>
+            🏅 Scorecard
+          </Text>
+        </View>
         <Text style={styles.historyLink} onPress={openHistory}>
           📜 My Quests
         </Text>
@@ -1028,6 +1366,147 @@ export default function App() {
     );
   }
 
+  if (screen === "collections") {
+    // Build a placeKey -> photoUri lookup from history so discovered places can
+    // show a thumbnail when we have one. Keyed by source_url || name to match
+    // the discovery key. We DON'T store photoUri in the collection itself.
+    const photoByKey = {};
+    for (const rec of history) {
+      for (const s of rec.stops || []) {
+        const key = s.source_url || s.name;
+        if (key && s.photoUri && !photoByKey[key]) photoByKey[key] = s.photoUri;
+      }
+    }
+    const areas = Object.keys(collections).sort((a, b) => {
+      const na = Object.keys(collections[a]?.discovered || {}).length;
+      const nb = Object.keys(collections[b]?.discovered || {}).length;
+      return nb - na;
+    });
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Collections</Text>
+        <Text style={styles.intro}>Notable spots you've discovered, area by area.</Text>
+        {areas.length === 0 ? (
+          <Text style={styles.intro}>
+            No discoveries yet. Finish a quest and the places you visit get logged here.
+          </Text>
+        ) : (
+          areas.map((area) => {
+            const discovered = collections[area]?.discovered || {};
+            const places = Object.entries(discovered).sort(
+              (a, b) => (a[1].first_seen || "").localeCompare(b[1].first_seen || "")
+            );
+            const open = expandedArea === area;
+            return (
+              <View key={area} style={styles.collCard}>
+                <TouchableOpacity
+                  style={styles.collHeader}
+                  onPress={() => setExpandedArea(open ? null : area)}
+                >
+                  <View style={{ flex: 1 }}>
+                    <Text style={styles.collArea} numberOfLines={1}>{area}</Text>
+                    <Text style={styles.collCount}>
+                      {places.length} {places.length === 1 ? "spot" : "spots"} discovered
+                    </Text>
+                  </View>
+                  <Text style={styles.listChevron}>{open ? "⌄" : "›"}</Text>
+                </TouchableOpacity>
+                {open
+                  ? places.map(([key, p]) => {
+                      const thumb = photoByKey[key];
+                      return (
+                        <View key={key} style={styles.collPlace}>
+                          {thumb ? (
+                            <Image source={{ uri: thumb }} style={styles.collThumb} />
+                          ) : (
+                            <View style={[styles.collThumb, styles.collThumbEmpty]}>
+                              <Text style={styles.collThumbMark}>✦</Text>
+                            </View>
+                          )}
+                          <Text style={styles.collPlaceName} numberOfLines={2}>
+                            {p.name || "Unknown spot"}
+                          </Text>
+                        </View>
+                      );
+                    })
+                  : null}
+              </View>
+            );
+          })
+        )}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  if (screen === "scorecard") {
+    // Per-Area bests, most-recently-played first.
+    const areas = Object.keys(bests).sort(
+      (a, b) => (bests[b]?.last_at || "").localeCompare(bests[a]?.last_at || "")
+    );
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Scorecard</Text>
+
+        {/* Lifetime totals (reused score.v1). */}
+        <View style={styles.scoreRow}>
+          <View style={styles.scoreStat}>
+            <Text style={styles.scoreNum}>{score.total}</Text>
+            <Text style={styles.scoreLabel}>points</Text>
+          </View>
+          <View style={styles.scoreStat}>
+            <Text style={styles.scoreNum}>{score.quests_completed}</Text>
+            <Text style={styles.scoreLabel}>quests</Text>
+          </View>
+          <View style={styles.scoreStat}>
+            <Text style={styles.scoreNum}>🔥 {score.streak_weeks}</Text>
+            <Text style={styles.scoreLabel}>week streak</Text>
+          </View>
+        </View>
+
+        <Text style={styles.scoreSectionTitle}>Personal bests by area</Text>
+        <Text style={styles.intro}>You vs. your best — beat your record next time.</Text>
+        {areas.length === 0 ? (
+          <Text style={styles.intro}>
+            No completed quests yet. Your area records show up here once you finish one.
+          </Text>
+        ) : (
+          areas.map((area) => {
+            const b = bests[area];
+            return (
+              <View key={area} style={styles.bestCard}>
+                <Text style={styles.bestArea} numberOfLines={1}>{area}</Text>
+                <View style={styles.bestStatsRow}>
+                  <View style={styles.bestStat}>
+                    <Text style={styles.bestNum}>{b.best_points}</Text>
+                    <Text style={styles.bestLabel}>best points</Text>
+                  </View>
+                  <View style={styles.bestStat}>
+                    <Text style={styles.bestNum}>{formatDuration(b.fastest_time_s)}</Text>
+                    <Text style={styles.bestLabel}>fastest</Text>
+                  </View>
+                  <View style={styles.bestStat}>
+                    <Text style={styles.bestNum}>{b.quests}</Text>
+                    <Text style={styles.bestLabel}>quests</Text>
+                  </View>
+                </View>
+              </View>
+            );
+          })
+        )}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
   if (screen === "loading") {
     return (
       <View style={styles.center}>
@@ -1086,20 +1565,25 @@ export default function App() {
 
         {/* Check-in → photo flow (unchanged behavior). */}
         {state.photoUri ? (
-          <Image source={{ uri: state.photoUri }} style={styles.photo} />
+          <>
+            <View style={styles.foundBanner}>
+              <Text style={styles.foundBannerText}>✓ Found it!</Text>
+            </View>
+            <Image source={{ uri: state.photoUri }} style={styles.photo} />
+          </>
         ) : state.checkedIn ? (
-          <TouchableOpacity style={styles.actionBtn} onPress={() => takePhoto(s.order_index)}>
-            <Text style={styles.actionText}>📷 Take your photo</Text>
+          <TouchableOpacity style={[styles.actionBtn, styles.actionBtnGo]} onPress={() => takePhoto(s.order_index)}>
+            <Text style={styles.actionText}>📷 Snap it to claim!</Text>
           </TouchableOpacity>
         ) : (
           <>
             <TouchableOpacity
-              style={[styles.actionBtn, !inRange && styles.actionBtnDisabled]}
+              style={[styles.actionBtn, inRange && styles.actionBtnGo, !inRange && styles.actionBtnDisabled]}
               onPress={() => checkIn(s.order_index)}
               disabled={!inRange}
             >
               <Text style={styles.actionText}>
-                {inRange ? "📍 Check in here" : "Walk closer to check in"}
+                {inRange ? "📍 GO! Check in here" : "Walk closer to check in"}
               </Text>
             </TouchableOpacity>
             {/* Manual override so bad GPS never dead-ends the user */}
@@ -1130,6 +1614,35 @@ export default function App() {
         contentContainerStyle={styles.sheetScrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Hand-rolled celebration: confetti + points count-up + streak/best reveal.
+            `play` (confetti + success haptic) fires only the FIRST time the
+            completed sheet is shown for this quest — re-opening it within the
+            session shows the banner statically, no re-buzz. NOTE: completion is
+            always reached from the expanded stop-detail sheet, so this branch
+            mounts exactly when the last photo lands — keep that coupling in mind. */}
+        {(() => {
+          const play = !celebratedRef.current;
+          celebratedRef.current = true;
+          return (
+            <Celebration
+              play={play}
+              points={pointsEarned}
+              streakWeeks={score.streak_weeks}
+              newSpots={newSpots}
+              elapsedS={elapsedS}
+              isBest={bestFlags.points || bestFlags.time}
+            />
+          );
+        })()}
+
+        {/* Honest, count-led collections line for this Area. */}
+        {newSpots > 0 ? (
+          <Text style={styles.discoverLine}>
+            +{newSpots} new spot{newSpots === 1 ? "" : "s"} discovered in{" "}
+            {quest.origin?.label || "this area"}!
+          </Text>
+        ) : null}
+
         {renderRecap()}
 
         {/* Quick delight signal + optional note after completion (UX-SPEC §1.8). */}
@@ -1276,15 +1789,7 @@ export default function App() {
               anchor={{ x: 0.5, y: 0.5 }}
               onPress={() => selectStop(s.order_index)}
             >
-              <View
-                style={[
-                  styles.pin,
-                  completed && styles.pinDone,
-                  isSelected && styles.pinSelected,
-                ]}
-              >
-                <Text style={styles.pinText}>{completed ? "✓" : s.order_index}</Text>
-              </View>
+              <MapPin orderIndex={s.order_index} completed={completed} selected={isSelected} />
             </Marker>
           );
         })}
@@ -1343,7 +1848,46 @@ const styles = StyleSheet.create({
   scoreStat: { alignItems: "center" },
   scoreNum: { fontSize: 22, fontWeight: "800", color: INK },
   scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
-  historyLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 24, textDecorationLine: "underline" },
+  historyLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 16, textDecorationLine: "underline" },
+  // Welcome nav row to the game-layer views
+  navRow: { flexDirection: "row", marginTop: 24, gap: 14 },
+  navLink: { fontSize: 15, color: ACCENT, fontWeight: "800", textDecorationLine: "underline" },
+
+  // Collections screen
+  collCard: { backgroundColor: "#fff", borderRadius: 16, marginTop: 14, borderWidth: 1, borderColor: "#e6dfd2", overflow: "hidden" },
+  collHeader: { flexDirection: "row", alignItems: "center", padding: 16 },
+  collArea: { fontSize: 17, fontWeight: "800", color: INK },
+  collCount: { fontSize: 14, color: GREEN, fontWeight: "700", marginTop: 3 },
+  collPlace: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1, borderTopColor: "#f0ebe1" },
+  collThumb: { width: 40, height: 40, borderRadius: 8, marginRight: 12 },
+  collThumbEmpty: { backgroundColor: CREAM, alignItems: "center", justifyContent: "center" },
+  collThumbMark: { color: ACCENT, fontSize: 18, fontWeight: "800" },
+  collPlaceName: { flex: 1, fontSize: 15, color: INK, fontWeight: "600" },
+
+  // Scorecard screen
+  scoreSectionTitle: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 28 },
+  bestCard: { backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 14, borderWidth: 1, borderColor: "#e6dfd2" },
+  bestArea: { fontSize: 16, fontWeight: "800", color: INK },
+  bestStatsRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 12 },
+  bestStat: { alignItems: "center", flex: 1 },
+  bestNum: { fontSize: 19, fontWeight: "800", color: ACCENT },
+  bestLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
+
+  // Completion celebration (hand-rolled Animated)
+  celebrateWrap: { width: "100%", alignItems: "center", marginBottom: 16, overflow: "hidden" },
+  confettiLayer: { position: "absolute", top: 0, left: 0, right: 0, height: 260 },
+  celebrateBanner: { width: "100%", backgroundColor: GREEN, borderRadius: 18, paddingVertical: 20, paddingHorizontal: 18, alignItems: "center" },
+  celebrateTitle: { color: "#fff", fontSize: 20, fontWeight: "800" },
+  celebratePoints: { color: "#fff", fontSize: 38, fontWeight: "900", letterSpacing: -1, marginTop: 4 },
+  celebrateChips: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 12 },
+  celebrateChip: { color: GREEN, backgroundColor: "#fff", borderRadius: 12, paddingVertical: 5, paddingHorizontal: 11, fontSize: 13, fontWeight: "800", overflow: "hidden" },
+  celebrateBest: { color: "#ffe9a8", fontSize: 15, fontWeight: "800", marginTop: 12 },
+  discoverLine: { fontSize: 16, color: GREEN, fontWeight: "800", textAlign: "center", marginBottom: 14 },
+
+  // Energetic check-in / found states
+  actionBtnGo: { backgroundColor: "#e0a449" },
+  foundBanner: { backgroundColor: GREEN, borderRadius: 12, paddingVertical: 10, alignItems: "center", marginTop: 12 },
+  foundBannerText: { color: "#fff", fontSize: 16, fontWeight: "800" },
 
   // Optional sign-in / profile entry on Welcome
   profileLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 16, textDecorationLine: "underline" },
@@ -1435,11 +1979,12 @@ const styles = StyleSheet.create({
   },
   pinDone: { backgroundColor: GREEN },
   pinSelected: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderColor: INK,
+    backgroundColor: "#e0a449", // brighter gold for the active stop
+    borderColor: "#fff",
     borderWidth: 3,
+    shadowOpacity: 0.4,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
   },
   pinText: { color: "#fff", fontSize: 14, fontWeight: "800" },
 

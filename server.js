@@ -115,6 +115,29 @@ const server = createServer(async (req, res) => {
     }
   }
 
+  // Single-player scorecard sink: capture each completion's score + time so a
+  // cross-user all-time board can be aggregated LATER. Append-only; the in-app
+  // scorecard reads local data, not this. No PII beyond the anonymous install id.
+  if (url.pathname === "/score" && req.method === "POST") {
+    try {
+      const body = await readJsonBody(req);
+      if (!body || typeof body !== "object") {
+        return send(res, 400, { error: "Provide a JSON object." });
+      }
+      appendJsonl("scores.jsonl", {
+        area: typeof body.area === "string" ? body.area : null,
+        theme: typeof body.theme === "string" ? body.theme : null,
+        points: Number.isFinite(body.points) ? body.points : null,
+        time_s: Number.isFinite(body.time_s) ? body.time_s : null,
+        install_id: typeof body.install_id === "string" ? body.install_id : null,
+        client_ts: typeof body.ts === "string" ? body.ts : null,
+      });
+      return send(res, 200, { ok: true });
+    } catch (err) {
+      return send(res, 400, { error: err.message });
+    }
+  }
+
   if (url.pathname === "/quest") {
     const latRaw = url.searchParams.get("lat");
     const lngRaw = url.searchParams.get("lng");
