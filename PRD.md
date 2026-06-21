@@ -10,12 +10,27 @@ Prioritization Framework below.
 
 ## 1. Vision
 
-**DayQuest turns any day, in any place, into a small real-world adventure** — it
-sends you out to discover the storied, strange, and overlooked spots near you,
-one bite-sized quest at a time.
+**DayQuest is a real-world discovery game** — wake up anywhere (your city or a new
+one), and turn boredom into an adventure: explore real, storied places, earn points,
+collect completions, track the route you walked, and compete & share with friends.
 
-We exist to get people **off the couch, outside, and curious about where they
-already live.** The feeling we're selling: *"I had a tiny adventure today."*
+**Pokémon GO × Atlas Obscura × Strava × social** (amended 2026-06-21, D-034):
+- **Explore & collect** (Pokémon GO) — go to real places, earn points, complete
+  "seen-them-all" missions/collections.
+- **Storied content** (Atlas Obscura) — the quirky, history-rich soul; *why* each
+  place matters. This is our content engine.
+- **Track & share your route** (Strava) — record the path you walked, with stats,
+  and share it.
+- **Compete & social** — scavenger hunts against friends, a shared feed.
+
+We exist to get people **off the couch, outside, and exploring** — solo or together.
+The feeling: *"I had a real adventure today."*
+
+**Build-order discipline (still discovery-first in sequence):** Pokémon GO and Strava
+are both fun *solo* first; social/competitive is the amplifier and the hard, cold-start
+part. So we build the great **solo discovery game** (collections + route tracking +
+game juice) *before* friend-competition + social feed. Accounts (Supabase) are now in,
+which is the prerequisite for the social layer when we get there.
 
 ## 2. Target user (initial wedge)
 
@@ -174,6 +189,9 @@ A high score that doesn't serve the bet still waits.
 | D-031 ✓ (NORTH STAR for location) | **"Areas" are a first-class object** — named, curated, walkable explore-zones. GPS *defaults you into the nearest Area*; choosing/planning/touring are all ways of *selecting* an Area. Area size scales with travel mode (walk=neighborhood, bike=district, drive=region). The **library of curated Areas is the moat & the revenue surface** (sponsored Areas/stops, city packs, tourism). Build the data model Area-first now; defer the Area browser/trip-planning/multi-city library until post-retention. | CEO "best long-term play" call. Location ≠ GPS detection; GPS is one lens onto the Areas library. Unifies local/planner/tourist; generalizes D-025 travel modes; where monetization lives | 2026-06-21 |
 | D-032 ✓ | **First Area build = reverse-geocode + Area label.** GPS auto-detect (default) → resolve to a *named Area* (e.g. "East Village, NYC") with a one-tap override; the label feeds the quest header, welcome teaser, and the share card (fixes the coords-on-share-card bug). Model it as "resolve to an Area," not "fetch by lat/lng." | Cheapest first brick of D-031; no login dependency; also closes a known share-card gap | 2026-06-21 |
 | D-033 ✓ | **Google Places = 3rd data source** (`fromPlaces` in lib/sources.js). Server-side, key-gated (graceful empty-array fallback when no key, so keyless/preview path still works). Filter to discovery-worthy types (parks, art, museums, landmarks, attractions, notable local spots) — NOT generic commercial noise. Field-masked + cached for cost control. | Unlocks suburban/LI coverage (Smithtown) + the "new/quirky/current" layer Wikipedia/OSM miss. Google key now configured | 2026-06-21 |
+| D-034 ✓ (AMENDS D-011) | **Vision = real-world discovery GAME** (Pokémon GO × Atlas Obscura × Strava × social): explore & collect, storied content, route tracking, friend competition + sharing. **End state is game-first; build order stays solo-first** (solo game fun before multiplayer/social, which has cold-start risk). Earned by the on-device validation that the loop is fun. | CEO articulated the real vision after testing. Confirmed on-device (D-027); accounts now in (D-029) to support the eventual social layer | 2026-06-21 |
+| D-035 ✓ | **Solo discovery-game increment (building):** (1) collections/missions ("discovered X of N notable spots in [Area]"), (2) **single-player async scorecard** (personal bests + points/time per quest/Area; an all-time board that's populated from user #1 and grows into live competition as density arrives — no live players needed), (3) gamey juice + look (points-fly, confetti, badge unlocks, haptics, brighter playful energy on the real map). | CEO greenlit. Async/personal-best design makes "competition" work at our tiny scale — no multiplayer cold-start | 2026-06-21 |
+| D-036 ✓ | **Route tracking is the NEXT increment** (record + draw the walked path Strava-style; continuous GPS) — its own round due to new technical surface. | Deserves focused build; not rushed into D-035 | 2026-06-21 |
 
 ## 13. Open decisions (need CEO input)
 
