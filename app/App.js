@@ -386,6 +386,23 @@ function totalWalkedM(stops) {
   return total;
 }
 
+// Total distance along a recorded GPS path (sum of consecutive haversine legs),
+// in metres. This is the TRUE walked distance — distinct from totalWalkedM, which
+// sums the planned straight-line legs between stops.
+function pathDistanceM(path) {
+  if (!Array.isArray(path) || path.length < 2) return 0;
+  let total = 0;
+  for (let i = 1; i < path.length; i++) {
+    total += distanceM(path[i - 1].latitude, path[i - 1].longitude, path[i].latitude, path[i].longitude);
+  }
+  return total;
+}
+
+// Minimum recorded distance before we trust the GPS path enough to headline it
+// as "you walked X km". Below this (empty path, manual-override completion with
+// little movement, a couple of jittery points) we fall back to the planned loop.
+const MIN_TRUSTED_WALK_M = 50;
+
 // A short, brag-worthy caption from a stop's lore (first sentence of lore_hook, trimmed).
 function bragCaption(stop) {
   const text = (stop.lore_hook || stop.reason || "").trim();
@@ -403,9 +420,16 @@ function bragCaption(stop) {
 const TRACE_W = 96;
 const TRACE_H = 96;
 const TRACE_PAD = 14; // keep dots off the edge
-function RouteTrace({ stops }) {
-  const lats = stops.map((s) => s.place.lat);
-  const lngs = stops.map((s) => s.place.lng);
+// Plot an arbitrary geo path as a capture-safe View trace. Two modes:
+//  - `routePath` ({latitude,longitude}[]): the REAL walked breadcrumb — many
+//    points, drawn as a continuous line with small endpoint markers (start/end),
+//    no per-point numbers.
+//  - `stops` (stop[]): the planned-loop fallback — numbered dots per stop.
+// `routePath` wins when it has ≥2 points; otherwise we fall back to `stops`.
+function RouteTrace({ stops, routePath }) {
+  const useWalked = Array.isArray(routePath) && routePath.length >= 2;
+  const lats = useWalked ? routePath.map((p) => p.latitude) : stops.map((s) => s.place.lat);
+  const lngs = useWalked ? routePath.map((p) => p.longitude) : stops.map((s) => s.place.lng);
   const minLat = Math.min(...lats);
   const maxLat = Math.max(...lats);
   const minLng = Math.min(...lngs);
@@ -413,15 +437,18 @@ function RouteTrace({ stops }) {
   const spanLat = maxLat - minLat || 1;
   const spanLng = maxLng - minLng || 1;
   const inner = { w: TRACE_W - TRACE_PAD * 2, h: TRACE_H - TRACE_PAD * 2 };
-  // Map each stop to an (x, y) inside the padded box. Latitude grows upward, so flip y.
-  const pts = stops.map((s) => ({
-    x: TRACE_PAD + ((s.place.lng - minLng) / spanLng) * inner.w,
-    y: TRACE_PAD + (1 - (s.place.lat - minLat) / spanLat) * inner.h,
-  }));
+  // Map each geo point to an (x, y) inside the padded box. Latitude grows upward, so flip y.
+  const project = (lat, lng) => ({
+    x: TRACE_PAD + ((lng - minLng) / spanLng) * inner.w,
+    y: TRACE_PAD + (1 - (lat - minLat) / spanLat) * inner.h,
+  });
+  const pts = useWalked
+    ? routePath.map((p) => project(p.latitude, p.longitude))
+    : stops.map((s) => project(s.place.lat, s.place.lng));
 
   return (
     <View style={styles.trace}>
-      {/* Connecting legs: a thin View per segment, rotated to point at the next dot. */}
+      {/* Connecting legs: a thin View per segment, rotated to point at the next point. */}
       {pts.slice(1).map((p, i) => {
         const a = pts[i];
         const dx = p.x - a.x;
@@ -432,18 +459,30 @@ function RouteTrace({ stops }) {
           <View
             key={`leg-${i}`}
             style={[
-              styles.traceLeg,
+              useWalked ? styles.traceLegWalked : styles.traceLeg,
               { left: a.x, top: a.y, width: len, transform: [{ rotate: `${angle}deg` }] },
             ]}
           />
         );
       })}
-      {/* Numbered stop dots. */}
-      {pts.map((p, i) => (
-        <View key={`dot-${i}`} style={[styles.traceDot, { left: p.x - 9, top: p.y - 9 }]}>
-          <Text style={styles.traceDotText}>{stops[i].order_index}</Text>
-        </View>
-      ))}
+      {useWalked
+        ? // Walked breadcrumb: just mark start (green) and end (gold), no numbers.
+          [0, pts.length - 1].map((i) => (
+            <View
+              key={`end-${i}`}
+              style={[
+                styles.traceEndDot,
+                i === 0 ? styles.traceStartDot : styles.traceFinishDot,
+                { left: pts[i].x - 6, top: pts[i].y - 6 },
+              ]}
+            />
+          ))
+        : // Planned loop: numbered stop dots.
+          pts.map((p, i) => (
+            <View key={`dot-${i}`} style={[styles.traceDot, { left: p.x - 9, top: p.y - 9 }]}>
+              <Text style={styles.traceDotText}>{stops[i].order_index}</Text>
+            </View>
+          ))}
     </View>
   );
 }
@@ -593,6 +632,11 @@ export default function App() {
   const [quest, setQuest] = useState(null);
   const [error, setError] = useState("");
   const [coords, setCoords] = useState(null); // live position
+  // The actual path walked this quest: [{ latitude, longitude, t }]. State drives
+  // the live map Polyline; the ref is the freshest copy the location callback
+  // (which only closes over [screen]) and the completion effect read/write.
+  const [routePath, setRoutePath] = useState([]);
+  const routePathRef = useRef([]);
   const [progress, setProgress] = useState({}); // { [order_index]: { checkedIn, photoUri } }
   const [saved, setSaved] = useState(null); // an in-progress quest restored from disk (for Resume)
   const [feedbackRating, setFeedbackRating] = useState(null); // "up" | "down"
@@ -704,12 +748,17 @@ export default function App() {
   // Persist the active quest + progress whenever it changes while playing, so
   // the quest survives an app close (UX-SPEC §1.7).
   useEffect(() => {
-    if (screen !== "ready" || !quest) return;
+    // Don't re-persist after completion: the completion effect removes STORE_KEY,
+    // but the watcher is still live, so a stray post-finish GPS point (now that
+    // routePath is a dep) would otherwise resurrect the just-deleted blob. The
+    // final legitimate save still happens — this effect runs before the completion
+    // effect flips the ref on the last-photo render (declaration order).
+    if (screen !== "ready" || !quest || completedFiredRef.current) return;
     AsyncStorage.setItem(
       STORE_KEY,
-      JSON.stringify({ quest, progress, startedAt: startedAtRef.current })
+      JSON.stringify({ quest, progress, startedAt: startedAtRef.current, routePath })
     ).catch(() => {});
-  }, [screen, quest, progress]);
+  }, [screen, quest, progress, routePath]);
 
   // Watch the user's location while a quest is active, so distances stay live.
   useEffect(() => {
@@ -719,7 +768,24 @@ export default function App() {
       try {
         sub = await Location.watchPositionAsync(
           { accuracy: Location.Accuracy.Balanced, distanceInterval: 10 },
-          (loc) => setCoords(loc.coords)
+          (loc) => {
+            const c = loc.coords;
+            // Accumulate the walked path. Read/write the REF (the callback only
+            // closes over [screen], so routePath state is stale here). Skip points
+            // within ~5m of the last to filter GPS jitter — distanceInterval:10
+            // already throttles, this just smooths the standing-still wobble.
+            const path = routePathRef.current;
+            const last = path[path.length - 1];
+            if (
+              !last ||
+              distanceM(last.latitude, last.longitude, c.latitude, c.longitude) >= 5
+            ) {
+              const next = [...path, { latitude: c.latitude, longitude: c.longitude, t: Date.now() }];
+              routePathRef.current = next;
+              setRoutePath(next);
+            }
+            setCoords(c);
+          }
         );
       } catch {
         /* permission may not be granted on a resumed quest — distances just stay null */
@@ -750,6 +816,11 @@ export default function App() {
       setElapsedS(timeS);
       const areaLabel = quest.origin?.label || "Your Area";
 
+      // Snapshot the recorded walked path (freshest from the ref) and its true
+      // distance, so the recap + saved history show the REAL journey.
+      const walkedPath = routePathRef.current;
+      const walkedDistanceM = pathDistanceM(walkedPath);
+
       (async () => {
         // Append to the persisted history log. We store the lean summary the
         // spec asks for AND a full quest+progress snapshot so the recap card
@@ -765,6 +836,11 @@ export default function App() {
             source_url: s.place?.source_url || null,
           })),
           points: earned,
+          // Route tracking: the real walked path + true walked distance/duration,
+          // so "My Quests" can redisplay the journey trace and honest stats later.
+          routePath: walkedPath,
+          walkedDistanceM,
+          durationS: timeS,
           quest, // full snapshot — recap needs lat/lng, lore_hook, intro
           progress, // { [order_index]: { photoUri, ... } } — recap reads this
         };
@@ -812,6 +888,8 @@ export default function App() {
     setError("");
     setProgress({});
     setCoords(null);
+    routePathRef.current = [];
+    setRoutePath([]);
     setFeedbackRating(null);
     setFeedbackText("");
     setFeedbackSent(false);
@@ -854,6 +932,10 @@ export default function App() {
     setQuest(saved.quest);
     setProgress(saved.progress || {});
     setCoords(null);
+    // Restore the walked-so-far path so the watcher keeps appending to it
+    // instead of starting a fresh trail (UX-SPEC §1: survives pause/resume).
+    routePathRef.current = Array.isArray(saved.routePath) ? saved.routePath : [];
+    setRoutePath(routePathRef.current);
     setFeedbackRating(null);
     setFeedbackText("");
     setFeedbackSent(false);
@@ -1044,13 +1126,31 @@ export default function App() {
   // Renders the 9:16 share-magnet recap. Defaults to the live quest/progress,
   // but accepts an explicit quest + progress so a past quest opened from the
   // "My Quests" history screen re-renders with this exact same card.
-  function renderRecap(q = quest, prog = progress, earned = pointsEarned) {
+  function renderRecap(
+    q = quest,
+    prog = progress,
+    earned = pointsEarned,
+    path = routePath,
+    durationS = elapsedS
+  ) {
     const photoStops = q.stops.filter((s) => prog[s.order_index]?.photoUri);
     // Hero = first completed stop's photo (the spec's default).
     const heroStop = photoStops[0] || q.stops[0];
     const heroUri = prog[heroStop.order_index]?.photoUri;
     const filmstrip = photoStops.filter((s) => s.order_index !== heroStop.order_index);
-    const km = (totalWalkedM(q.stops) / 1000).toFixed(1);
+
+    // True walked distance from the recorded GPS path. Fall back to the planned
+    // straight-line loop when the path is empty/too short (manual override, a
+    // quest that predates route tracking) so we never show a broken "0.0 km".
+    const walkedM = pathDistanceM(path);
+    const trustWalk = Array.isArray(path) && path.length >= 2 && walkedM >= MIN_TRUSTED_WALK_M;
+    const km = ((trustWalk ? walkedM : totalWalkedM(q.stops)) / 1000).toFixed(1);
+    // Headline stat: honest about whether it's the real walk or the planned loop.
+    const statLine = trustWalk
+      ? Number.isFinite(durationS) && durationS > 0
+        ? `You walked ${km} km in ${formatDuration(durationS)}`
+        : `You walked ${km} km`
+      : `${q.stops.length} stops · ${km} km explored`;
 
     return (
       <View style={styles.recapWrap}>
@@ -1086,8 +1186,10 @@ export default function App() {
             </Text>
 
             <View style={styles.recapProofRow}>
-              {/* Journey proof: a compact route trace (View-based, so it survives captureRef). */}
-              <RouteTrace stops={q.stops} />
+              {/* Journey proof: a compact route trace (View-based, so it survives
+                  captureRef). Plots the REAL walked path when we trusted it for the
+                  stat; otherwise the planned numbered-stop loop. */}
+              <RouteTrace stops={q.stops} routePath={trustWalk ? path : null} />
 
               {/* Filmstrip of the other photos, subordinate to the hero. */}
               <View style={styles.recapFilmstrip}>
@@ -1102,9 +1204,7 @@ export default function App() {
             </View>
 
             <View style={styles.recapFooter}>
-              <Text style={styles.recapStat}>
-                {q.stops.length} stops · {km} km explored
-              </Text>
+              <Text style={styles.recapStat}>{statLine}</Text>
               <Text style={styles.recapMark}>DayQuest</Text>
             </View>
           </View>
@@ -1320,8 +1420,15 @@ export default function App() {
           </Text>
           <Text style={styles.theme}>{historyRecord.theme}</Text>
           <Text style={styles.progress}>{formatHistoryDate(historyRecord.completed_at)}</Text>
-          {/* Pass the saved snapshot + its earned points into the shared recap. */}
-          {renderRecap(historyRecord.quest, historyRecord.progress, historyRecord.points || 0)}
+          {/* Pass the saved snapshot + its earned points + walked route/duration
+              into the shared recap so a past quest redisplays its real journey. */}
+          {renderRecap(
+            historyRecord.quest,
+            historyRecord.progress,
+            historyRecord.points || 0,
+            historyRecord.routePath || [],
+            historyRecord.durationS ?? null
+          )}
           <View style={{ height: 40 }} />
         </ScrollView>
       );
@@ -1771,11 +1878,21 @@ export default function App() {
         showsUserLocation
         showsMyLocationButton={false}
       >
+        {/* PLANNED route: the accent line connecting the stops in walking order. */}
         <Polyline
           coordinates={quest.stops.map((s) => ({ latitude: s.place.lat, longitude: s.place.lng }))}
           strokeColor={ACCENT}
           strokeWidth={4}
         />
+        {/* WALKED path: the live breadcrumb of where you've ACTUALLY been —
+            thicker + translucent green, visually distinct from the planned line. */}
+        {routePath.length >= 2 ? (
+          <Polyline
+            coordinates={routePath.map((p) => ({ latitude: p.latitude, longitude: p.longitude }))}
+            strokeColor="rgba(74,124,89,0.7)"
+            strokeWidth={7}
+          />
+        ) : null}
         {quest.stops.map((s) => {
           const completed = Boolean(progress[s.order_index]?.photoUri);
           const isSelected = selectedStop === s.order_index;
@@ -2126,6 +2243,24 @@ const styles = StyleSheet.create({
     backgroundColor: ACCENT,
     transformOrigin: "left center",
   },
+  // Walked-path leg: thicker + green to match the live map breadcrumb.
+  traceLegWalked: {
+    position: "absolute",
+    height: 3,
+    backgroundColor: GREEN,
+    transformOrigin: "left center",
+  },
+  // Start/finish markers on the walked trace (no per-point numbers).
+  traceEndDot: {
+    position: "absolute",
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    borderWidth: 1.5,
+    borderColor: "#fff",
+  },
+  traceStartDot: { backgroundColor: GREEN },
+  traceFinishDot: { backgroundColor: "#e0a449" },
   traceDot: {
     position: "absolute",
     width: 18,
