@@ -661,34 +661,48 @@ export default function App() {
   const [elapsedS, setElapsedS] = useState(null); // seconds to complete this quest
   const [bestFlags, setBestFlags] = useState({ points: false, time: false }); // "New personal best!"
 
-  // --- Map-first active screen: bottom-sheet + selected stop -------------------
-  // `selectedStop` is the order_index of the stop whose detail is expanded in the
-  // sheet, or null for the collapsed "peek" list. It is intentionally kept OUT of
+  // --- Map-first active screen (Pokémon-GO style): floating controls + pop-outs --
+  // `selectedStop` is the order_index of the stop whose detail is shown in the
+  // pop-out card, or null when the map is clean. It is intentionally kept OUT of
   // the completion effect's deps so it never re-fires scoring/history.
   const [selectedStop, setSelectedStop] = useState(null);
-  // 0 = peek (list), 1 = expanded (one stop's detail / completion). A plain
-  // Animated.Value driven by Animated.timing — no gesture-handler / reanimated,
-  // so it's rock-solid in Expo Go SDK 54.
-  const sheetAnim = useRef(new Animated.Value(0)).current;
-  const [sheetExpanded, setSheetExpanded] = useState(false);
+  // The pop-out stop card and the completion overlay are each driven by a plain
+  // Animated.Value (0→1) via Animated.timing/spring — no gesture-handler /
+  // reanimated, so it's rock-solid in Expo Go SDK 54.
+  const cardAnim = useRef(new Animated.Value(0)).current; // stop pop-out card
+  const recapAnim = useRef(new Animated.Value(0)).current; // completion overlay
+  // Whether the completion overlay is currently presented. Auto-presented once
+  // when the quest first completes (false→true transition), re-openable via the
+  // floating Recap button, dismissable back to the clean map.
+  const [recapOpen, setRecapOpen] = useState(false);
+  const recapAutoPresentedRef = useRef(false); // guard: auto-present completion once
 
-  // Animate the sheet between peek and expanded whenever the target changes.
+  // Pop the stop card in/out whenever a stop is selected/deselected.
   useEffect(() => {
-    Animated.timing(sheetAnim, {
-      toValue: sheetExpanded ? 1 : 0,
-      duration: 240,
-      useNativeDriver: false, // animating height — not transform-only
+    Animated.spring(cardAnim, {
+      toValue: selectedStop != null ? 1 : 0,
+      friction: 7,
+      tension: 70,
+      useNativeDriver: true,
     }).start();
-  }, [sheetExpanded, sheetAnim]);
+  }, [selectedStop, cardAnim]);
 
-  // Tapping a map dot or a list row selects a stop and expands the sheet.
+  // Fade/scale the completion overlay in/out.
+  useEffect(() => {
+    Animated.timing(recapAnim, {
+      toValue: recapOpen ? 1 : 0,
+      duration: 260,
+      useNativeDriver: true,
+    }).start();
+  }, [recapOpen, recapAnim]);
+
+  // Tapping a map dot or a list row selects a stop → its pop-out card.
+  // Tapping a second dot while a card is open SWAPS the content (re-selection).
   function selectStop(orderIndex) {
     setSelectedStop(orderIndex);
-    setSheetExpanded(true);
   }
-  // Collapse back to the peek list (drag handle / back affordance).
-  function collapseSheet() {
-    setSheetExpanded(false);
+  // Dismiss the pop-out card back to the clean map (X / tap-outside).
+  function closeCard() {
     setSelectedStop(null);
   }
 
@@ -883,6 +897,22 @@ export default function App() {
     }
   }, [screen, quest, progress]);
 
+  // Auto-present the completion overlay exactly once, when the quest first
+  // becomes complete (the last photo lands). Ref-guarded so it never re-opens
+  // on subsequent renders — once the user closes it, the floating Recap button
+  // re-opens it. An already-complete resume pre-sets the guard (see resumeQuest)
+  // so reopening such a quest doesn't slam the overlay back up.
+  useEffect(() => {
+    if (screen !== "ready" || !quest) return;
+    const done = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
+    const allDone = done === quest.stops.length;
+    if (allDone && !recapAutoPresentedRef.current) {
+      recapAutoPresentedRef.current = true;
+      setSelectedStop(null); // clear any open stop card so the overlay is clean
+      setRecapOpen(true);
+    }
+  }, [screen, quest, progress]);
+
   async function startQuest() {
     setScreen("loading");
     setError("");
@@ -901,6 +931,10 @@ export default function App() {
     completedFiredRef.current = false;
     celebratedRef.current = false;
     startedAtRef.current = Date.now();
+    // Fresh quest: clean map, no open card/overlay, completion auto-present armed.
+    setSelectedStop(null);
+    setRecapOpen(false);
+    recapAutoPresentedRef.current = false;
     try {
       const { status: perm } = await Location.requestForegroundPermissionsAsync();
       if (perm !== "granted") {
@@ -950,6 +984,13 @@ export default function App() {
     const done = saved.quest.stops.filter((s) => saved.progress?.[s.order_index]?.photoUri).length;
     completedFiredRef.current = done === saved.quest.stops.length;
     celebratedRef.current = completedFiredRef.current; // already-complete resume shouldn't re-celebrate
+    // Clean map on resume. If the resumed quest is ALREADY complete, arm the
+    // auto-present guard so the overlay doesn't slam up — the Recap button opens
+    // it on demand. An in-progress resume leaves it disarmed so finishing the
+    // last stop still auto-presents completion.
+    setSelectedStop(null);
+    setRecapOpen(false);
+    recapAutoPresentedRef.current = completedFiredRef.current;
     setSaved(null);
     setScreen("ready");
     track("quest_resumed", { stops: saved.quest.stops?.length });
@@ -1624,24 +1665,17 @@ export default function App() {
     );
   }
 
-  // screen === "ready" — MAP-FIRST layout: a full-screen map with selectable
-  // numbered stop dots, overlaid by a custom Animated bottom sheet that toggles
-  // between a "peek" list and a single stop's expanded detail (and completion).
+  // screen === "ready" — MAP-FIRST, Pokémon-GO-style layout: a full-screen map
+  // with selectable numbered stop dots and floating round controls at the
+  // corners/sides. Tapping a stop pops out a centered detail CARD (the full
+  // check-in/photo/override flow); completion surfaces as a full-screen overlay.
   const doneCount = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
   const allDone = doneCount === quest.stops.length;
-  // The stop whose detail is shown when expanded (and not yet complete).
+  // The stop whose detail is shown in the pop-out card.
   const activeStop =
     selectedStop != null ? quest.stops.find((s) => s.order_index === selectedStop) : null;
 
-  // Sheet height interpolates between a compact peek and a tall expanded panel.
-  const peekHeight = Math.round(SCREEN_H * 0.34);
-  const expandedHeight = Math.round(SCREEN_H * 0.74);
-  const sheetHeight = sheetAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: [peekHeight, expandedHeight],
-  });
-
-  // --- Renderers for the sheet body (peek list / stop detail / completion) -----
+  // --- Renderers for the pop-out card / completion overlay ---------------------
   function renderStopDetail(s) {
     const state = progress[s.order_index] || {};
     const dist = coords ? distanceM(coords.latitude, coords.longitude, s.place.lat, s.place.lng) : null;
@@ -1649,11 +1683,11 @@ export default function App() {
     const completed = Boolean(state.photoUri);
     return (
       <ScrollView
-        style={styles.sheetScroll}
-        contentContainerStyle={styles.sheetScrollContent}
+        style={styles.cardScroll}
+        contentContainerStyle={styles.cardScrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <Text style={styles.stopTitle}>
+        <Text style={styles.stopTitle} numberOfLines={2}>
           {completed ? "✓ " : ""}
           {s.order_index}. {s.place.name}
         </Text>
@@ -1717,8 +1751,8 @@ export default function App() {
   function renderCompletion() {
     return (
       <ScrollView
-        style={styles.sheetScroll}
-        contentContainerStyle={styles.sheetScrollContent}
+        style={styles.overlayScroll}
+        contentContainerStyle={styles.overlayScrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* Hand-rolled celebration: confetti + points count-up + streak/best reveal.
@@ -1800,72 +1834,13 @@ export default function App() {
     );
   }
 
-  function renderPeek() {
-    return (
-      <ScrollView
-        style={styles.sheetScroll}
-        contentContainerStyle={styles.sheetScrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Area label affordance (resolved server-side from GPS). Non-functional
-            for now — the area-picker/override UI is a later increment. */}
-        {quest.origin?.label ? (
-          <Text style={styles.peekArea} numberOfLines={1}>Exploring {quest.origin.label} ▾</Text>
-        ) : null}
-        <Text style={styles.peekTheme} numberOfLines={2}>{quest.theme}</Text>
-        <Text style={styles.intro}>{quest.intro}</Text>
-        <Text style={styles.progress}>
-          {allDone ? "🎉 Quest complete!" : `${doneCount} of ${quest.stops.length} stops done`}
-        </Text>
+  // Pop-out card transforms: scale/fade pop from the existing Animated API.
+  const cardScale = cardAnim.interpolate({ inputRange: [0, 1], outputRange: [0.82, 1] });
+  // The completion overlay scales/fades in from the same family of transforms.
+  const overlayScale = recapAnim.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] });
 
-        {allDone ? (
-          <TouchableOpacity style={styles.actionBtn} onPress={() => setSheetExpanded(true)}>
-            <Text style={styles.actionText}>🎉 See your recap</Text>
-          </TouchableOpacity>
-        ) : null}
-
-        {quest.stops.map((s) => {
-          const state = progress[s.order_index] || {};
-          const dist = coords
-            ? distanceM(coords.latitude, coords.longitude, s.place.lat, s.place.lng)
-            : null;
-          const completed = Boolean(state.photoUri);
-          return (
-            <TouchableOpacity
-              key={s.order_index}
-              style={[styles.listRow, completed && styles.listRowDone]}
-              onPress={() => selectStop(s.order_index)}
-            >
-              <View style={[styles.listDot, completed && styles.listDotDone]}>
-                <Text style={styles.listDotText}>{completed ? "✓" : s.order_index}</Text>
-              </View>
-              <View style={styles.listRowText}>
-                <Text style={styles.listName} numberOfLines={1}>{s.place.name}</Text>
-                <Text style={styles.listDist}>
-                  {dist != null ? `${dist} m away` : `${s.place.distance_m} m from start`}
-                </Text>
-              </View>
-              <Text style={styles.listChevron}>›</Text>
-            </TouchableOpacity>
-          );
-        })}
-
-        {/* Always-available "New Quest" (mirrors the original, always-visible button). */}
-        <TouchableOpacity style={styles.newQuestLink} onPress={startQuest}>
-          <Text style={styles.newQuestLinkText}>+ New Quest</Text>
-        </TouchableOpacity>
-        <View style={{ height: 8 }} />
-      </ScrollView>
-    );
-  }
-
-  // What fills the EXPANDED sheet: completion takes priority, otherwise the
-  // selected stop's detail (fall back to peek list if nothing is selected).
-  const expandedBody = allDone
-    ? renderCompletion()
-    : activeStop
-    ? renderStopDetail(activeStop)
-    : renderPeek();
+  // Lifetime points shown on the profile/score button (bottom-left).
+  const profilePoints = score.total;
 
   return (
     <View style={styles.mapScreen}>
@@ -1912,32 +1887,118 @@ export default function App() {
         })}
       </MapView>
 
-      {/* Floating top bar: quest identity + always-available Abandon (pause). */}
-      <View style={styles.topBar} pointerEvents="box-none">
-        <View style={styles.topBarPill}>
-          <Text style={styles.topBarTheme} numberOfLines={1}>{quest.theme}</Text>
+      {/* ===== Floating HUD (Pokémon-GO style). pointerEvents box-none so the
+              gaps between controls pass touches through to the live map. ===== */}
+
+      {/* Top-left: quest identity + area label, as a glassy floating chip. */}
+      <View style={styles.hudTopLeft} pointerEvents="box-none">
+        <View style={styles.identityChip}>
+          <Text style={styles.identityTheme} numberOfLines={1}>{quest.theme}</Text>
+          {quest.origin?.label ? (
+            <Text style={styles.identityArea} numberOfLines={1}>📍 {quest.origin.label}</Text>
+          ) : null}
         </View>
-        <TouchableOpacity style={styles.topBarAbandon} onPress={abandonQuest}>
-          <Text style={styles.topBarAbandonText}>Abandon</Text>
+      </View>
+
+      {/* Top-right: a stacked side rail of round buttons — the things reachable
+          from Welcome (Collections, Scorecard, Sign in) + Abandon. */}
+      <View style={styles.hudSideRail} pointerEvents="box-none">
+        <TouchableOpacity style={styles.railBtn} onPress={openCollections} activeOpacity={0.8}>
+          <Text style={styles.railIcon}>🗺️</Text>
+          <Text style={styles.railLabel}>Spots</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.railBtn} onPress={openScorecard} activeOpacity={0.8}>
+          <Text style={styles.railIcon}>🏅</Text>
+          <Text style={styles.railLabel}>Scores</Text>
+        </TouchableOpacity>
+        {authConfigured ? (
+          <TouchableOpacity style={styles.railBtn} onPress={openProfile} activeOpacity={0.8}>
+            <Text style={styles.railIcon}>{user ? "👤" : "✨"}</Text>
+            <Text style={styles.railLabel}>{user ? "You" : "Sign in"}</Text>
+          </TouchableOpacity>
+        ) : null}
+        <TouchableOpacity style={[styles.railBtn, styles.railBtnAbandon]} onPress={abandonQuest} activeOpacity={0.8}>
+          <Text style={styles.railIcon}>✕</Text>
+          <Text style={styles.railLabelAbandon}>Quit</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Custom Animated bottom sheet — peek (list) ↔ expanded (one stop / recap). */}
-      <Animated.View style={[styles.sheet, { height: sheetHeight }]}>
-        {/* Drag handle / back affordance: collapses the expanded sheet to the list. */}
-        <TouchableOpacity
-          style={styles.sheetHandleZone}
-          activeOpacity={0.7}
-          onPress={() => (sheetExpanded ? collapseSheet() : setSheetExpanded(true))}
-        >
-          <View style={styles.sheetHandle} />
-          {sheetExpanded && !allDone ? (
-            <Text style={styles.sheetBack}>‹ All stops</Text>
-          ) : null}
-        </TouchableOpacity>
+      {/* Top-center: compact progress chip ("2/3" or "Complete!"). */}
+      <View style={styles.hudProgress} pointerEvents="box-none">
+        <View style={[styles.progressChip, allDone && styles.progressChipDone]}>
+          <Text style={styles.progressChipText}>
+            {allDone ? "🎉 Complete!" : `${doneCount}/${quest.stops.length} stops`}
+          </Text>
+        </View>
+      </View>
 
-        {sheetExpanded ? expandedBody : renderPeek()}
-      </Animated.View>
+      {/* Bottom-left: profile/score button — chunky, shows lifetime points,
+          opens the Profile/Scorecard. */}
+      <TouchableOpacity style={styles.scoreFab} onPress={openScorecard} activeOpacity={0.85}>
+        <Text style={styles.scoreFabPts}>{profilePoints}</Text>
+        <Text style={styles.scoreFabLabel}>pts</Text>
+      </TouchableOpacity>
+
+      {/* Bottom-right: the prominent PRIMARY action. "Recap" once complete
+          (re-opens the completion overlay), otherwise "New Quest". */}
+      {allDone ? (
+        <TouchableOpacity
+          style={[styles.primaryFab, styles.primaryFabRecap]}
+          onPress={() => {
+            setSelectedStop(null);
+            setRecapOpen(true);
+          }}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.primaryFabIcon}>🎉</Text>
+          <Text style={styles.primaryFabText}>Recap</Text>
+        </TouchableOpacity>
+      ) : (
+        <TouchableOpacity style={styles.primaryFab} onPress={startQuest} activeOpacity={0.85}>
+          <Text style={styles.primaryFabIcon}>＋</Text>
+          <Text style={styles.primaryFabText}>New Quest</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* ===== Pop-out stop CARD (replaces the old expanded bottom sheet). A
+              centered, scale/fade-popped Animated card carrying the FULL
+              check-in / photo / override / source / flag flow. Tap the scrim or
+              the X to dismiss back to the clean map. ===== */}
+      {activeStop ? (
+        <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
+          {/* Tap-outside scrim. */}
+          <TouchableOpacity
+            style={styles.cardScrim}
+            activeOpacity={1}
+            onPress={closeCard}
+          />
+          <View style={styles.cardCenter} pointerEvents="box-none">
+            <Animated.View style={[styles.popCard, { opacity: cardAnim, transform: [{ scale: cardScale }] }]}>
+              <TouchableOpacity style={styles.cardClose} onPress={closeCard} activeOpacity={0.7}>
+                <Text style={styles.cardCloseText}>✕</Text>
+              </TouchableOpacity>
+              {renderStopDetail(activeStop)}
+            </Animated.View>
+          </View>
+        </View>
+      ) : null}
+
+      {/* ===== Completion OVERLAY (full-screen, scrollable). Holds the
+              celebration + 9:16 recap + feedback + New Quest. Full-screen (not a
+              small card) so the keyboard doesn't cover feedback and captureRef
+              lays the recap out at real size. ===== */}
+      {recapOpen ? (
+        <Animated.View
+          style={[styles.completionOverlay, { opacity: recapAnim, transform: [{ scale: overlayScale }] }]}
+        >
+          <View style={styles.overlayHeader}>
+            <TouchableOpacity onPress={() => setRecapOpen(false)} activeOpacity={0.7}>
+              <Text style={styles.overlayClose}>✕ Back to map</Text>
+            </TouchableOpacity>
+          </View>
+          {renderCompletion()}
+        </Animated.View>
+      ) : null}
     </View>
   );
 }
@@ -1980,6 +2041,8 @@ const styles = StyleSheet.create({
   collThumbEmpty: { backgroundColor: CREAM, alignItems: "center", justifyContent: "center" },
   collThumbMark: { color: ACCENT, fontSize: 18, fontWeight: "800" },
   collPlaceName: { flex: 1, fontSize: 15, color: INK, fontWeight: "600" },
+  // Chevron used by the Collections accordion header.
+  listChevron: { fontSize: 24, color: "#cbbfae", fontWeight: "700", marginLeft: 8 },
 
   // Scorecard screen
   scoreSectionTitle: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 28 },
@@ -2062,7 +2125,7 @@ const styles = StyleSheet.create({
   progress: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 12, marginBottom: 16 },
   card: { backgroundColor: "#fff", borderRadius: 16, padding: 18, marginBottom: 16 },
   cardDone: { opacity: 0.7, borderWidth: 1, borderColor: GREEN },
-  stopTitle: { fontSize: 20, fontWeight: "700", color: INK },
+  stopTitle: { fontSize: 20, fontWeight: "700", color: INK, paddingRight: 36 },
   distance: { fontSize: 13, color: ACCENT, fontWeight: "600", marginTop: 2, marginBottom: 8 },
   body: { fontSize: 15, color: INK, lineHeight: 21 },
   why: { fontSize: 14, color: INK, opacity: 0.7, marginTop: 6, fontStyle: "italic" },
@@ -2105,98 +2168,160 @@ const styles = StyleSheet.create({
   },
   pinText: { color: "#fff", fontSize: 14, fontWeight: "800" },
 
-  // Floating top bar over the map.
-  topBar: {
-    position: "absolute",
-    top: 56,
-    left: 16,
-    right: 16,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  topBarPill: {
-    flex: 1,
-    backgroundColor: "rgba(244,241,234,0.94)",
-    borderRadius: 22,
-    paddingVertical: 10,
+  // --- Floating HUD (Pokémon-GO style) ----------------------------------------
+  // Top-left identity chip (theme + area).
+  hudTopLeft: { position: "absolute", top: 56, left: 16, right: 96 },
+  identityChip: {
+    alignSelf: "flex-start",
+    maxWidth: "100%",
+    backgroundColor: "rgba(255,255,255,0.95)",
+    borderRadius: 20,
+    paddingVertical: 9,
     paddingHorizontal: 16,
     borderWidth: 1,
     borderColor: "#e6dfd2",
-    marginRight: 10,
     shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.16,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 5,
   },
-  topBarTheme: { fontSize: 15, fontWeight: "800", color: INK, letterSpacing: -0.2 },
-  topBarAbandon: {
-    backgroundColor: "rgba(244,241,234,0.94)",
-    borderRadius: 22,
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderWidth: 1,
-    borderColor: "#e6dfd2",
-  },
-  topBarAbandonText: { fontSize: 13, color: ACCENT, fontWeight: "700" },
+  identityTheme: { fontSize: 15, fontWeight: "800", color: INK, letterSpacing: -0.2 },
+  identityArea: { fontSize: 12, color: GREEN, fontWeight: "700", marginTop: 2 },
 
-  // Bottom sheet
-  sheet: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: CREAM,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: -3 },
-    elevation: 12,
-  },
-  sheetHandleZone: { alignItems: "center", paddingTop: 10, paddingBottom: 6 },
-  sheetHandle: {
-    width: 44,
-    height: 5,
-    borderRadius: 3,
-    backgroundColor: "#cbbfae",
-  },
-  sheetBack: { fontSize: 14, color: ACCENT, fontWeight: "700", marginTop: 8, alignSelf: "flex-start" },
-  sheetScroll: { flex: 1 },
-  sheetScrollContent: { paddingBottom: 24 },
-  peekArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 2 },
-  peekTheme: { fontSize: 22, fontWeight: "800", color: INK, letterSpacing: -0.4, marginTop: 4 },
-
-  // Compact peek list of stops
-  listRow: {
-    flexDirection: "row",
+  // Top-right stacked side rail of round buttons.
+  hudSideRail: { position: "absolute", top: 54, right: 14, alignItems: "center", gap: 12 },
+  railBtn: {
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: "rgba(255,255,255,0.96)",
     alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 14,
-    padding: 12,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: "#e6dfd2",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.22,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 6,
   },
-  listRowDone: { borderColor: GREEN },
-  listDot: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+  railBtnAbandon: { backgroundColor: "rgba(255,238,232,0.97)" },
+  railIcon: { fontSize: 20 },
+  railLabel: { fontSize: 9, fontWeight: "800", color: INK, marginTop: 1, letterSpacing: 0.2 },
+  railLabelAbandon: { fontSize: 9, fontWeight: "800", color: ACCENT, marginTop: 1 },
+
+  // Top-center progress chip.
+  hudProgress: { position: "absolute", top: 60, left: 0, right: 0, alignItems: "center" },
+  progressChip: {
+    backgroundColor: ACCENT,
+    borderRadius: 16,
+    paddingVertical: 7,
+    paddingHorizontal: 16,
+    borderWidth: 2,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 },
+    elevation: 6,
+  },
+  progressChipDone: { backgroundColor: GREEN },
+  progressChipText: { color: "#fff", fontSize: 14, fontWeight: "900", letterSpacing: 0.3 },
+
+  // Bottom-left score/profile FAB.
+  scoreFab: {
+    position: "absolute",
+    bottom: 38,
+    left: 22,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: "#e0a449",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 3,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
+  },
+  scoreFabPts: { color: "#fff", fontSize: 22, fontWeight: "900", letterSpacing: -0.5 },
+  scoreFabLabel: { color: "#fff", fontSize: 11, fontWeight: "800", marginTop: -2, opacity: 0.9 },
+
+  // Bottom-right primary action FAB (New Quest / Recap).
+  primaryFab: {
+    position: "absolute",
+    bottom: 38,
+    right: 22,
+    minWidth: 88,
+    height: 72,
+    borderRadius: 36,
+    paddingHorizontal: 18,
     backgroundColor: ACCENT,
     alignItems: "center",
     justifyContent: "center",
-    marginRight: 12,
+    borderWidth: 3,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
   },
-  listDotDone: { backgroundColor: GREEN },
-  listDotText: { color: "#fff", fontSize: 14, fontWeight: "800" },
-  listRowText: { flex: 1 },
-  listName: { fontSize: 16, fontWeight: "700", color: INK },
-  listDist: { fontSize: 13, color: ACCENT, fontWeight: "600", marginTop: 2 },
-  listChevron: { fontSize: 24, color: "#cbbfae", fontWeight: "700", marginLeft: 8 },
-  newQuestLink: { alignSelf: "center", marginTop: 16, paddingVertical: 8, paddingHorizontal: 16 },
-  newQuestLinkText: { fontSize: 15, color: ACCENT, fontWeight: "700", textDecorationLine: "underline" },
+  primaryFabRecap: { backgroundColor: GREEN },
+  primaryFabIcon: { color: "#fff", fontSize: 22, fontWeight: "900", marginBottom: -1 },
+  primaryFabText: { color: "#fff", fontSize: 13, fontWeight: "900", letterSpacing: 0.2 },
+
+  // --- Pop-out stop card -------------------------------------------------------
+  cardScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(43,38,34,0.45)" },
+  cardCenter: { flex: 1, alignItems: "center", justifyContent: "center", padding: 18 },
+  popCard: {
+    width: "100%",
+    maxWidth: 460,
+    maxHeight: SCREEN_H * 0.78,
+    backgroundColor: CREAM,
+    borderRadius: 24,
+    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingBottom: 8,
+    borderWidth: 2,
+    borderColor: "#fff",
+    shadowColor: "#000",
+    shadowOpacity: 0.32,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+    elevation: 16,
+  },
+  cardClose: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#e6dfd2",
+  },
+  cardCloseText: { fontSize: 16, fontWeight: "800", color: INK },
+  // flexShrink (NOT flex:1) so the ScrollView shrinks to the card's maxHeight-only
+  // bound and actually scrolls — keeping the bottom-of-card manual override /
+  // source / flag reachable even on a tall stop (long description + captured photo).
+  cardScroll: { flexShrink: 1 },
+  cardScrollContent: { paddingBottom: 16, paddingRight: 4 },
+
+  // --- Completion overlay (full-screen, scrollable) ----------------------------
+  completionOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: CREAM },
+  overlayHeader: { paddingTop: 56, paddingHorizontal: 20, paddingBottom: 4 },
+  overlayClose: { fontSize: 15, color: ACCENT, fontWeight: "800" },
+  overlayScroll: { flex: 1 },
+  overlayScrollContent: { paddingHorizontal: 20, paddingBottom: 40 },
 
   // 9:16 share-magnet recap
   recapWrap: { marginBottom: 20, alignItems: "center" },
