@@ -39,11 +39,24 @@ import {
   loadProfile,
   pushScore,
 } from "./lib/auth";
-// On iOS this uses Apple Maps (no API key needed — works in Expo Go).
-// Android / a production build needs a Google Maps API key wired into app.json
-// under `android.config.googleMaps.apiKey` (and PROVIDER_GOOGLE). We deliberately
-// leave the provider as the platform default so Expo Go testing needs no key.
-import MapView, { Marker, Polyline } from "react-native-maps";
+// Map provider is chosen at RUNTIME (see `isExpoGo` below):
+//  - In Expo Go (iOS) we use the platform DEFAULT provider (Apple Maps) with NO
+//    customMapStyle, because PROVIDER_GOOGLE + customMapStyle does NOT work in
+//    Expo Go — this keeps the current testing flow working with no API key.
+//  - In a real dev/standalone build we use PROVIDER_GOOGLE + the stylized
+//    customMapStyle (the Pokémon-GO look). That build reads the Google Maps key
+//    from app.config.js (ios.config.googleMapsApiKey / android.config.googleMaps.apiKey).
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import Constants from "expo-constants";
+import mapStyle from "./mapStyle";
+
+// True only when running inside Expo Go. In a real build `appOwnership` is
+// null/undefined, so this is false and Google + the custom style activate.
+// Defensive: ANY uncertainty that still smells like Expo Go (the legacy
+// storeClient execution environment) keeps us on the safe Apple-Maps path.
+const isExpoGo =
+  Constants.appOwnership === "expo" ||
+  Constants.executionEnvironment === "storeClient";
 
 const QUEST_EMOJI = { photo: "📷", find_detail: "🔍", question: "❓", collect: "✨" };
 const CHECKIN_RADIUS_M = 100; // how close you must be to check in
@@ -1849,6 +1862,10 @@ export default function App() {
       {/* FULL-SCREEN map: numbered dots in walking order, route line, "you are here". */}
       <MapView
         style={StyleSheet.absoluteFill}
+        // Expo Go: default provider (Apple Maps), no custom style — keeps the
+        // working test flow intact. Built app: Google provider + stylized map.
+        provider={isExpoGo ? undefined : PROVIDER_GOOGLE}
+        customMapStyle={isExpoGo ? undefined : mapStyle}
         initialRegion={regionForStops(quest.stops, coords)}
         showsUserLocation
         showsMyLocationButton={false}
