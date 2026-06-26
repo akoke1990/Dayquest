@@ -7,9 +7,11 @@
   "scripts": {
     "quest": "node generate-quest.js",
     "serve": "node server.js",
-    "ingest:gv": "node scripts/ingest-gv.js"
+    "ingest:gv": "node scripts/ingest-gv.js",
+    "ingest:pois": "node scripts/ingest-pois.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.104.2"
+    "@anthropic-ai/sdk": "^0.104.2",
+    "@supabase/supabase-js": "^2.108.2"
   }
 }
