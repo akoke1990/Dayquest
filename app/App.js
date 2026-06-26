@@ -694,6 +694,16 @@ export default function App() {
   const [recapOpen, setRecapOpen] = useState(false);
   const recapAutoPresentedRef = useRef(false); // guard: auto-present completion once
 
+  // --- Quest Setup sheet (choose WHERE + SIZE) --------------------------------
+  // setupReturn is where Cancel goes back to ("welcome" or "ready").
+  const [setupReturn, setSetupReturn] = useState("welcome");
+  const [setupMode, setSetupMode] = useState("current"); // "current" | "place"
+  const [setupQuery, setSetupQuery] = useState(""); // typed place text
+  const [setupPlace, setSetupPlace] = useState(null); // resolved { name, lat, lng }
+  const [setupResolving, setSetupResolving] = useState(false);
+  const [setupError, setSetupError] = useState("");
+  const [setupSize, setSetupSize] = useState("quick"); // "quick" | "explore"
+
   // Pop the stop card in/out whenever a stop is selected/deselected.
   useEffect(() => {
     Animated.spring(cardAnim, {
@@ -947,7 +957,14 @@ export default function App() {
     }
   }, [screen, quest, progress]);
 
-  async function startQuest() {
+  // Start a quest. With NO args this is the simple one-tap default: request
+  // permission → current GPS → quick quest (byte-identical to the original).
+  // With opts.lat/lng it quests at a chosen place (Quest Setup sheet): no
+  // permission/GPS needed, the typed label is passed through, and opts.size
+  // scales the loop. opts.label, when present, makes the server skip the
+  // reverse-geocode so the HUD shows the place the user typed.
+  async function startQuest(opts = {}) {
+    const hasPlace = Number.isFinite(opts.lat) && Number.isFinite(opts.lng);
     setScreen("loading");
     setError("");
     setProgress({});
@@ -970,24 +987,37 @@ export default function App() {
     setRecapOpen(false);
     recapAutoPresentedRef.current = false;
     try {
-      const { status: perm } = await Location.requestForegroundPermissionsAsync();
-      if (perm !== "granted") {
-        setError("We need your location to find an adventure nearby.");
-        setScreen("error");
-        return;
+      let latitude, longitude;
+      if (hasPlace) {
+        // Questing at a typed place — no device location needed.
+        latitude = opts.lat;
+        longitude = opts.lng;
+      } else {
+        const { status: perm } = await Location.requestForegroundPermissionsAsync();
+        if (perm !== "granted") {
+          setError("We need your location to find an adventure nearby.");
+          setScreen("error");
+          return;
+        }
+        const loc = await Location.getCurrentPositionAsync({});
+        setCoords(loc.coords);
+        ({ latitude, longitude } = loc.coords);
       }
-      const loc = await Location.getCurrentPositionAsync({});
-      setCoords(loc.coords);
-      const { latitude, longitude } = loc.coords;
 
-      const res = await fetch(`${API_BASE}/quest?lat=${latitude}&lng=${longitude}`);
+      // Build the query: keep the one-tap URL identical (no label/size) so the
+      // simple default path is unchanged; only append what the setup sheet adds.
+      const params = new URLSearchParams({ lat: String(latitude), lng: String(longitude) });
+      if (opts.label) params.set("label", opts.label);
+      if (opts.size && opts.size !== "quick") params.set("size", opts.size);
+
+      const res = await fetch(`${API_BASE}/quest?${params.toString()}`);
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not build a quest here.");
 
       setQuest(data);
       setSaved(null);
       setScreen("ready");
-      track("quest_started", { stops: data.stops?.length });
+      track("quest_started", { stops: data.stops?.length, size: opts.size || "quick", placed: hasPlace });
     } catch (e) {
       setError(`${e.message}\n\nIs the server running (npm run serve)?\nTrying: ${API_BASE}`);
       setScreen("error");
@@ -1148,6 +1178,55 @@ export default function App() {
     setAuthError("");
     setScreen("profile");
     track("profile_opened");
+  }
+
+  // --- Quest Setup sheet ------------------------------------------------------
+  // Open the setup sheet, remembering where Cancel should return to.
+  function openSetup() {
+    setSetupReturn(screen === "ready" ? "ready" : "welcome");
+    setSetupError("");
+    setScreen("setup");
+    track("setup_opened");
+  }
+
+  // Close the setup sheet without starting — back to wherever we came from.
+  function closeSetup() {
+    setScreen(setupReturn);
+  }
+
+  // Forward-geocode the typed place via the server. No device permission needed
+  // (you may be planning a quest somewhere else entirely).
+  async function resolveSetupPlace() {
+    const q = setupQuery.trim();
+    if (!q || setupResolving) return;
+    setSetupResolving(true);
+    setSetupError("");
+    setSetupPlace(null);
+    try {
+      const res = await fetch(`${API_BASE}/resolve-place?q=${encodeURIComponent(q)}`);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Couldn't find that place.");
+      setSetupPlace({ name: data.name, lat: data.lat, lng: data.lng });
+      track("place_resolved", { q });
+    } catch (e) {
+      setSetupError(e.message || "Couldn't find that place. Try a different name.");
+    } finally {
+      setSetupResolving(false);
+    }
+  }
+
+  // Whether the sheet has everything it needs to start a quest.
+  const setupReady =
+    setupMode === "current" || (setupMode === "place" && setupPlace != null);
+
+  // Generate a quest from the chosen location + size.
+  function startSetupQuest() {
+    if (!setupReady) return;
+    if (setupMode === "place" && setupPlace) {
+      startQuest({ lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name, size: setupSize });
+    } else {
+      startQuest({ size: setupSize });
+    }
   }
 
   // Run web-redirect OAuth for a provider, then upsert + load the profile,
@@ -1435,9 +1514,13 @@ export default function App() {
 
         {screen === "error" ? <Text style={styles.error}>{error}</Text> : null}
 
-        <TouchableOpacity style={styles.button} onPress={startQuest}>
+        <TouchableOpacity style={styles.button} onPress={() => startQuest()}>
           <Text style={styles.buttonText}>{screen === "error" ? "Try again" : "Start a Quest"}</Text>
         </TouchableOpacity>
+        {/* The power option: choose where + how far before generating. */}
+        <Text style={styles.setupLink} onPress={openSetup}>
+          ⚙️ Set up a quest (place + size)
+        </Text>
         {/* Plain-language permission framing, shown before the OS dialog. */}
         <Text style={styles.permNote}>
           We'll use your location to find places to explore — only while you're on a quest.
@@ -1772,6 +1855,114 @@ export default function App() {
     );
   }
 
+  if (screen === "setup") {
+    return (
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+      >
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={closeSetup}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Quest Setup</Text>
+        <Text style={styles.setupIntro}>
+          Choose where to explore and how far you want to roam.
+        </Text>
+
+        {/* WHERE ---------------------------------------------------------- */}
+        <Text style={styles.setupSectionLabel}>Where</Text>
+        <View style={styles.segmentRow}>
+          <TouchableOpacity
+            style={[styles.segment, setupMode === "current" && styles.segmentActive]}
+            onPress={() => { setSetupMode("current"); setSetupError(""); }}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.segmentText, setupMode === "current" && styles.segmentTextActive]}>
+              📍 My location
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.segment, setupMode === "place" && styles.segmentActive]}
+            onPress={() => { setSetupMode("place"); setSetupError(""); }}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.segmentText, setupMode === "place" && styles.segmentTextActive]}>
+              🔎 A place
+            </Text>
+          </TouchableOpacity>
+        </View>
+
+        {setupMode === "place" ? (
+          <View style={styles.placeBlock}>
+            <View style={styles.placeInputRow}>
+              <TextInput
+                style={styles.placeInput}
+                value={setupQuery}
+                onChangeText={(t) => { setSetupQuery(t); setSetupPlace(null); setSetupError(""); }}
+                placeholder="e.g. East Village, Stony Brook NY"
+                placeholderTextColor="#9aa0a6"
+                autoCapitalize="words"
+                returnKeyType="search"
+                onSubmitEditing={resolveSetupPlace}
+              />
+              <TouchableOpacity
+                style={styles.placeFindBtn}
+                onPress={resolveSetupPlace}
+                disabled={setupResolving || !setupQuery.trim()}
+                activeOpacity={0.85}
+              >
+                {setupResolving ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <Text style={styles.placeFindText}>Find</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+            {setupPlace ? (
+              <Text style={styles.placeResolved}>✓ {setupPlace.name}</Text>
+            ) : null}
+            {setupError ? <Text style={styles.setupErr}>{setupError}</Text> : null}
+          </View>
+        ) : null}
+
+        {/* SIZE ----------------------------------------------------------- */}
+        <Text style={styles.setupSectionLabel}>Size</Text>
+        <View style={styles.sizeRow}>
+          <TouchableOpacity
+            style={[styles.sizeCard, setupSize === "quick" && styles.sizeCardActive]}
+            onPress={() => setSetupSize("quick")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.sizeName}>Quick</Text>
+            <Text style={styles.sizeDetail}>~1km · 3 stops</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.sizeCard, setupSize === "explore" && styles.sizeCardActive]}
+            onPress={() => setSetupSize("explore")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.sizeName}>Explore</Text>
+            <Text style={styles.sizeDetail}>~2km · up to 5 stops</Text>
+          </TouchableOpacity>
+        </View>
+
+        <TouchableOpacity
+          style={[styles.button, !setupReady && styles.buttonDisabled]}
+          onPress={startSetupQuest}
+          disabled={!setupReady}
+        >
+          <Text style={styles.buttonText}>Start Quest</Text>
+        </TouchableOpacity>
+        {setupMode === "place" && !setupPlace ? (
+          <Text style={styles.permNote}>Find a place above to start questing there.</Text>
+        ) : null}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
   if (screen === "loading") {
     return (
       <View style={styles.center}>
@@ -1943,7 +2134,7 @@ export default function App() {
           )}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={startQuest}>
+        <TouchableOpacity style={styles.button} onPress={() => startQuest()}>
           <Text style={styles.buttonText}>New Quest</Text>
         </TouchableOpacity>
         <View style={{ height: 16 }} />
@@ -2024,6 +2215,10 @@ export default function App() {
       {/* Top-right: a stacked side rail of round buttons — the things reachable
           from Welcome (Collections, Scorecard, Sign in) + Abandon. */}
       <View style={styles.hudSideRail} pointerEvents="box-none">
+        <TouchableOpacity style={styles.railBtn} onPress={openSetup} activeOpacity={0.8}>
+          <Text style={styles.railIcon}>📍</Text>
+          <Text style={styles.railLabel}>Setup</Text>
+        </TouchableOpacity>
         <TouchableOpacity style={styles.railBtn} onPress={openCollections} activeOpacity={0.8}>
           <Text style={styles.railIcon}>🗺️</Text>
           <Text style={styles.railLabel}>Spots</Text>
@@ -2075,7 +2270,7 @@ export default function App() {
           <Text style={styles.primaryFabText}>Recap</Text>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity style={styles.primaryFab} onPress={startQuest} activeOpacity={0.85}>
+        <TouchableOpacity style={styles.primaryFab} onPress={() => startQuest()} activeOpacity={0.85}>
           <Text style={styles.primaryFabIcon}>＋</Text>
           <Text style={styles.primaryFabText}>New Quest</Text>
         </TouchableOpacity>
@@ -2253,6 +2448,29 @@ const styles = StyleSheet.create({
   error: { color: ACCENT, marginTop: 20, textAlign: "center", lineHeight: 20 },
   button: { backgroundColor: ACCENT, paddingVertical: 16, paddingHorizontal: 36, borderRadius: 30, marginTop: 28, alignSelf: "center" },
   buttonText: { color: "#fff", fontSize: 18, fontWeight: "700" },
+  buttonDisabled: { opacity: 0.4 },
+
+  // --- Quest Setup sheet ------------------------------------------------------
+  setupLink: { fontSize: 14, color: ACCENT, fontWeight: "700", textAlign: "center", marginTop: 16 },
+  setupIntro: { fontSize: 15, color: INK, opacity: 0.7, marginTop: 6, lineHeight: 21 },
+  setupSectionLabel: { fontSize: 13, fontWeight: "800", color: INK, opacity: 0.6, letterSpacing: 1, textTransform: "uppercase", marginTop: 26, marginBottom: 10 },
+  segmentRow: { flexDirection: "row", gap: 10 },
+  segment: { flex: 1, paddingVertical: 14, borderRadius: 14, borderWidth: 1.5, borderColor: "#e0d8c9", backgroundColor: "#fff", alignItems: "center" },
+  segmentActive: { borderColor: ACCENT, backgroundColor: "#fbeee6" },
+  segmentText: { fontSize: 15, fontWeight: "700", color: INK, opacity: 0.7 },
+  segmentTextActive: { color: ACCENT, opacity: 1 },
+  placeBlock: { marginTop: 14 },
+  placeInputRow: { flexDirection: "row", gap: 10, alignItems: "center" },
+  placeInput: { flex: 1, backgroundColor: "#fff", borderWidth: 1.5, borderColor: "#e0d8c9", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: INK },
+  placeFindBtn: { backgroundColor: ACCENT, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12, minWidth: 64, alignItems: "center", justifyContent: "center" },
+  placeFindText: { color: "#fff", fontSize: 15, fontWeight: "700" },
+  placeResolved: { fontSize: 15, color: GREEN, fontWeight: "700", marginTop: 12 },
+  setupErr: { fontSize: 14, color: ACCENT, marginTop: 12, lineHeight: 20 },
+  sizeRow: { flexDirection: "row", gap: 12 },
+  sizeCard: { flex: 1, padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: "#e0d8c9", backgroundColor: "#fff" },
+  sizeCardActive: { borderColor: ACCENT, backgroundColor: "#fbeee6" },
+  sizeName: { fontSize: 17, fontWeight: "800", color: INK },
+  sizeDetail: { fontSize: 13, color: INK, opacity: 0.65, marginTop: 4 },
   theme: { fontSize: 30, fontWeight: "800", color: INK, letterSpacing: -0.5 },
   intro: { fontSize: 16, color: INK, opacity: 0.75, marginTop: 6, lineHeight: 22 },
   progress: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 12, marginBottom: 16 },

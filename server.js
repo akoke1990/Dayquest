@@ -12,7 +12,7 @@
 import { createServer } from "node:http";
 import { appendFileSync, mkdirSync } from "node:fs";
 import { buildQuest, loadEnv } from "./lib/quest.js";
-import { resolveArea } from "./lib/area.js";
+import { resolveArea, resolvePlace } from "./lib/area.js";
 
 loadEnv();
 const PORT = process.env.PORT || 8787;
@@ -138,6 +138,21 @@ const server = createServer(async (req, res) => {
     }
   }
 
+  // Forward geocoding: turn a typed place name into coordinates so the app's
+  // Quest Setup sheet can quest somewhere OTHER than current GPS. Returns the
+  // resolved display name + coords, or 404 when nothing matches.
+  if (url.pathname === "/resolve-place") {
+    const q = (url.searchParams.get("q") || "").trim();
+    if (!q) {
+      return send(res, 400, { error: "Provide a non-empty `q` query param." });
+    }
+    const place = await resolvePlace(q); // never throws; null on no match/failure
+    if (!place) {
+      return send(res, 404, { error: `No place found for "${q}".` });
+    }
+    return send(res, 200, { name: place.name, lat: place.lat, lng: place.lng });
+  }
+
   if (url.pathname === "/quest") {
     const latRaw = url.searchParams.get("lat");
     const lngRaw = url.searchParams.get("lng");
@@ -159,8 +174,11 @@ const server = createServer(async (req, res) => {
       const label = labelRaw && labelRaw.trim()
         ? labelRaw.trim()
         : (await resolveArea(lat, lng)).name;
-      const quest = await buildQuest(lat, lng, label);
-      console.log(`  ← ${quest.stops.length} stops: ${quest.theme} (area: ${label})`);
+      // Optional walk-scaled size: "quick" (default) | "explore". Unknown values
+      // are ignored downstream (buildQuest falls back to quick).
+      const size = url.searchParams.get("size") || undefined;
+      const quest = await buildQuest(lat, lng, label, { size });
+      console.log(`  ← ${quest.stops.length} stops: ${quest.theme} (area: ${label}, size: ${size || "quick"})`);
       return send(res, 200, quest);
     } catch (err) {
       if (err.code === "NO_KEY") return send(res, 503, { error: "Server has no ANTHROPIC_API_KEY configured." });
