@@ -73,6 +73,10 @@ const COLLECTIONS_KEY = "dayquest.collections.v1";
 // Per-Area personal bests for the async scorecard.
 // { [areaLabel]: { best_points, fastest_time_s, quests, last_at } }
 const BESTS_KEY = "dayquest.bests.v1";
+// Soft-gate choice: "1" once the user has tapped "Continue as guest". When set
+// (or when a signed-in session exists), the sign-in entry screen is skipped on
+// launch so we never re-prompt someone who already chose anonymous-first.
+const GUEST_KEY = "dayquest.guest.v1";
 
 // Light scoring knobs (no levels grind, no leaderboards — UX is "a little win").
 const POINTS_PER_QUEST = 100;
@@ -750,21 +754,38 @@ export default function App() {
       } catch {
         /* corrupt/missing — just start fresh */
       }
-      setScreen("welcome");
+
+      // --- Soft sign-in gate routing (ONE authoritative launch decision) ------
+      // Resolve all three inputs — saved quest (above), a prior guest choice, and
+      // an existing Supabase session — BEFORE leaving "hydrating", so a signed-in
+      // user or a returning guest goes straight to welcome with NO flash of the
+      // sign-in screen. Order: signed-in OR guest-chosen → welcome, ELSE → signin.
+      let guestChosen = false;
+      try {
+        guestChosen = (await AsyncStorage.getItem(GUEST_KEY)) === "1";
+      } catch {
+        /* missing — treat as not-yet-chosen */
+      }
+      let sessionUser = null;
+      if (authConfigured) {
+        // Local-storage session read; fast on cold launch (no network). If it
+        // ever hangs that's a real-device concern, not a bundle one.
+        sessionUser = await getCurrentUser().catch(() => null);
+        if (sessionUser) {
+          setUser(sessionUser);
+          loadProfile(sessionUser.id).then((p) => p && setProfile(p)).catch(() => {});
+        }
+      }
+      setScreen(sessionUser || guestChosen ? "welcome" : "signin");
     })();
   }, []);
 
-  // Restore an existing Supabase session (if signed in) and keep `user` in sync
-  // with auth changes. Entirely skipped when auth isn't configured.
+  // Keep `user` in sync with auth changes (sign-in/out elsewhere). The INITIAL
+  // session restore now happens in the hydration effect above so the launch
+  // route is decided once; this is purely the live subscription. Skipped when
+  // auth isn't configured.
   useEffect(() => {
     if (!authConfigured) return;
-    (async () => {
-      const u = await getCurrentUser();
-      if (u) {
-        setUser(u);
-        loadProfile(u.id).then((p) => p && setProfile(p)).catch(() => {});
-      }
-    })();
     const unsub = onAuthChange((u) => {
       setUser(u);
       if (!u) setProfile(null);
@@ -1109,6 +1130,19 @@ export default function App() {
     track("scorecard_opened", { areas: Object.keys(b).length });
   }
 
+  // Soft gate: the user chose to keep going anonymously. Persist the choice so
+  // the sign-in screen is never forced again, then drop into the existing
+  // welcome/home flow. Guest must ALWAYS work — this is the no-trap path.
+  async function continueAsGuest() {
+    try {
+      await AsyncStorage.setItem(GUEST_KEY, "1");
+    } catch {
+      /* persistence is best-effort — proceed regardless so we never trap */
+    }
+    track("guest_chosen");
+    setScreen("welcome");
+  }
+
   // Open the optional Profile screen.
   function openProfile() {
     setAuthError("");
@@ -1136,6 +1170,10 @@ export default function App() {
       }
       setUser(res.user);
       track("sign_in_succeeded", { provider });
+      // If sign-in happened from the soft-gate entry screen, proceed into the
+      // home/welcome flow as a signed-in user. Sign-in from the Profile screen
+      // stays put — its signed-in card renders in place (existing behavior).
+      if (screen === "signin") setScreen("welcome");
       // Merge local totals into the profile, then load it back as the truth.
       const merged = await upsertProfile(res.user, score);
       if (merged) setProfile(merged);
@@ -1276,6 +1314,72 @@ export default function App() {
       <View style={styles.center}>
         <StatusBar style="dark" />
         <ActivityIndicator size="large" color={ACCENT} />
+      </View>
+    );
+  }
+
+  // --- Sign-in entry (SOFT gate) ---------------------------------------------
+  // The app's first screen on a fresh launch. NOT a wall: "Continue as guest"
+  // always works and is clearly tappable. Provider buttons run the existing
+  // OAuth helpers; failure/cancel surfaces an inline message (never crashes).
+  // When auth is unconfigured the provider buttons are replaced with a gentle
+  // "sign-in unavailable" line and guest is the way forward. MUST return before
+  // the `ready` fallthrough below,
+  // which dereferences `quest` (null here).
+  if (screen === "signin") {
+    return (
+      <View style={styles.signinScreen}>
+        <StatusBar style="dark" />
+        <View style={styles.signinHero}>
+          <Text style={styles.signinLogo}>DayQuest</Text>
+          <Text style={styles.signinValueProp}>
+            Turn your neighborhood into an adventure.
+          </Text>
+        </View>
+
+        <View style={styles.signinActions}>
+          {authConfigured ? (
+            <>
+              <TouchableOpacity
+                style={[styles.oauthBtn, styles.signinBtn, authBusy && styles.actionBtnDisabled]}
+                onPress={() => handleSignIn("google")}
+                disabled={authBusy}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.oauthBtnText}>Continue with Google</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.oauthBtn, styles.oauthBtnApple, styles.signinBtn, authBusy && styles.actionBtnDisabled]}
+                onPress={() => handleSignIn("apple")}
+                disabled={authBusy}
+                activeOpacity={0.85}
+              >
+                <Text style={[styles.oauthBtnText, styles.oauthBtnTextApple]}>
+                  Continue with Apple
+                </Text>
+              </TouchableOpacity>
+              {authBusy ? <ActivityIndicator style={{ marginTop: 16 }} color={ACCENT} /> : null}
+              {authError ? <Text style={styles.error}>{authError}</Text> : null}
+            </>
+          ) : (
+            <Text style={styles.signinUnavailable}>
+              Sign-in isn't available right now — jump straight in below.
+            </Text>
+          )}
+
+          {/* Always-available anonymous-first path. Never gated. */}
+          <TouchableOpacity
+            style={styles.guestBtn}
+            onPress={continueAsGuest}
+            disabled={authBusy}
+            activeOpacity={0.7}
+          >
+            <Text style={styles.guestBtnText}>Continue as guest</Text>
+          </TouchableOpacity>
+          <Text style={styles.signinFootnote}>
+            No account needed. You can sign in later to save your progress.
+          </Text>
+        </View>
       </View>
     );
   }
@@ -2132,6 +2236,18 @@ const styles = StyleSheet.create({
   // Per-stop flag
   cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 },
   flagLink: { fontSize: 12, color: INK, opacity: 0.5, textDecorationLine: "underline" },
+  // Sign-in entry (soft gate)
+  signinScreen: { flex: 1, backgroundColor: CREAM, paddingHorizontal: 28, paddingTop: 120, paddingBottom: 48, justifyContent: "space-between" },
+  signinHero: { alignItems: "center" },
+  signinLogo: { fontSize: 52, fontWeight: "800", color: INK, letterSpacing: -1.2 },
+  signinValueProp: { fontSize: 18, color: INK, opacity: 0.72, marginTop: 12, textAlign: "center", lineHeight: 25 },
+  signinActions: { width: "100%" },
+  signinBtn: { paddingVertical: 17, borderRadius: 28 },
+  signinUnavailable: { fontSize: 15, color: INK, opacity: 0.7, textAlign: "center", lineHeight: 22, marginBottom: 4 },
+  guestBtn: { marginTop: 22, paddingVertical: 14, alignItems: "center" },
+  guestBtnText: { fontSize: 17, color: ACCENT, fontWeight: "800", textDecorationLine: "underline" },
+  signinFootnote: { fontSize: 13, color: INK, opacity: 0.5, textAlign: "center", marginTop: 8, lineHeight: 18 },
+
   logo: { fontSize: 44, fontWeight: "800", color: INK, letterSpacing: -1 },
   tagline: { fontSize: 17, color: INK, opacity: 0.7, marginTop: 8, textAlign: "center" },
   error: { color: ACCENT, marginTop: 20, textAlign: "center", lineHeight: 20 },
