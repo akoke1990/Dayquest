@@ -18,6 +18,60 @@ loadEnv();
 const PORT = process.env.PORT || 8787;
 const DATA_DIR = new URL("./data/", import.meta.url);
 
+// --- In-memory quest cache (D-046 precursor) ---------------------------------
+// Repeat testers cluster in a few neighbourhoods; a quest build is expensive
+// (3 live data sources + up to 2 Claude calls). Cache the finished quest JSON
+// keyed by a rounded coord (~110m, 3 decimals — matches sources.js placesCache)
+// + normalised size + a coarse day bucket, so a second request for the same
+// area/size/day returns instantly with NO data/Claude calls.
+//
+// NOTE: this cache is purely IN-MEMORY — it resets whenever the Render free
+// instance sleeps, redeploys, or restarts. The persistent/shared version
+// arrives with the POI DB (D-046). For the tester round this is enough: it
+// makes clustered repeat quests instant within a single warm instance.
+const QUEST_CACHE = new Map(); // insertion-ordered → FIFO eviction
+const QUEST_CACHE_MAX = 500; // bound memory: ~500 quests
+const QUEST_CACHE_TTL_MS = 12 * 60 * 60 * 1000; // 12h freshness window
+
+// Mirror presetFor() in lib/quest.js EXACTLY: only "explore" is a distinct
+// preset; everything else (incl. missing/garbage) collapses to "quick". This
+// keeps the key tight (better hit-rate) while guaranteeing quick≠explore.
+function normSize(size) {
+  return size === "explore" ? "explore" : "quick";
+}
+
+// Coarse day bucket (UTC day index) — pairs with the TTL as a natural reset so
+// a neighbourhood's quest refreshes across days even if the instance stays warm.
+function dayBucket() {
+  return Math.floor(Date.now() / (24 * 60 * 60 * 1000));
+}
+
+// Key parts: rounded coord + normalised size + day. label is deliberately NOT
+// keyed — resolveArea(lat,lng) is deterministic per rounded coord, so co-located
+// callers resolve the same label; an explicit ?label= only affects cosmetic
+// origin text and serving the first caller's label is acceptable staleness.
+function questCacheKey(lat, lng, size) {
+  return `${lat.toFixed(3)},${lng.toFixed(3)}|${normSize(size)}|${dayBucket()}`;
+}
+
+function questCacheGet(key) {
+  const hit = QUEST_CACHE.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.ts > QUEST_CACHE_TTL_MS) {
+    QUEST_CACHE.delete(key); // lazily drop stale entries
+    return null;
+  }
+  return hit.quest;
+}
+
+function questCacheSet(key, quest) {
+  // FIFO eviction: drop the oldest inserted entry once at capacity.
+  if (QUEST_CACHE.size >= QUEST_CACHE_MAX) {
+    QUEST_CACHE.delete(QUEST_CACHE.keys().next().value);
+  }
+  QUEST_CACHE.set(key, { quest, ts: Date.now() });
+}
+
 function send(res, status, body) {
   res.writeHead(status, {
     "Content-Type": "application/json",
@@ -166,6 +220,20 @@ const server = createServer(async (req, res) => {
     }
     try {
       console.log(`  → quest request for ${lat}, ${lng}`);
+      // Optional walk-scaled size: "quick" (default) | "explore". Unknown values
+      // are ignored downstream (buildQuest falls back to quick).
+      const size = url.searchParams.get("size") || undefined;
+
+      // Cache check FIRST — before resolveArea + buildQuest — so a hit skips all
+      // data/Claude calls. The body is returned byte-identical (we never tag it),
+      // which is what guarantees the "same coord twice → identical" behaviour.
+      const cacheKey = questCacheKey(lat, lng, size);
+      const cached = questCacheGet(cacheKey);
+      if (cached) {
+        console.log(`  ← (cache hit) ${cached.stops.length} stops: ${cached.theme}`);
+        return send(res, 200, cached);
+      }
+
       // Resolve to an Area: if the caller passed an explicit label, honour it;
       // otherwise reverse-geocode coords into a human neighbourhood/town name so
       // origin.label is a real place (never raw coordinates). resolveArea never
@@ -174,10 +242,11 @@ const server = createServer(async (req, res) => {
       const label = labelRaw && labelRaw.trim()
         ? labelRaw.trim()
         : (await resolveArea(lat, lng)).name;
-      // Optional walk-scaled size: "quick" (default) | "explore". Unknown values
-      // are ignored downstream (buildQuest falls back to quick).
-      const size = url.searchParams.get("size") || undefined;
       const quest = await buildQuest(lat, lng, label, { size });
+      // Store ONLY a successfully built quest. TOO_FEW (and any other build
+      // error) throws above and lands in catch → it never reaches here, so error
+      // responses are never cached.
+      questCacheSet(cacheKey, quest);
       console.log(`  ← ${quest.stops.length} stops: ${quest.theme} (area: ${label}, size: ${size || "quick"})`);
       return send(res, 200, quest);
     } catch (err) {
