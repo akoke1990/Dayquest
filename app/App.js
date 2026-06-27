@@ -782,6 +782,7 @@ export default function App() {
   const [setupResolving, setSetupResolving] = useState(false);
   const [setupError, setSetupError] = useState("");
   const [setupSize, setSetupSize] = useState("quick"); // "quick" | "explore"
+  const [travelMode, setTravelMode] = useState("walk"); // "walk" | "bike" — sent as mode= (bike = bigger loop, server-handled)
 
   // Pop the stop card in/out whenever a stop is selected/deselected.
   useEffect(() => {
@@ -1097,6 +1098,26 @@ export default function App() {
       const params = new URLSearchParams({ lat: String(latitude), lng: String(longitude) });
       if (opts.label) params.set("label", opts.label);
       if (opts.size && opts.size !== "quick") params.set("size", opts.size);
+      // Walk/Bike travel mode. Bike = a bigger loop; the server scales the
+      // distance — we just send the mode. Omitted for the default walk so the
+      // simple one-tap URL stays minimal.
+      if (opts.mode && opts.mode !== "walk") params.set("mode", opts.mode);
+
+      // No-repeat: exclude the places the user has already visited so each quest
+      // in an area stays fresh. Build a comma-separated list of placeKeys from the
+      // newest ~100 visited records (URLSearchParams URL-encodes the value). Built
+      // here so EVERY entry point (welcome fast-path, New Quest FAB, completion,
+      // setup) excludes visited. Best-effort: a read failure just sends no exclude.
+      try {
+        const visitedList = await readVisited(); // newest-first
+        const excludeKeys = visitedList
+          .slice(0, 100)
+          .map((v) => v.placeKey)
+          .filter(Boolean);
+        if (excludeKeys.length) params.set("exclude", excludeKeys.join(","));
+      } catch {
+        /* no exclude — quest still builds, just may repeat places */
+      }
 
       const res = await fetch(`${API_BASE}/quest?${params.toString()}`);
       const data = await res.json();
@@ -1107,6 +1128,26 @@ export default function App() {
       setScreen("ready");
       track("quest_started", { stops: data.stops?.length, size: opts.size || "quick", placed: hasPlace });
     } catch (e) {
+      // A failed start already wiped the in-memory progress at the top of this
+      // function, but `quest` still holds the PREVIOUS quest. Drop that stale
+      // quest so the error/welcome screen never offers it as a (progress-wiped)
+      // Resume — which, if tapped, would persist the empty progress over the good
+      // STORE_KEY blob and lose the real check-ins/photos. The disk blob is still
+      // intact, so re-read it into `saved`: any genuinely in-progress quest is then
+      // offered as Resume via the safe cold-start path (full progress restored).
+      setQuest(null);
+      try {
+        const raw = await AsyncStorage.getItem(STORE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          const q = parsed?.quest;
+          const prog = parsed?.progress || {};
+          const done = q ? q.stops.filter((s) => prog[s.order_index]?.photoUri).length : 0;
+          if (q && done < q.stops.length) setSaved(parsed);
+        }
+      } catch {
+        /* corrupt/missing — just no Resume offered */
+      }
       setError(`${e.message}\n\nIs the server running (npm run serve)?\nTrying: ${API_BASE}`);
       setScreen("error");
     }
@@ -1114,6 +1155,17 @@ export default function App() {
 
   // Restore an in-progress quest from disk (UX-SPEC §1.1 / §1.7).
   function resumeQuest() {
+    // LIVE branch (the lost-quest fix): when the quest is still in memory — the
+    // user merely backed out to welcome via a HUD sub-screen, nothing was reset —
+    // `saved` is null but `quest`/`progress`/routePathRef/startedAtRef/awardedRef
+    // are all still correct. Just return to the map; touch nothing else so they
+    // land exactly where they left off (stops, check-ins, photos, route, points).
+    if (quest && !saved) {
+      setScreen("ready");
+      return;
+    }
+    // COLD-START branch: nothing live in memory — rehydrate from the disk blob
+    // captured at launch (the existing path, unchanged below).
     if (!saved?.quest) return;
     setQuest(saved.quest);
     const restored = saved.progress || {};
@@ -1384,9 +1436,9 @@ export default function App() {
   function startSetupQuest() {
     if (!setupReady) return;
     if (setupMode === "place" && setupPlace) {
-      startQuest({ lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name, size: setupSize });
+      startQuest({ lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name, size: setupSize, mode: travelMode });
     } else {
-      startQuest({ size: setupSize });
+      startQuest({ size: setupSize, mode: travelMode });
     }
   }
 
@@ -1625,7 +1677,13 @@ export default function App() {
   }
 
   if (screen === "welcome" || screen === "error") {
-    const savedQuest = saved?.quest;
+    // Resume is offered for EITHER an in-progress quest still live in memory (the
+    // user backed out via a HUD sub-screen — `saved` is null but `quest` is intact)
+    // OR a cold-start quest rehydrated from disk at launch (`saved`). A quest still
+    // in memory that's already complete is excluded — there's nothing to resume.
+    const liveInProgress =
+      quest && quest.stops.some((s) => !progress[s.order_index]?.photoUri);
+    const savedQuest = liveInProgress ? quest : saved?.quest;
     return (
       <ScrollView style={styles.scroll} contentContainerStyle={styles.welcomeContent}>
         <StatusBar style="dark" />
@@ -1675,12 +1733,21 @@ export default function App() {
 
         {screen === "error" ? <Text style={styles.error}>{error}</Text> : null}
 
-        <TouchableOpacity style={styles.button} onPress={() => startQuest()}>
-          <Text style={styles.buttonText}>{screen === "error" ? "Try again" : "Start a Quest"}</Text>
-        </TouchableOpacity>
-        {/* The power option: choose where + how far before generating. */}
-        <Text style={styles.setupLink} onPress={openSetup}>
-          ⚙️ Set up a quest (place + size)
+        {/* FRONT DOOR: the prominent path is picking area + walk/bike + size in
+            Quest Setup (UX-SPEC core loop). On the error screen we keep the
+            primary as a direct "Try again" one-tap retry. */}
+        {screen === "error" ? (
+          <TouchableOpacity style={styles.button} onPress={() => startQuest()}>
+            <Text style={styles.buttonText}>Try again</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={styles.button} onPress={openSetup}>
+            <Text style={styles.buttonText}>Start a Quest</Text>
+          </TouchableOpacity>
+        )}
+        {/* Fast path retained: a one-tap quest at your current location. */}
+        <Text style={styles.setupLink} onPress={() => startQuest()}>
+          ⚡ Quick quest right here
         </Text>
         {/* Plain-language permission framing, shown before the OS dialog. */}
         <Text style={styles.permNote}>
@@ -2131,6 +2198,29 @@ export default function App() {
             {setupError ? <Text style={styles.setupErr}>{setupError}</Text> : null}
           </View>
         ) : null}
+
+        {/* HOW (travel mode) ---------------------------------------------- */}
+        <Text style={styles.setupSectionLabel}>How</Text>
+        <View style={styles.segmentRow}>
+          <TouchableOpacity
+            style={[styles.segment, travelMode === "walk" && styles.segmentActive]}
+            onPress={() => setTravelMode("walk")}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.segmentText, travelMode === "walk" && styles.segmentTextActive]}>
+              🚶 Walk
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.segment, travelMode === "bike" && styles.segmentActive]}
+            onPress={() => setTravelMode("bike")}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.segmentText, travelMode === "bike" && styles.segmentTextActive]}>
+              🚲 Bike
+            </Text>
+          </TouchableOpacity>
+        </View>
 
         {/* SIZE ----------------------------------------------------------- */}
         <Text style={styles.setupSectionLabel}>Size</Text>
