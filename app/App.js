@@ -584,7 +584,7 @@ function RouteTrace({ stops, routePath }) {
 // count-up to the points earned and a pop-in badge. Chosen over a confetti lib
 // to keep the only new dep at expo-haptics and avoid native surface risk —
 // per the spec's "when in doubt, hand-roll with Animated."
-const CONFETTI_COLORS = ["#b5562e", "#4a7c59", "#e0a449", "#d98452", "#6b8f71"];
+const CONFETTI_COLORS = ["#1F6FB2", "#3FAE4E", "#F5B400", "#3B82C4", "#7BD389"];
 const CONFETTI_N = 22;
 
 function Confetti({ width }) {
@@ -767,6 +767,7 @@ export default function App() {
   // reanimated, so it's rock-solid in Expo Go SDK 54.
   const cardAnim = useRef(new Animated.Value(0)).current; // stop pop-out card
   const recapAnim = useRef(new Animated.Value(0)).current; // completion overlay
+  const revealAnim = useRef(new Animated.Value(0)).current; // freshly-generated quest reveal card
   // Whether the completion overlay is currently presented. Auto-presented once
   // when the quest first completes (false→true transition), re-openable via the
   // floating Recap button, dismissable back to the clean map.
@@ -802,6 +803,20 @@ export default function App() {
       useNativeDriver: true,
     }).start();
   }, [recapOpen, recapAnim]);
+
+  // Animate the freshly-generated quest REVEAL card in. Reset to 0 on enter so
+  // re-entering the reveal screen (a new quest after the first) re-plays the
+  // game-y scale/flip/fade. Spring gives it the satisfying card "pop".
+  useEffect(() => {
+    if (screen !== "reveal") return;
+    revealAnim.setValue(0);
+    Animated.spring(revealAnim, {
+      toValue: 1,
+      friction: 7,
+      tension: 55,
+      useNativeDriver: true,
+    }).start();
+  }, [screen, revealAnim]);
 
   // Tapping a map dot or a list row selects a stop → its pop-out card.
   // Tapping a second dot while a card is open SWAPS the content (re-selection).
@@ -892,7 +907,11 @@ export default function App() {
     // routePath is a dep) would otherwise resurrect the just-deleted blob. The
     // final legitimate save still happens — this effect runs before the completion
     // effect flips the ref on the last-photo render (declaration order).
-    if (screen !== "ready" || !quest || completedFiredRef.current) return;
+    // Persist on "reveal" too: a freshly generated quest sitting on the reveal
+    // card is already durable, so killing the app there → relaunch offers Resume
+    // (→ map, skipping the reveal, which is correct: reveal is the entry moment,
+    // not a re-gate). Tapping "Begin" only flips the screen, never resets progress.
+    if ((screen !== "ready" && screen !== "reveal") || !quest || completedFiredRef.current) return;
     AsyncStorage.setItem(
       STORE_KEY,
       JSON.stringify({ quest, progress, startedAt: startedAtRef.current, routePath })
@@ -974,6 +993,9 @@ export default function App() {
           completed_at: new Date().toISOString(),
           theme: quest.theme,
           origin_label: quest.origin?.label || "",
+          // Travel mode for the gallery card (🚶/🚴). Stamped onto the quest at
+          // generation; defaults to walk for quests saved before this existed.
+          mode: quest.mode || "walk",
           stops: quest.stops.map((s) => ({
             name: s.place?.name || "",
             photoUri: progress[s.order_index]?.photoUri || null,
@@ -1123,9 +1145,16 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not build a quest here.");
 
-      setQuest(data);
+      // Stamp the chosen travel mode onto the quest object so it's available to
+      // the reveal card AND durable into the saved-history snapshot (the gallery
+      // card reads it back; `travelMode` state would have reset on a cold-start
+      // resume). Defaults to "walk" for the simple one-tap path.
+      setQuest({ ...data, mode: opts.mode || "walk" });
       setSaved(null);
-      setScreen("ready");
+      // Freshly generated quests open on the animated REVEAL card (the "<Area>
+      // Quest" collectible). Tapping it enters the map ("ready"). resumeQuest()
+      // goes straight to "ready", so resumed/in-progress quests never see this.
+      setScreen("reveal");
       track("quest_started", { stops: data.stops?.length, size: opts.size || "quick", placed: hasPlace });
     } catch (e) {
       // A failed start already wiped the in-memory progress at the top of this
@@ -1912,29 +1941,53 @@ export default function App() {
           ← Back
         </Text>
         <Text style={styles.theme}>My Quests</Text>
+        <Text style={styles.intro}>Your collection of completed quests. Tap a card to relive it.</Text>
         {history.length === 0 ? (
           <Text style={styles.intro}>
-            No quests yet. Finish one and it'll be saved here — with your photos.
+            No quests yet. Finish one and it'll be saved here — as a collectible card.
           </Text>
         ) : (
           history.map((rec) => {
+            // Hero photo = first stop that has one (the gallery card's banner).
             const thumb = rec.stops?.find((s) => s.photoUri)?.photoUri || null;
+            const stopNames = (rec.stops || [])
+              .map((s) => s.name)
+              .filter(Boolean);
+            const modeEmoji = rec.mode === "bike" ? "🚴" : "🚶";
             return (
               <TouchableOpacity
                 key={rec.id}
-                style={styles.histRow}
+                style={styles.questCard}
                 onPress={() => setHistoryRecord(rec)}
+                activeOpacity={0.88}
               >
+                {/* Hero banner: the user's photography, full-bleed across the top. */}
                 {thumb ? (
-                  <Image source={{ uri: thumb }} style={styles.histThumb} />
+                  <Image source={{ uri: thumb }} style={styles.questCardHero} resizeMode="cover" />
                 ) : (
-                  <View style={[styles.histThumb, styles.histThumbEmpty]} />
+                  <View style={[styles.questCardHero, styles.questCardHeroEmpty]}>
+                    <Text style={styles.questCardHeroMark}>✦</Text>
+                  </View>
                 )}
-                <View style={styles.histRowText}>
-                  <Text style={styles.histTheme} numberOfLines={2}>{rec.theme}</Text>
-                  <Text style={styles.histMeta}>
-                    {formatHistoryDate(rec.completed_at)} · {rec.points} pts
-                  </Text>
+                <View style={styles.questCardBody}>
+                  <Text style={styles.questCardTheme} numberOfLines={2}>{rec.theme}</Text>
+                  {rec.origin_label ? (
+                    <Text style={styles.questCardArea} numberOfLines={1}>📍 {rec.origin_label}</Text>
+                  ) : null}
+                  {/* Meta chips: date · mode · points. */}
+                  <View style={styles.questCardMetaRow}>
+                    <Text style={styles.questCardMeta}>{formatHistoryDate(rec.completed_at)}</Text>
+                    <Text style={styles.questCardDot}>·</Text>
+                    <Text style={styles.questCardMeta}>{modeEmoji}</Text>
+                    <Text style={styles.questCardDot}>·</Text>
+                    <Text style={styles.questCardPts}>{rec.points} pts</Text>
+                  </View>
+                  {/* The stops hit on this quest. */}
+                  {stopNames.length ? (
+                    <Text style={styles.questCardStops} numberOfLines={2}>
+                      {stopNames.join(" • ")}
+                    </Text>
+                  ) : null}
                 </View>
               </TouchableOpacity>
             );
@@ -2174,7 +2227,7 @@ export default function App() {
                 value={setupQuery}
                 onChangeText={(t) => { setSetupQuery(t); setSetupPlace(null); setSetupError(""); }}
                 placeholder="e.g. East Village, Stony Brook NY"
-                placeholderTextColor="#9aa0a6"
+                placeholderTextColor={MUTE}
                 autoCapitalize="words"
                 returnKeyType="search"
                 onSubmitEditing={resolveSetupPlace}
@@ -2264,6 +2317,75 @@ export default function App() {
         <StatusBar style="dark" />
         <QuestScanner />
       </>
+    );
+  }
+
+  // --- Quest REVEAL card ------------------------------------------------------
+  // The "<Area> Quest" collectible, shown the moment a freshly generated quest
+  // returns from the server. A game-y card that springs/flips/fades in (Animated
+  // only) showing the THEME, area, mode, stop count, and a prominent Begin CTA.
+  // Tapping Begin enters the existing map ("ready"); nothing is reset, so the
+  // live quest/progress flow downstream is byte-identical to before. Defends
+  // against a null quest (shouldn't happen — set before this screen) by falling
+  // back to welcome so we never crash dereferencing quest fields.
+  if (screen === "reveal") {
+    if (!quest) {
+      setScreen("welcome");
+      return null;
+    }
+    const modeEmoji = quest.mode === "bike" ? "🚴" : "🚶";
+    const modeLabel = quest.mode === "bike" ? "Bike" : "Walk";
+    const stopCount = quest.stops?.length || 0;
+    // Card transforms: a scale "pop" + a subtle Y-axis flip (perspective) + fade,
+    // all native-driver-friendly. The shimmer of arriving as a collectible.
+    const revealScale = revealAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] });
+    const revealFlip = revealAnim.interpolate({ inputRange: [0, 1], outputRange: ["18deg", "0deg"] });
+    const revealLift = revealAnim.interpolate({ inputRange: [0, 1], outputRange: [40, 0] });
+    return (
+      <View style={styles.revealScreen}>
+        <StatusBar style="light" />
+        <Animated.View
+          style={[
+            styles.revealCard,
+            {
+              opacity: revealAnim,
+              transform: [
+                { perspective: 800 },
+                { translateY: revealLift },
+                { scale: revealScale },
+                { rotateX: revealFlip },
+              ],
+            },
+          ]}
+        >
+          <Text style={styles.revealKicker}>NEW QUEST UNLOCKED</Text>
+          <Text style={styles.revealTheme}>{quest.theme}</Text>
+          {quest.origin?.label ? (
+            <Text style={styles.revealArea}>📍 {quest.origin.label}</Text>
+          ) : null}
+
+          <View style={styles.revealStatsRow}>
+            <View style={styles.revealStat}>
+              <Text style={styles.revealStatNum}>{modeEmoji}</Text>
+              <Text style={styles.revealStatLabel}>{modeLabel}</Text>
+            </View>
+            <View style={styles.revealStatDivider} />
+            <View style={styles.revealStat}>
+              <Text style={styles.revealStatNum}>{stopCount}</Text>
+              <Text style={styles.revealStatLabel}>{stopCount === 1 ? "stop" : "stops"}</Text>
+            </View>
+          </View>
+
+          <TouchableOpacity
+            style={styles.revealBeginBtn}
+            onPress={() => setScreen("ready")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.revealBeginText}>Begin</Text>
+          </TouchableOpacity>
+          <Text style={styles.revealHint}>Tap to start your adventure</Text>
+        </Animated.View>
+      </View>
     );
   }
 
@@ -2412,7 +2534,7 @@ export default function App() {
               <TextInput
                 style={styles.feedbackInput}
                 placeholder="Anything we should know? (optional)"
-                placeholderTextColor="#9a8e80"
+                placeholderTextColor={MUTE}
                 value={feedbackText}
                 onChangeText={setFeedbackText}
                 maxLength={500}
@@ -2470,7 +2592,7 @@ export default function App() {
         {routePath.length >= 2 ? (
           <Polyline
             coordinates={routePath.map((p) => ({ latitude: p.latitude, longitude: p.longitude }))}
-            strokeColor="rgba(74,124,89,0.7)"
+            strokeColor="rgba(63,174,78,0.75)"
             strokeWidth={7}
           />
         ) : null}
@@ -2613,10 +2735,29 @@ export default function App() {
   );
 }
 
-const CREAM = "#f4f1ea";
-const INK = "#2b2622";
-const ACCENT = "#b5562e";
-const GREEN = "#4a7c59";
+// --- Palette (Pokémon-GO style) ---------------------------------------------
+// One source of truth for the app chrome. Bright cool blue primary, vivid grass
+// green secondary, crisp white cards on a light cool background, bold dark text,
+// and a warm amber pop reserved for rewards / points / the active CTA.
+//
+// The four legacy names are kept (CREAM/INK/ACCENT/GREEN) and simply re-pointed
+// so every existing StyleSheet reference flips at once:
+//   CREAM  -> light cool background (was warm cream)
+//   INK    -> bold cool-dark text   (was warm near-black)
+//   ACCENT -> PoGo primary blue     (was terracotta)
+//   GREEN  -> vivid grass green      (was muted forest)
+const CREAM = "#EAF4FB"; // light cool background
+const CARD = "#FFFFFF"; // crisp white cards
+const INK = "#10243B"; // bold cool-dark text (deep navy)
+const ACCENT = "#1F6FB2"; // PoGo primary blue (deeper, for chrome/CTAs)
+const ACCENT_LIGHT = "#3B82C4"; // brighter sky-blue (lines, lighter chrome)
+const GREEN = "#3FAE4E"; // vivid grass green
+const AMBER = "#F5B400"; // warm reward / points / active-CTA pop
+const BORDER = "#CFE2F0"; // cool card border
+const TINT = "#DCECF8"; // selected-segment cool tint
+const SCRIM = "rgba(16,36,59,0.55)"; // navy scrim over the map for pop-out cards
+const NAVY = "#0C1B2C"; // dark recap-card background (cool, share artifact)
+const MUTE = "#7C92A6"; // muted placeholder / chevron text
 
 const styles = StyleSheet.create({
   center: { flex: 1, backgroundColor: CREAM, alignItems: "center", justifyContent: "center", padding: 28 },
@@ -2624,15 +2765,55 @@ const styles = StyleSheet.create({
   scrollContent: { padding: 20, paddingTop: 64 },
   welcomeContent: { padding: 24, paddingTop: 88, alignItems: "center" },
 
+  // --- Quest REVEAL card (freshly generated quest as a collectible) -----------
+  revealScreen: { flex: 1, backgroundColor: ACCENT, alignItems: "center", justifyContent: "center", padding: 26 },
+  revealCard: {
+    width: "100%",
+    maxWidth: 420,
+    backgroundColor: CARD,
+    borderRadius: 28,
+    paddingHorizontal: 26,
+    paddingTop: 30,
+    paddingBottom: 26,
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: AMBER,
+    shadowColor: "#000",
+    shadowOpacity: 0.35,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 18,
+  },
+  revealKicker: { fontSize: 13, fontWeight: "900", color: GREEN, letterSpacing: 2, textTransform: "uppercase" },
+  revealTheme: { fontSize: 28, fontWeight: "900", color: INK, letterSpacing: -0.6, textAlign: "center", marginTop: 12, lineHeight: 33 },
+  revealArea: { fontSize: 16, fontWeight: "800", color: ACCENT, marginTop: 10 },
+  revealStatsRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 22, marginBottom: 4 },
+  revealStat: { alignItems: "center", paddingHorizontal: 22 },
+  revealStatNum: { fontSize: 30, fontWeight: "900", color: INK },
+  revealStatLabel: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 2 },
+  revealStatDivider: { width: 1.5, height: 44, backgroundColor: BORDER },
+  revealBeginBtn: {
+    backgroundColor: AMBER,
+    borderRadius: 30,
+    paddingVertical: 16,
+    paddingHorizontal: 64,
+    marginTop: 26,
+    minHeight: 44,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  revealBeginText: { color: INK, fontSize: 20, fontWeight: "900", letterSpacing: 0.3 },
+  revealHint: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 12 },
+
   // Welcome teaser + resume
-  teaserCard: { backgroundColor: "#fff", borderRadius: 18, padding: 20, marginTop: 28, width: "100%", borderWidth: 1, borderColor: "#e6dfd2" },
+  teaserCard: { backgroundColor: "#fff", borderRadius: 18, padding: 20, marginTop: 28, width: "100%", borderWidth: 1, borderColor: BORDER },
   teaserKicker: { fontSize: 12, fontWeight: "800", color: ACCENT, letterSpacing: 1, textTransform: "uppercase" },
   teaserPlace: { fontSize: 22, fontWeight: "800", color: INK, marginTop: 6, letterSpacing: -0.3 },
   teaserFact: { fontSize: 15, color: INK, opacity: 0.82, marginTop: 8, lineHeight: 22 },
   teaserArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 10 },
   permNote: { fontSize: 12, color: INK, opacity: 0.55, textAlign: "center", marginTop: 14, lineHeight: 17 },
   // Lifetime score + weekly streak strip on Welcome
-  scoreRow: { flexDirection: "row", marginTop: 20, width: "100%", justifyContent: "space-around", backgroundColor: "#fff", borderRadius: 16, paddingVertical: 14, borderWidth: 1, borderColor: "#e6dfd2" },
+  scoreRow: { flexDirection: "row", marginTop: 20, width: "100%", justifyContent: "space-around", backgroundColor: "#fff", borderRadius: 16, paddingVertical: 14, borderWidth: 1, borderColor: BORDER },
   scoreStat: { alignItems: "center" },
   scoreNum: { fontSize: 22, fontWeight: "800", color: INK },
   scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
@@ -2642,20 +2823,20 @@ const styles = StyleSheet.create({
   navLink: { fontSize: 15, color: ACCENT, fontWeight: "800", textDecorationLine: "underline" },
 
   // Collections screen
-  collCard: { backgroundColor: "#fff", borderRadius: 16, marginTop: 14, borderWidth: 1, borderColor: "#e6dfd2", overflow: "hidden" },
+  collCard: { backgroundColor: "#fff", borderRadius: 16, marginTop: 14, borderWidth: 1, borderColor: BORDER, overflow: "hidden" },
   collHeader: { flexDirection: "row", alignItems: "center", padding: 16 },
   collArea: { fontSize: 17, fontWeight: "800", color: INK },
   collCount: { fontSize: 14, color: GREEN, fontWeight: "700", marginTop: 3 },
-  collPlace: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1, borderTopColor: "#f0ebe1" },
+  collPlace: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1, borderTopColor: BORDER },
   collThumb: { width: 40, height: 40, borderRadius: 8, marginRight: 12 },
   collThumbEmpty: { backgroundColor: CREAM, alignItems: "center", justifyContent: "center" },
   collThumbMark: { color: ACCENT, fontSize: 18, fontWeight: "800" },
   collPlaceName: { flex: 1, fontSize: 15, color: INK, fontWeight: "600" },
   // Chevron used by the Collections accordion header.
-  listChevron: { fontSize: 24, color: "#cbbfae", fontWeight: "700", marginLeft: 8 },
+  listChevron: { fontSize: 24, color: MUTE, fontWeight: "700", marginLeft: 8 },
 
   // Places Visited screen (individual check-ins, newest-first)
-  visitRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: "#e6dfd2" },
+  visitRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: BORDER },
   visitMeta: { flex: 1, marginLeft: 12 },
   visitName: { fontSize: 16, fontWeight: "800", color: INK },
   visitArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 2 },
@@ -2663,7 +2844,7 @@ const styles = StyleSheet.create({
 
   // Scorecard screen
   scoreSectionTitle: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 28 },
-  bestCard: { backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 14, borderWidth: 1, borderColor: "#e6dfd2" },
+  bestCard: { backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 14, borderWidth: 1, borderColor: BORDER },
   bestArea: { fontSize: 16, fontWeight: "800", color: INK },
   bestStatsRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 12 },
   bestStat: { alignItems: "center", flex: 1 },
@@ -2678,11 +2859,11 @@ const styles = StyleSheet.create({
   celebratePoints: { color: "#fff", fontSize: 38, fontWeight: "900", letterSpacing: -1, marginTop: 4 },
   celebrateChips: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 12 },
   celebrateChip: { color: GREEN, backgroundColor: "#fff", borderRadius: 12, paddingVertical: 5, paddingHorizontal: 11, fontSize: 13, fontWeight: "800", overflow: "hidden" },
-  celebrateBest: { color: "#ffe9a8", fontSize: 15, fontWeight: "800", marginTop: 12 },
+  celebrateBest: { color: "#FFE08A", fontSize: 15, fontWeight: "800", marginTop: 12 },
   discoverLine: { fontSize: 16, color: GREEN, fontWeight: "800", textAlign: "center", marginBottom: 14 },
 
   // Energetic check-in / found states
-  actionBtnGo: { backgroundColor: "#e0a449" },
+  actionBtnGo: { backgroundColor: AMBER },
   foundBanner: { backgroundColor: GREEN, borderRadius: 12, paddingVertical: 10, alignItems: "center", marginTop: 12 },
   foundBannerText: { color: "#fff", fontSize: 16, fontWeight: "800" },
 
@@ -2691,13 +2872,13 @@ const styles = StyleSheet.create({
   profileLinkDisabled: { fontSize: 13, color: INK, opacity: 0.4, marginTop: 16 },
 
   // Profile screen
-  profileCard: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 16, borderWidth: 1, borderColor: "#e6dfd2" },
+  profileCard: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 16, borderWidth: 1, borderColor: BORDER },
   profileAvatar: { width: 56, height: 56, borderRadius: 28, marginRight: 14 },
   profileAvatarEmpty: { backgroundColor: ACCENT, alignItems: "center", justifyContent: "center" },
   profileAvatarInitial: { color: "#fff", fontSize: 24, fontWeight: "800" },
   profileName: { fontSize: 18, fontWeight: "800", color: INK },
   profileEmail: { fontSize: 14, color: INK, opacity: 0.6, marginTop: 2 },
-  oauthBtn: { backgroundColor: "#fff", borderRadius: 12, paddingVertical: 15, alignItems: "center", marginTop: 14, borderWidth: 1, borderColor: "#d8cfc0" },
+  oauthBtn: { backgroundColor: "#fff", borderRadius: 12, paddingVertical: 15, alignItems: "center", marginTop: 14, borderWidth: 1, borderColor: BORDER },
   oauthBtnText: { color: INK, fontSize: 16, fontWeight: "700" },
   oauthBtnApple: { backgroundColor: "#000", borderColor: "#000" },
   oauthBtnTextApple: { color: "#fff" },
@@ -2708,12 +2889,38 @@ const styles = StyleSheet.create({
 
   // My Quests history screen
   backLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginBottom: 10 },
-  histRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: "#e6dfd2" },
+  histRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: BORDER },
   histThumb: { width: 56, height: 56, borderRadius: 10, marginRight: 14 },
-  histThumbEmpty: { backgroundColor: "#e6dfd2" },
+  histThumbEmpty: { backgroundColor: BORDER },
   histRowText: { flex: 1 },
   histTheme: { fontSize: 16, fontWeight: "800", color: INK },
   histMeta: { fontSize: 13, color: INK, opacity: 0.6, marginTop: 4 },
+
+  // My Quests as a CARD GALLERY (each completed quest = a collectible card).
+  questCard: {
+    backgroundColor: CARD,
+    borderRadius: 18,
+    marginTop: 16,
+    borderWidth: 1,
+    borderColor: BORDER,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 3,
+  },
+  questCardHero: { width: "100%", height: 150, backgroundColor: TINT },
+  questCardHeroEmpty: { alignItems: "center", justifyContent: "center" },
+  questCardHeroMark: { fontSize: 34, color: ACCENT_LIGHT, fontWeight: "800" },
+  questCardBody: { padding: 16 },
+  questCardTheme: { fontSize: 18, fontWeight: "900", color: INK, letterSpacing: -0.3, lineHeight: 23 },
+  questCardArea: { fontSize: 14, fontWeight: "800", color: ACCENT, marginTop: 6 },
+  questCardMetaRow: { flexDirection: "row", alignItems: "center", marginTop: 8, flexWrap: "wrap" },
+  questCardMeta: { fontSize: 13, color: INK, opacity: 0.6, fontWeight: "600" },
+  questCardDot: { fontSize: 13, color: INK, opacity: 0.4, marginHorizontal: 6 },
+  questCardPts: { fontSize: 13, color: GREEN, fontWeight: "800" },
+  questCardStops: { fontSize: 13, color: INK, opacity: 0.7, marginTop: 8, lineHeight: 19 },
 
   resumeBox: { backgroundColor: "#fff", borderRadius: 18, padding: 18, marginTop: 24, width: "100%", borderWidth: 1, borderColor: GREEN, alignItems: "center" },
   resumeLabel: { fontSize: 13, fontWeight: "700", color: GREEN },
@@ -2726,7 +2933,7 @@ const styles = StyleSheet.create({
   feedbackThumbs: { flexDirection: "row", marginTop: 10, marginBottom: 4 },
   thumb: { fontSize: 30, marginRight: 18, opacity: 0.4 },
   thumbActive: { opacity: 1 },
-  feedbackInput: { borderWidth: 1, borderColor: "#e6dfd2", borderRadius: 10, padding: 12, fontSize: 15, color: INK, marginTop: 10, backgroundColor: CREAM },
+  feedbackInput: { borderWidth: 1, borderColor: BORDER, borderRadius: 10, padding: 12, fontSize: 15, color: INK, marginTop: 10, backgroundColor: CREAM },
   feedbackThanks: { fontSize: 15, color: GREEN, fontWeight: "700" },
 
   // Per-stop flag
@@ -2756,20 +2963,20 @@ const styles = StyleSheet.create({
   setupIntro: { fontSize: 15, color: INK, opacity: 0.7, marginTop: 6, lineHeight: 21 },
   setupSectionLabel: { fontSize: 13, fontWeight: "800", color: INK, opacity: 0.6, letterSpacing: 1, textTransform: "uppercase", marginTop: 26, marginBottom: 10 },
   segmentRow: { flexDirection: "row", gap: 10 },
-  segment: { flex: 1, paddingVertical: 14, borderRadius: 14, borderWidth: 1.5, borderColor: "#e0d8c9", backgroundColor: "#fff", alignItems: "center" },
-  segmentActive: { borderColor: ACCENT, backgroundColor: "#fbeee6" },
+  segment: { flex: 1, paddingVertical: 14, borderRadius: 14, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff", alignItems: "center" },
+  segmentActive: { borderColor: ACCENT, backgroundColor: TINT },
   segmentText: { fontSize: 15, fontWeight: "700", color: INK, opacity: 0.7 },
   segmentTextActive: { color: ACCENT, opacity: 1 },
   placeBlock: { marginTop: 14 },
   placeInputRow: { flexDirection: "row", gap: 10, alignItems: "center" },
-  placeInput: { flex: 1, backgroundColor: "#fff", borderWidth: 1.5, borderColor: "#e0d8c9", borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: INK },
+  placeInput: { flex: 1, backgroundColor: "#fff", borderWidth: 1.5, borderColor: BORDER, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: INK },
   placeFindBtn: { backgroundColor: ACCENT, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12, minWidth: 64, alignItems: "center", justifyContent: "center" },
   placeFindText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   placeResolved: { fontSize: 15, color: GREEN, fontWeight: "700", marginTop: 12 },
   setupErr: { fontSize: 14, color: ACCENT, marginTop: 12, lineHeight: 20 },
   sizeRow: { flexDirection: "row", gap: 12 },
-  sizeCard: { flex: 1, padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: "#e0d8c9", backgroundColor: "#fff" },
-  sizeCardActive: { borderColor: ACCENT, backgroundColor: "#fbeee6" },
+  sizeCard: { flex: 1, padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff" },
+  sizeCardActive: { borderColor: ACCENT, backgroundColor: TINT },
   sizeName: { fontSize: 17, fontWeight: "800", color: INK },
   sizeDetail: { fontSize: 13, color: INK, opacity: 0.65, marginTop: 4 },
   theme: { fontSize: 30, fontWeight: "800", color: INK, letterSpacing: -0.5 },
@@ -2785,7 +2992,7 @@ const styles = StyleSheet.create({
   questBox: { backgroundColor: CREAM, borderRadius: 12, padding: 12, marginTop: 12 },
   questText: { fontSize: 15, color: INK, fontWeight: "600" },
   actionBtn: { backgroundColor: ACCENT, borderRadius: 12, paddingVertical: 13, alignItems: "center", marginTop: 12 },
-  actionBtnDisabled: { backgroundColor: "#cbb8a8" },
+  actionBtnDisabled: { backgroundColor: "#A9C3D6" },
   actionText: { color: "#fff", fontSize: 15, fontWeight: "700" },
   override: { fontSize: 13, color: ACCENT, textAlign: "center", marginTop: 10, textDecorationLine: "underline" },
   photo: { width: "100%", height: 180, borderRadius: 12, marginTop: 12 },
@@ -2811,7 +3018,7 @@ const styles = StyleSheet.create({
   },
   pinDone: { backgroundColor: GREEN },
   pinSelected: {
-    backgroundColor: "#e0a449", // brighter gold for the active stop
+    backgroundColor: AMBER, // brighter gold for the active stop
     borderColor: "#fff",
     borderWidth: 3,
     shadowOpacity: 0.4,
@@ -2831,7 +3038,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
     paddingHorizontal: 16,
     borderWidth: 1,
-    borderColor: "#e6dfd2",
+    borderColor: BORDER,
     shadowColor: "#000",
     shadowOpacity: 0.16,
     shadowRadius: 8,
@@ -2858,10 +3065,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 3 },
     elevation: 6,
   },
-  railBtnAbandon: { backgroundColor: "rgba(255,238,232,0.97)" },
+  railBtnAbandon: { backgroundColor: "rgba(255,235,235,0.97)" },
   railIcon: { fontSize: 20 },
   railLabel: { fontSize: 9, fontWeight: "800", color: INK, marginTop: 1, letterSpacing: 0.2 },
-  railLabelAbandon: { fontSize: 9, fontWeight: "800", color: ACCENT, marginTop: 1 },
+  railLabelAbandon: { fontSize: 9, fontWeight: "800", color: "#D2483B", marginTop: 1 },
 
   // Top-center progress chip.
   hudProgress: { position: "absolute", top: 60, left: 0, right: 0, alignItems: "center" },
@@ -2889,7 +3096,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: "#e0a449",
+    backgroundColor: AMBER,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 3,
@@ -2928,7 +3135,7 @@ const styles = StyleSheet.create({
   primaryFabText: { color: "#fff", fontSize: 13, fontWeight: "900", letterSpacing: 0.2 },
 
   // --- Pop-out stop card -------------------------------------------------------
-  cardScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(43,38,34,0.45)" },
+  cardScrim: { ...StyleSheet.absoluteFillObject, backgroundColor: SCRIM },
   cardCenter: { flex: 1, alignItems: "center", justifyContent: "center", padding: 18 },
   popCard: {
     width: "100%",
@@ -2959,7 +3166,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#e6dfd2",
+    borderColor: BORDER,
   },
   cardCloseText: { fontSize: 16, fontWeight: "800", color: INK },
   // flexShrink (NOT flex:1) so the ScrollView shrinks to the card's maxHeight-only
@@ -2980,13 +3187,13 @@ const styles = StyleSheet.create({
   recapCard: {
     width: "100%",
     aspectRatio: 9 / 16,
-    backgroundColor: INK,
+    backgroundColor: NAVY,
     borderRadius: 20,
     overflow: "hidden",
   },
   recapHeroWrap: { flex: 3, justifyContent: "flex-end" },
   recapHero: { ...StyleSheet.absoluteFillObject, width: "100%", height: "100%" },
-  recapHeroFallback: { backgroundColor: "#3a342e" },
+  recapHeroFallback: { backgroundColor: NAVY },
   recapCaptionWrap: {
     paddingHorizontal: 18,
     paddingTop: 40,
@@ -2997,13 +3204,13 @@ const styles = StyleSheet.create({
   recapCaption: { color: "#fff", fontSize: 19, fontWeight: "700", lineHeight: 25 },
   recapPanel: { flex: 2, padding: 18, justifyContent: "space-between" },
   recapTheme: { color: "#fff", fontSize: 20, fontWeight: "800", letterSpacing: -0.3 },
-  recapPlace: { color: ACCENT, fontSize: 14, fontWeight: "700", marginTop: 3 },
+  recapPlace: { color: AMBER, fontSize: 14, fontWeight: "700", marginTop: 3 },
   recapProofRow: { flexDirection: "row", alignItems: "center", marginVertical: 12 },
   recapFilmstrip: { flex: 1, flexDirection: "row", marginLeft: 14, flexWrap: "wrap" },
   recapFilm: { width: 52, height: 52, borderRadius: 8, marginRight: 6, marginBottom: 6 },
   recapFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   recapStat: { color: "#fff", opacity: 0.7, fontSize: 13, fontWeight: "600" },
-  recapMark: { fontSize: 15, fontWeight: "800", color: ACCENT, letterSpacing: 1 },
+  recapMark: { fontSize: 15, fontWeight: "800", color: AMBER, letterSpacing: 1 },
 
   // Route trace (View-based, capture-safe)
   trace: {
@@ -3017,7 +3224,7 @@ const styles = StyleSheet.create({
   traceLeg: {
     position: "absolute",
     height: 2,
-    backgroundColor: ACCENT,
+    backgroundColor: ACCENT_LIGHT,
     transformOrigin: "left center",
   },
   // Walked-path leg: thicker + green to match the live map breadcrumb.
@@ -3037,13 +3244,13 @@ const styles = StyleSheet.create({
     borderColor: "#fff",
   },
   traceStartDot: { backgroundColor: GREEN },
-  traceFinishDot: { backgroundColor: "#e0a449" },
+  traceFinishDot: { backgroundColor: AMBER },
   traceDot: {
     position: "absolute",
     width: 18,
     height: 18,
     borderRadius: 9,
-    backgroundColor: ACCENT,
+    backgroundColor: ACCENT_LIGHT,
     borderWidth: 1.5,
     borderColor: "#fff",
     alignItems: "center",

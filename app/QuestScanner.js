@@ -7,11 +7,12 @@
 import { useEffect, useRef, useState } from "react";
 import { Animated, Easing, StyleSheet, Text, View } from "react-native";
 
-// Warm palette, matched to App.js (CREAM / INK / ACCENT / GREEN).
-const CREAM = "#f4f1ea";
-const INK = "#2b2622";
-const ACCENT = "#b5562e";
-const GREEN = "#4a7c59";
+// Pokémon-GO palette, matched to App.js (CREAM / INK / ACCENT / GREEN). The
+// palette constants are module-local in App.js, so we mirror the values here.
+const CREAM = "#EAF4FB"; // light cool background
+const INK = "#10243B"; // bold cool-dark text (deep navy)
+const ACCENT = "#1F6FB2"; // PoGo primary blue
+const GREEN = "#3FAE4E"; // vivid grass green
 
 const STATUS_LINES = [
   "Scanning your neighborhood…",
@@ -110,7 +111,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     borderWidth: 2,
     borderColor: ACCENT,
-    backgroundColor: "rgba(181,86,46,0.06)",
+    backgroundColor: "rgba(31,111,178,0.08)",
   },
   dot: {
     width: 64,
