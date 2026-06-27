@@ -49,6 +49,7 @@ import {
 import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import Constants from "expo-constants";
 import mapStyle from "./mapStyle";
+import QuestScanner from "./QuestScanner";
 
 // True only when running inside Expo Go. In a real build `appOwnership` is
 // null/undefined, so this is false and Google + the custom style activate.
@@ -78,9 +79,18 @@ const BESTS_KEY = "dayquest.bests.v1";
 // launch so we never re-prompt someone who already chose anonymous-first.
 const GUEST_KEY = "dayquest.guest.v1";
 
+// Persistent log of every individual place the user has CHECKED INTO (across all
+// quests, even partial ones). De-duped by placeKey. Newest-first array of
+// { placeKey, name, area, photoUri, visited_at }.
+const VISITED_KEY = "dayquest.visited.v1";
+
 // Light scoring knobs (no levels grind, no leaderboards — UX is "a little win").
-const POINTS_PER_QUEST = 100;
-const POINTS_PER_PHOTO = 25;
+// The CORE earning event is now the CHECK-IN: every stop you reach banks points
+// immediately. Completion adds a bonus on top. Photo is folded into the check-in
+// (no separate photo award) so we never double-count a stop.
+const POINTS_PER_CHECKIN = 25; // banked the instant a stop is checked in (once per stop per quest)
+const POINTS_PER_QUEST = 100; // completion bonus, on top of the per-check-in points
+const POINTS_PER_PHOTO = 25; // retained for back-compat reading of old saved recaps; not awarded live
 
 // Persistent home for quest photos copied out of the ImagePicker cache.
 const PHOTO_DIR = "dayquest-photos";
@@ -229,6 +239,70 @@ async function recordScore(pointsEarned) {
   };
   await AsyncStorage.setItem(SCORE_KEY, JSON.stringify(next)).catch(() => {});
   return next;
+}
+
+// Bank points for a single CHECK-IN. Deliberately lighter than recordScore: it
+// only bumps the lifetime `total` and persists — it does NOT touch
+// quests_completed or the weekly streak (those are completion-only semantics).
+// Returns the new score so the caller can render the running total immediately.
+async function addCheckinPoints(points) {
+  const prev = await readScore();
+  const next = { ...prev, total: prev.total + points };
+  await AsyncStorage.setItem(SCORE_KEY, JSON.stringify(next)).catch(() => {});
+  return next;
+}
+
+// --- Visited places log (every check-in, across all quests) ------------------
+// Read the visited-places log (newest-first), tolerating missing/corrupt.
+async function readVisited() {
+  try {
+    const raw = await AsyncStorage.getItem(VISITED_KEY);
+    if (raw) {
+      const list = JSON.parse(raw);
+      if (Array.isArray(list)) return list;
+    }
+  } catch {
+    /* corrupt — treat as empty */
+  }
+  return [];
+}
+
+// Append (or refresh) one visited place. De-duped by placeKey GLOBALLY across all
+// quests: visiting the same place twice keeps the FIRST visit (and its existing
+// photo) rather than duplicating — we only fill in a missing photo/area. Newest
+// entries are prepended so the list reads newest-first. Persists immediately.
+async function appendVisited({ placeKey: key, name, area, photoUri, visited_at }) {
+  if (!key) return await readVisited();
+  const list = await readVisited();
+  const existing = list.find((v) => v.placeKey === key);
+  if (existing) {
+    // Already logged — keep the original visited_at, just backfill missing bits.
+    if (!existing.photoUri && photoUri) existing.photoUri = photoUri;
+    if (!existing.area && area) existing.area = area;
+  } else {
+    list.unshift({
+      placeKey: key,
+      name: name || "Unknown spot",
+      area: area || "Your Area",
+      photoUri: photoUri || null,
+      visited_at: visited_at || new Date().toISOString(),
+    });
+  }
+  await AsyncStorage.setItem(VISITED_KEY, JSON.stringify(list)).catch(() => {});
+  return list;
+}
+
+// Attach a photo to an already-logged visited place (when the user snaps one
+// after checking in). No-op if the place isn't logged yet. Persists immediately.
+async function setVisitedPhoto(key, photoUri) {
+  if (!key || !photoUri) return await readVisited();
+  const list = await readVisited();
+  const existing = list.find((v) => v.placeKey === key);
+  if (existing && !existing.photoUri) {
+    existing.photoUri = photoUri;
+    await AsyncStorage.setItem(VISITED_KEY, JSON.stringify(list)).catch(() => {});
+  }
+  return list;
 }
 
 // Read the saved quest history (newest-first list), tolerating missing/corrupt.
@@ -668,9 +742,14 @@ export default function App() {
   const completedFiredRef = useRef(false); // guard so quest_completed fires once
   const startedAtRef = useRef(null); // epoch ms when the active quest went live (for completion time)
   const celebratedRef = useRef(false); // guard so confetti + success haptic play once per quest
+  // Synchronous double-award guard: order indices already awarded check-in points
+  // THIS quest. Wins the sub-frame race two near-simultaneous taps (button +
+  // override) could slip past the render-closure `progress` check. Reset per quest.
+  const awardedRef = useRef(new Set());
 
   // --- Collections + scorecard (single-player game layer) ----------------------
   const [collections, setCollections] = useState({}); // { [area]: { discovered: {...} } }
+  const [visited, setVisited] = useState([]); // every checked-in place, newest-first
   const [bests, setBests] = useState({}); // { [area]: { best_points, fastest_time_s, quests } }
   const [expandedArea, setExpandedArea] = useState(null); // which Area's place list is open in Collections
   // Per-completion celebration facts, surfaced in the recap.
@@ -749,8 +828,9 @@ export default function App() {
       getInstallId();
       // Load lifetime score so Welcome can show the running total + streak.
       readScore().then(setScore).catch(() => {});
-      // Load the single-player game-layer state (collections + bests).
+      // Load the single-player game-layer state (collections + visited + bests).
       readCollections().then(setCollections).catch(() => {});
+      readVisited().then(setVisited).catch(() => {});
       readBests().then(setBests).catch(() => {});
       try {
         const raw = await AsyncStorage.getItem(STORE_KEY);
@@ -863,8 +943,13 @@ export default function App() {
       // visible "you did it" moment) — not here — so it never double-buzzes.
 
       // --- Light scoring + history (all ON-DEVICE, no login/server) --------
-      const photoCount = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
-      const earned = POINTS_PER_QUEST + photoCount * POINTS_PER_PHOTO;
+      // The per-stop check-in points were ALREADY banked into the lifetime total
+      // live (see checkIn). To avoid double-counting, completion only banks the
+      // +100 completion BONUS. The recap badge still SHOWS the full quest value
+      // (check-ins + bonus) so the celebration reflects everything earned.
+      const checkinCount = quest.stops.filter((s) => progress[s.order_index]?.checkedIn).length;
+      const bonusToBank = POINTS_PER_QUEST; // the not-yet-awarded portion
+      const earned = checkinCount * POINTS_PER_CHECKIN + POINTS_PER_QUEST; // display total
       setPointsEarned(earned);
 
       // Completion time: elapsed since the quest went live. null if we never
@@ -905,8 +990,10 @@ export default function App() {
         const list = await appendHistory(record);
         setHistory(list);
 
-        // Roll the lifetime total, count, and weekly streak.
-        const next = await recordScore(earned);
+        // Roll the lifetime total, count, and weekly streak. Only the BONUS is
+        // added to the total here — the per-check-in points are already banked
+        // (avoids double-counting). quests_completed + streak still advance.
+        const next = await recordScore(bonusToBank);
         setScore(next);
         // Local data only — but fire an analytics ping that points were earned.
         track("points_earned", { points: earned, total: next.total, streak_weeks: next.streak_weeks });
@@ -968,6 +1055,7 @@ export default function App() {
     setScreen("loading");
     setError("");
     setProgress({});
+    awardedRef.current = new Set(); // fresh quest — no stops awarded yet
     setCoords(null);
     routePathRef.current = [];
     setRoutePath([]);
@@ -1028,7 +1116,13 @@ export default function App() {
   function resumeQuest() {
     if (!saved?.quest) return;
     setQuest(saved.quest);
-    setProgress(saved.progress || {});
+    const restored = saved.progress || {};
+    setProgress(restored);
+    // Pre-seed the award guard with stops already checked in last session, so a
+    // resumed quest can't re-award points for a stop that already banked them.
+    awardedRef.current = new Set(
+      Object.keys(restored).filter((k) => restored[k]?.checkedIn).map((k) => Number(k))
+    );
     setCoords(null);
     // Restore the walked-so-far path so the watcher keeps appending to it
     // instead of starting a fresh trail (UX-SPEC §1: survives pause/resume).
@@ -1067,6 +1161,7 @@ export default function App() {
     setSaved(null);
     setQuest(null);
     setProgress({});
+    awardedRef.current = new Set();
     setScreen("welcome");
   }
 
@@ -1099,10 +1194,62 @@ export default function App() {
     setFeedbackSent(true);
   }
 
-  function checkIn(orderIndex) {
+  // The single chokepoint for BOTH the in-range GPS button and the "I'm here"
+  // manual override. Checking in is now the CORE earning event: it banks points
+  // immediately, logs the place to the persistent Visited history, and persists
+  // synchronously — all guarded so re-checking-in the same stop never
+  // double-awards (once per stop per quest).
+  async function checkIn(orderIndex) {
+    // Idempotency guard: points + visited record happen exactly once per stop
+    // per quest. The render-closure check covers the normal (re-rendered) case;
+    // the synchronous ref wins the sub-frame race two simultaneous taps (the GO
+    // button + the "I'm here" override coexist) could otherwise slip past, since
+    // we yield at the first await before any re-render.
+    if (progress[orderIndex]?.checkedIn || awardedRef.current.has(orderIndex)) return;
+    awardedRef.current.add(orderIndex);
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
-    setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true } }));
+
+    const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
+    const area = quest?.origin?.label || "Your Area";
+    const key = placeKey(stop?.place);
+
+    // Compute the next progress explicitly so we can persist it synchronously
+    // below (don't rely on the debounced persist effect — the task wants the
+    // award durable the instant it happens, closing any kill-between window).
+    const next = { ...progress, [orderIndex]: { ...progress[orderIndex], checkedIn: true } };
+    setProgress(next);
+
+    // Persist the active-quest blob right now with the freshest route path, so a
+    // crash immediately after the award can't lose the checked-in flag.
+    AsyncStorage.setItem(
+      STORE_KEY,
+      JSON.stringify({ quest, progress: next, startedAt: startedAtRef.current, routePath: routePathRef.current })
+    ).catch(() => {});
+
     track("stop_checked_in", { order_index: orderIndex });
+
+    // Bank the per-check-in points (lifetime total only — not quests_completed
+    // or streak). Then push the fresh total to the cloud profile if signed in.
+    const score2 = await addCheckinPoints(POINTS_PER_CHECKIN);
+    setScore(score2);
+    track("checkin_points_earned", { points: POINTS_PER_CHECKIN, total: score2.total });
+    if (userRef.current) {
+      pushScore(userRef.current, score2)
+        .then(() => loadProfile(userRef.current.id))
+        .then((p) => p && setProfile(p))
+        .catch(() => {});
+    }
+
+    // Log the place to the persistent Visited history (de-duped by placeKey).
+    const list = await appendVisited({
+      placeKey: key,
+      name: stop?.place?.name || "",
+      area,
+      photoUri: progress[orderIndex]?.photoUri || null,
+      visited_at: new Date().toISOString(),
+    });
+    setVisited(list);
   }
 
   async function takePhoto(orderIndex) {
@@ -1130,6 +1277,11 @@ export default function App() {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium).catch(() => {});
       setProgress((p) => ({ ...p, [orderIndex]: { ...p[orderIndex], checkedIn: true, photoUri: uri } }));
       track("stop_photo", { order_index: orderIndex });
+      // Attach the photo to this place's Visited record (no points awarded here —
+      // points were banked at check-in; photo is purely the visual claim/thumbnail).
+      const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
+      const key = placeKey(stop?.place);
+      if (key) setVisitedPhoto(key, uri).then(setVisited).catch(() => {});
     }
   }
 
@@ -1149,6 +1301,15 @@ export default function App() {
     setExpandedArea(null);
     setScreen("collections");
     track("collections_opened", { areas: Object.keys(c).length });
+  }
+
+  // Open the "Places Visited" history (every checked-in place, newest-first),
+  // reading fresh from disk so it always reflects the latest check-ins.
+  async function openVisited() {
+    const list = await readVisited();
+    setVisited(list);
+    setScreen("visited");
+    track("visited_opened", { count: list.length });
   }
 
   // Open the Scorecard view (lifetime score + per-Area bests), fresh from disk.
@@ -1535,6 +1696,9 @@ export default function App() {
             🏅 Scorecard
           </Text>
         </View>
+        <Text style={styles.historyLink} onPress={openVisited}>
+          📍 Places Visited
+        </Text>
         <Text style={styles.historyLink} onPress={openHistory}>
           📜 My Quests
         </Text>
@@ -1708,6 +1872,47 @@ export default function App() {
               </TouchableOpacity>
             );
           })
+        )}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  if (screen === "visited") {
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Places Visited</Text>
+        <Text style={styles.intro}>Every spot you've checked into, newest first.</Text>
+        {visited.length === 0 ? (
+          <Text style={styles.intro}>
+            No places yet. Check in at a stop on a quest and it shows up here — even if
+            you don't finish the whole quest.
+          </Text>
+        ) : (
+          visited.map((v) => (
+            <View key={v.placeKey} style={styles.visitRow}>
+              {v.photoUri ? (
+                <Image source={{ uri: v.photoUri }} style={styles.collThumb} />
+              ) : (
+                <View style={[styles.collThumb, styles.collThumbEmpty]}>
+                  <Text style={styles.collThumbMark}>📍</Text>
+                </View>
+              )}
+              <View style={styles.visitMeta}>
+                <Text style={styles.visitName} numberOfLines={2}>
+                  {v.name || "Unknown spot"}
+                </Text>
+                <Text style={styles.visitArea} numberOfLines={1}>
+                  {v.area || "Your Area"}
+                </Text>
+                <Text style={styles.visitDate}>{formatHistoryDate(v.visited_at)}</Text>
+              </View>
+            </View>
+          ))
         )}
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -1965,11 +2170,10 @@ export default function App() {
 
   if (screen === "loading") {
     return (
-      <View style={styles.center}>
+      <>
         <StatusBar style="dark" />
-        <ActivityIndicator size="large" color={ACCENT} />
-        <Text style={styles.tagline}>Building your quest…</Text>
-      </View>
+        <QuestScanner />
+      </>
     );
   }
 
@@ -2359,6 +2563,13 @@ const styles = StyleSheet.create({
   collPlaceName: { flex: 1, fontSize: 15, color: INK, fontWeight: "600" },
   // Chevron used by the Collections accordion header.
   listChevron: { fontSize: 24, color: "#cbbfae", fontWeight: "700", marginLeft: 8 },
+
+  // Places Visited screen (individual check-ins, newest-first)
+  visitRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: "#e6dfd2" },
+  visitMeta: { flex: 1, marginLeft: 12 },
+  visitName: { fontSize: 16, fontWeight: "800", color: INK },
+  visitArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 2 },
+  visitDate: { fontSize: 12, color: INK, opacity: 0.55, marginTop: 3 },
 
   // Scorecard screen
   scoreSectionTitle: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 28 },
