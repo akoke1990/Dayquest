@@ -21,6 +21,12 @@
           "photosPermission": "DayQuest accesses your photos so you can pick an image for a stop."
         }
       ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "DayQuest uses your camera so you can catch the collectible waiting at each place you discover."
+        }
+      ],
       "expo-web-browser",
       "expo-apple-authentication"
     ],

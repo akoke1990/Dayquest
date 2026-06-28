@@ -55,6 +55,7 @@ import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from "react-native
 import Constants from "expo-constants";
 import mapStyle from "./mapStyle";
 import QuestScanner from "./QuestScanner";
+import CameraCatch from "./CameraCatch";
 
 // True only when running inside Expo Go. In a real build `appOwnership` is
 // null/undefined, so this is false and Google + the custom style activate.
@@ -865,6 +866,11 @@ export default function App() {
   // hunt to the next not-found target. Gates the completion auto-present so the
   // final reveal isn't covered.
   const [findReveal, setFindReveal] = useState(null);
+  // True while the camera-catch overlay is presented (the COLLECT step of a
+  // find). Reachable ONLY from inside the find reveal (findReveal != null), so
+  // the catch is structurally geo-gated to the solved place — it can't be opened
+  // from anywhere else. Reset in nextClue() when the find completes.
+  const [catching, setCatching] = useState(false);
   const [hintShown, setHintShown] = useState(false); // current target's hint revealed
   const [escapeArmed, setEscapeArmed] = useState(false); // the "reveal anyway" fallback shown after a while
   // Warmer/colder: last proximity band we buzzed for (so haptics fire on band
@@ -873,6 +879,10 @@ export default function App() {
   // Find guard: order indices whose find has already been triggered this quest,
   // so GPS jitter around the find radius can't re-fire the reveal. Reset per quest.
   const foundFiredRef = useRef(new Set());
+  // Re-entry guard for completeCatch (the catch→advance handler). Prevents a
+  // sprite-tap + skip-tap from double-firing the collect-fly/advance. Reset per
+  // find in nextClue().
+  const completingRef = useRef(false);
   // Snapshot of the Area's ALREADY-discovered placeKeys taken when a quest is
   // generated, BEFORE any find collects into the set. The completion "+N new
   // spots" delta diffs against this — because collectItem() now writes each find
@@ -1635,23 +1645,65 @@ export default function App() {
     setEscapeArmed(false);
     setFindReveal(orderIndex); // show the reveal overlay for this target
     track("stop_revealed", { order_index: orderIndex, via: viaEscape ? "escape" : "found" });
-    // Bank points + visited + collect the item (idempotent chokepoint).
+    // Bank points + visited + collect the item (idempotent chokepoint). NOTE:
+    // collection is durable HERE, at find — so every catch path (catch, skip,
+    // permission-denied, no-camera) results in a collected item with no extra
+    // work. The camera-catch is a presentation/celebration layer on top.
     checkIn(orderIndex);
-    // Play the reveal card pop + the item "collect" fly. Reset to 0 first so a
-    // second find in the same session re-plays the animation.
+    // Play the reveal card pop. Reset to 0 first so a second find in the same
+    // session re-plays the animation. The item "collect-fly" (collectAnim) is NOT
+    // played here anymore — it's deferred until the user CATCHES the item (camera
+    // catch / skip / fallback) via completeCatch(), so the collectible visibly
+    // stays "in the place" until caught.
     revealCardAnim.setValue(0);
     collectAnim.setValue(0);
     Animated.spring(revealCardAnim, { toValue: 1, friction: 6, tension: 60, useNativeDriver: true }).start();
-    Animated.sequence([
-      Animated.delay(500),
-      Animated.timing(collectAnim, { toValue: 1, duration: 650, useNativeDriver: true }),
-    ]).start();
+  }
+
+  // Open the camera-catch (the COLLECT step). Only callable from the find reveal
+  // (the button lives in renderFindReveal), keeping the catch geo-gated.
+  function openCatch() {
+    setCatching(true);
+  }
+
+  // Finish the catch: play the item "collect-fly" toward the collection rail, then
+  // advance. Called from every catch path — caught the sprite, skipped the camera,
+  // or fell back (denied / no camera). collectItem already ran in checkIn (durable
+  // at find), so we re-run it idempotently here purely so the collect is also
+  // explicit at the catch and any FALLBACK_ITEM edge stays consistent; it's keyed
+  // by placeKey so re-running is harmless. Either way the find completes.
+  async function completeCatch(orderIndex) {
+    // Re-entry guard: the camera path leaves both the sprite-tap and the footer
+    // "skip" tappable, so two near-simultaneous taps could otherwise fire this
+    // twice (double collect-fly + double nextClue). The collect itself is
+    // idempotent, but this keeps the animation/advance clean. Cleared in nextClue.
+    if (completingRef.current) return;
+    completingRef.current = true;
+    setCatching(false);
+    // Idempotent re-collect (no-op if already in the set) — makes "tap → collects"
+    // literally true on the catch path and self-documents the contract.
+    const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
+    if (stop) {
+      const area = quest?.origin?.label || "Your Area";
+      const item = stop?.virtual_item || FALLBACK_ITEM;
+      if (placeKey(stop?.place)) {
+        const c = await collectItem(area, stop?.place, item);
+        setCollections(c);
+      }
+    }
+    // Play the collect-fly celebration, then advance to the next clue/completion.
+    collectAnim.setValue(0);
+    Animated.timing(collectAnim, { toValue: 1, duration: 650, useNativeDriver: true }).start(({ finished }) => {
+      if (finished) nextClue();
+    });
   }
 
   // Advance past the current reveal to the NEXT clue (or completion). Clearing
   // findReveal un-gates the completion auto-present effect when it was the last.
   function nextClue() {
     setFindReveal(null);
+    setCatching(false); // tear down the camera-catch overlay if it was up
+    completingRef.current = false; // re-arm the catch-completion guard for the next find
     setHintShown(false);
     setEscapeArmed(false);
     lastBandRef.current = null; // re-arm warmer/colder for the new target
@@ -2813,19 +2865,30 @@ export default function App() {
     );
   }
 
-  // The animated "You found it!" REVEAL: shows the place name + lore (safe now)
-  // and the collected virtual item flying into the collection rail. Overlays the
-  // map; "Next clue" (or "Finish the hunt") advances via nextClue().
+  // The animated "You found it!" REVEAL: shows the place name + lore (safe now),
+  // then offers the camera-CATCH as the COLLECT step. The collectible's emoji
+  // flies into the collection rail only AFTER it's caught (collectAnim, played by
+  // completeCatch). Overlays the map. The catch (and only the catch) is reachable
+  // from here, so it's geo-gated to the solved place.
+  //
+  // When `catching` is true the full-screen CameraCatch overlay is rendered ON
+  // TOP of this reveal (findReveal stays set so the completion auto-present stays
+  // gated). Every CameraCatch outcome — caught the sprite (onCatch), or skipped /
+  // fell back (onCancel) — runs completeCatch(): collect-fly → nextClue(). There
+  // is no path that leaves the user stuck.
   function renderFindReveal(s) {
     const item = s.virtual_item || FALLBACK_ITEM;
     const remaining = quest.stops.filter((st) => !progress[st.order_index]?.found).length;
     const isLast = remaining === 0;
     const cardScaleR = revealCardAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] });
     // The item "collects": pops up then flies toward the top-right collection rail.
+    // Only animates once completeCatch() drives collectAnim 0→1 after a catch.
     const itemScale = collectAnim.interpolate({ inputRange: [0, 0.4, 1], outputRange: [1, 1.4, 0.4] });
     const itemTranslateY = collectAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -260] });
     const itemTranslateX = collectAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 120] });
     const itemOpacity = collectAnim.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] });
+    // The "added to your collection" caption only makes sense after the catch.
+    const captionOpacity = collectAnim.interpolate({ inputRange: [0, 0.2, 1], outputRange: [0, 1, 1] });
     return (
       <View style={styles.revealOverlay}>
         <Confetti width={SCREEN_W} />
@@ -2840,7 +2903,7 @@ export default function App() {
             </Text>
           ) : null}
 
-          {/* Collected item — flies toward the collection rail. */}
+          {/* The collectible — flies toward the collection rail once caught. */}
           <View style={styles.collectWrap}>
             <Animated.Text
               style={[
@@ -2850,7 +2913,9 @@ export default function App() {
             >
               {item}
             </Animated.Text>
-            <Text style={styles.collectCaption}>{item} added to your collection</Text>
+            <Animated.Text style={[styles.collectCaption, { opacity: captionOpacity }]}>
+              {item} added to your collection
+            </Animated.Text>
           </View>
 
           <View style={styles.findActions}>
@@ -2864,11 +2929,31 @@ export default function App() {
                 📷 Add a photo
               </Text>
             )}
-            <TouchableOpacity style={styles.findNextBtn} onPress={nextClue} activeOpacity={0.85}>
-              <Text style={styles.findNextText}>{isLast ? "Finish the hunt 🎉" : "Next clue →"}</Text>
+            {/* COLLECT step = catch the collectible with the camera (geo-gated to
+                here). The skip is the never-trap escape — it collects + advances
+                without the camera. */}
+            <TouchableOpacity style={styles.findCatchBtn} onPress={openCatch} activeOpacity={0.85}>
+              <Text style={styles.findCatchText}>📸 Catch your {item}!</Text>
             </TouchableOpacity>
+            <Text style={styles.findPhotoLink} onPress={() => completeCatch(s.order_index)}>
+              {isLast ? "Skip camera, just collect & finish 🎉" : "Skip camera, just collect →"}
+            </Text>
           </View>
         </Animated.View>
+
+        {/* Full-screen camera-catch overlay (the COLLECT step). Mounted only
+            while `catching`, only from inside this reveal → structurally
+            geo-gated. Both outcomes route through completeCatch. */}
+        {catching ? (
+          <View style={StyleSheet.absoluteFill}>
+            <CameraCatch
+              item={item}
+              itemName={s.place?.name || item}
+              onCatch={() => completeCatch(s.order_index)}
+              onCancel={() => completeCatch(s.order_index)}
+            />
+          </View>
+        ) : null}
       </View>
     );
   }
@@ -3512,10 +3597,13 @@ const styles = StyleSheet.create({
   collectWrap: { alignItems: "center", marginTop: 18, height: 64, justifyContent: "center" },
   collectItem: { fontSize: 44 },
   collectCaption: { fontSize: 13, fontWeight: "800", color: GREEN, marginTop: 4 },
-  findActions: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 18, marginTop: 22 },
+  findActions: { flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, marginTop: 22 },
   findPhotoLink: { fontSize: 15, fontWeight: "800", color: ACCENT, textDecorationLine: "underline" },
   findNextBtn: { backgroundColor: AMBER, borderRadius: 26, paddingVertical: 14, paddingHorizontal: 28, minHeight: 44, alignItems: "center", justifyContent: "center" },
   findNextText: { fontSize: 17, fontWeight: "900", color: INK, letterSpacing: 0.2 },
+  // Prominent primary CTA for the camera-catch (the COLLECT step).
+  findCatchBtn: { backgroundColor: AMBER, borderRadius: 26, paddingVertical: 15, paddingHorizontal: 30, minHeight: 48, alignItems: "center", justifyContent: "center" },
+  findCatchText: { fontSize: 18, fontWeight: "900", color: INK, letterSpacing: 0.2 },
 
   // Energetic check-in / found states
   actionBtnGo: { backgroundColor: AMBER },
