@@ -898,7 +898,10 @@ export default function App() {
   const [setupPlace, setSetupPlace] = useState(null); // resolved { name, lat, lng }
   const [setupResolving, setSetupResolving] = useState(false);
   const [setupError, setSetupError] = useState("");
-  const [setupSize, setSetupSize] = useState("quick"); // "quick" | "explore"
+  const [setupSize, setSetupSize] = useState("quick"); // "quick" | "explore" | "epic"
+  // Clue side-panel collapse state. Starts open; the handle/tab toggles it so the
+  // clue can be tucked against the left edge to keep the map + warmer/colder clear.
+  const [cluePanelOpen, setCluePanelOpen] = useState(true);
   const [travelMode, setTravelMode] = useState("walk"); // "walk" | "bike" — sent as mode= (bike = bigger loop, server-handled)
 
   // Pop the stop card in/out whenever a stop is selected/deselected.
@@ -2611,6 +2614,16 @@ export default function App() {
             <Text style={styles.sizeDetail}>~2km · up to 5 stops</Text>
           </TouchableOpacity>
         </View>
+        {/* Epic gets its own full-width row so the longer label has room and the
+            two-up Quick/Explore cards above stay uncramped. Sends size=epic. */}
+        <TouchableOpacity
+          style={[styles.sizeCardWide, setupSize === "epic" && styles.sizeCardActive]}
+          onPress={() => setSetupSize("epic")}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.sizeName}>Epic 🏆</Text>
+          <Text style={styles.sizeDetail}>A longer hunt · 7–8 finds</Text>
+        </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.button, !setupReady && styles.buttonDisabled]}
@@ -3057,7 +3070,9 @@ export default function App() {
               map drags between elements still pan. ===== */}
       {currentTarget && !allDone && findReveal == null && !recapOpen ? (
         <View style={styles.huntHud} pointerEvents="box-none">
-          {/* Warmer/colder meter — reflects live GPS distance, pulsing. */}
+          {/* Warmer/colder meter — reflects live GPS distance, pulsing. Stays
+              pinned at the bottom so the map + meter remain the focus; the clue
+              moved out to the left side-panel below. */}
           <Animated.View
             style={[
               styles.warmthMeter,
@@ -3082,40 +3097,75 @@ export default function App() {
               {coords ? band?.hint : "Make sure location is on to play the hunt."}
             </Text>
           </Animated.View>
+        </View>
+      ) : null}
 
-          {/* The CLUE card — the riddle. Name is HIDDEN. 🔍 Hint reveals `hint`. */}
-          <View style={styles.clueCard}>
-            <Text style={styles.clueKicker}>
-              CLUE {doneCount + 1} OF {quest.stops.length}
-            </Text>
-            <Text style={styles.clueText}>
-              {currentTarget.clue ||
-                "Somewhere in this circle hides your next discovery. Explore to find it!"}
-            </Text>
-            {hintShown && (currentTarget.hint || currentTarget.description) ? (
-              <Text style={styles.clueHint}>💡 {currentTarget.hint || currentTarget.description}</Text>
-            ) : null}
-            <View style={styles.clueActions}>
-              {!hintShown ? (
-                <Text style={styles.hintBtn} onPress={() => setHintShown(true)}>
-                  🔍 Hint
+      {/* ===== CLUE SIDE-PANEL: the riddle, docked to the LEFT edge and
+              collapsible via a handle/tab so it never covers the whole map. When
+              collapsed only the slim tab shows (📜 + clue number); tapping it
+              expands the card. box-none lets the map pan around it. Same render
+              guard as the warmth meter so they appear/disappear together. ===== */}
+      {currentTarget && !allDone && findReveal == null && !recapOpen ? (
+        <View style={styles.cluePanelWrap} pointerEvents="box-none">
+          {cluePanelOpen ? (
+            <View style={styles.cluePanel}>
+              <ScrollView
+                style={styles.cluePanelScroll}
+                contentContainerStyle={styles.cluePanelScrollContent}
+                showsVerticalScrollIndicator={false}
+              >
+                <Text style={styles.clueKicker}>
+                  CLUE {doneCount + 1} OF {quest.stops.length}
                 </Text>
-              ) : (
-                <Text style={styles.hintBtnUsed}>💡 Hint shown</Text>
-              )}
-              <Text style={styles.foundItBtn} onPress={() => findStop(currentTarget.order_index, false)}>
-                I found it! →
-              </Text>
+                <Text style={styles.clueText}>
+                  {currentTarget.clue ||
+                    "Somewhere in this circle hides your next discovery. Explore to find it!"}
+                </Text>
+                {hintShown && (currentTarget.hint || currentTarget.description) ? (
+                  <Text style={styles.clueHint}>💡 {currentTarget.hint || currentTarget.description}</Text>
+                ) : null}
+                <View style={styles.clueActions}>
+                  {!hintShown ? (
+                    <Text style={styles.hintBtn} onPress={() => setHintShown(true)}>
+                      🔍 Hint
+                    </Text>
+                  ) : (
+                    <Text style={styles.hintBtnUsed}>💡 Hint shown</Text>
+                  )}
+                  <Text style={styles.foundItBtn} onPress={() => findStop(currentTarget.order_index, false)}>
+                    I found it! →
+                  </Text>
+                </View>
+                {/* No-trap fallback: a manual "reveal anyway" surfaces after a
+                    while, or immediately once the hint is shown. Reveals + counts
+                    as found so GPS/accessibility issues never trap the user. */}
+                {escapeArmed || hintShown ? (
+                  <Text style={styles.escapeLink} onPress={() => findStop(currentTarget.order_index, true)}>
+                    Can't find it? Reveal this place →
+                  </Text>
+                ) : null}
+              </ScrollView>
+              {/* Collapse handle on the panel's right edge — tucks it away. */}
+              <TouchableOpacity
+                style={styles.clueHandle}
+                onPress={() => setCluePanelOpen(false)}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.clueHandleIcon}>‹</Text>
+              </TouchableOpacity>
             </View>
-            {/* No-trap fallback: a manual "reveal anyway" surfaces after a while,
-                or immediately once the hint is shown. Reveals + counts as found so
-                GPS/accessibility issues never trap the user. */}
-            {escapeArmed || hintShown ? (
-              <Text style={styles.escapeLink} onPress={() => findStop(currentTarget.order_index, true)}>
-                Can't find it? Reveal this place →
-              </Text>
-            ) : null}
-          </View>
+          ) : (
+            // Collapsed: only a slim tab against the left edge. Tap to expand.
+            <TouchableOpacity
+              style={styles.clueTab}
+              onPress={() => setCluePanelOpen(true)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.clueTabIcon}>📜</Text>
+              <Text style={styles.clueTabNum}>{doneCount + 1}/{quest.stops.length}</Text>
+              <Text style={styles.clueTabChevron}>›</Text>
+            </TouchableOpacity>
+          )}
         </View>
       ) : null}
 
@@ -3343,18 +3393,68 @@ const styles = StyleSheet.create({
   },
   warmthLabel: { fontSize: 20, fontWeight: "900", letterSpacing: 0.2 },
   warmthHint: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 3, textAlign: "center" },
-  clueCard: {
+  // --- Clue SIDE-PANEL (left-docked, collapsible) -----------------------------
+  // Vertically centered against the left edge; capped height so an expanded hint
+  // never runs off-screen (the inner ScrollView takes over). Leaves the right
+  // portion of the map clear so the warmer/colder meter + Circle stay the focus.
+  cluePanelWrap: {
+    position: "absolute",
+    left: 0,
+    top: SCREEN_H * 0.16,
+    maxHeight: SCREEN_H * 0.5,
+  },
+  cluePanel: {
+    flexDirection: "row",
+    alignItems: "stretch",
+    // Explicit width (not maxWidth): a vertical ScrollView inside a flex row
+    // needs a determinate parent width or the text column can collapse/overflow.
+    // ~72% leaves the right of the map (and the search Circle) visibly clear.
+    width: SCREEN_W * 0.72,
     backgroundColor: CARD,
-    borderRadius: 20,
-    padding: 18,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
     borderWidth: 1,
+    borderLeftWidth: 0,
     borderColor: BORDER,
     shadowColor: "#000",
     shadowOpacity: 0.2,
     shadowRadius: 14,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOffset: { width: 2, height: 6 },
     elevation: 8,
   },
+  cluePanelScroll: { flex: 1 },
+  cluePanelScrollContent: { padding: 16, paddingRight: 4 },
+  // The collapse handle — a slim grabber on the panel's right edge.
+  clueHandle: {
+    width: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: TINT,
+    borderTopRightRadius: 20,
+    borderBottomRightRadius: 20,
+  },
+  clueHandleIcon: { fontSize: 22, fontWeight: "900", color: ACCENT },
+  // Collapsed tab — only this shows when the panel is tucked away.
+  clueTab: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 14,
+    paddingHorizontal: 10,
+    backgroundColor: CARD,
+    borderTopRightRadius: 16,
+    borderBottomRightRadius: 16,
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderColor: BORDER,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    shadowOffset: { width: 2, height: 4 },
+    elevation: 6,
+  },
+  clueTabIcon: { fontSize: 20 },
+  clueTabNum: { fontSize: 12, fontWeight: "900", color: ACCENT, marginTop: 4, letterSpacing: 0.5 },
+  clueTabChevron: { fontSize: 18, fontWeight: "900", color: MUTE, marginTop: 2 },
   clueKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
   clueText: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 8, lineHeight: 25 },
   clueHint: { fontSize: 15, fontWeight: "700", color: GREEN, marginTop: 10, lineHeight: 21 },
@@ -3515,6 +3615,7 @@ const styles = StyleSheet.create({
   setupErr: { fontSize: 14, color: ACCENT, marginTop: 12, lineHeight: 20 },
   sizeRow: { flexDirection: "row", gap: 12 },
   sizeCard: { flex: 1, padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff" },
+  sizeCardWide: { padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff", marginTop: 12 },
   sizeCardActive: { borderColor: ACCENT, backgroundColor: TINT },
   sizeName: { fontSize: 17, fontWeight: "800", color: INK },
   sizeDetail: { fontSize: 13, color: INK, opacity: 0.65, marginTop: 4 },
