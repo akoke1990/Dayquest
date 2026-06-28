@@ -46,7 +46,7 @@ import {
 //  - In a real dev/standalone build we use PROVIDER_GOOGLE + the stylized
 //    customMapStyle (the Pokémon-GO look). That build reads the Google Maps key
 //    from app.config.js (ios.config.googleMapsApiKey / android.config.googleMaps.apiKey).
-import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from "react-native-maps";
 import Constants from "expo-constants";
 import mapStyle from "./mapStyle";
 import QuestScanner from "./QuestScanner";
@@ -60,8 +60,34 @@ const isExpoGo =
   Constants.executionEnvironment === "storeClient";
 
 const QUEST_EMOJI = { photo: "📷", find_detail: "🔍", question: "❓", collect: "✨" };
-const CHECKIN_RADIUS_M = 100; // how close you must be to check in
+const CHECKIN_RADIUS_M = 100; // how close you must be to check in (legacy stop card)
+// --- Scavenger-hunt tuning ---------------------------------------------------
+const SEARCH_ZONE_RADIUS_M = 200; // the <Circle> "it's somewhere in here" hunt zone
+const FIND_RADIUS_M = 50; // within this of the target → FOUND IT (reveal + collect)
+// After this long on one clue we surface the manual "reveal anyway" escape, so a
+// GPS/accessibility issue can never trap the user on a clue.
+const ESCAPE_AFTER_MS = 45000;
+const FALLBACK_ITEM = "🎁"; // virtual_item when the server hasn't supplied one
+
+// Warmer/colder proximity bands (metal-detector feel). Ordered cold→hot. Each
+// band carries its UI label + a haptic style fired on band CHANGE (throttle).
+const PROX_BANDS = [
+  { id: "cold", max: Infinity, label: "❄️ Ice cold", hint: "Keep exploring…", color: "#3B82C4" },
+  { id: "cool", max: 300, label: "😐 Getting closer", hint: "You're on the trail", color: "#1F6FB2" },
+  { id: "warm", max: 150, label: "🔥 Warm", hint: "It's nearby!", color: "#F5B400" },
+  { id: "hot", max: 50, label: "🔥🔥 Red hot!", hint: "You're right on top of it!", color: "#E8590C" },
+];
+// Map a live distance (m) to its band. Walks hot→cold and returns the first
+// whose `max` the distance is at/under; cold is the catch-all (max: Infinity).
+function proximityBand(distM) {
+  if (distM == null) return null;
+  for (let i = PROX_BANDS.length - 1; i >= 0; i--) {
+    if (distM <= PROX_BANDS[i].max) return PROX_BANDS[i];
+  }
+  return PROX_BANDS[0];
+}
 const SCREEN_H = Dimensions.get("window").height; // for sheet peek/expanded sizing
+const SCREEN_W = Dimensions.get("window").width; // confetti spread on the find reveal
 
 // --- Local persistence (pause/resume) + anonymous analytics -----------------
 const STORE_KEY = "dayquest.activeQuest.v1"; // { quest, progress }
@@ -368,6 +394,33 @@ async function recordCollections(areaLabel, stops) {
   return { collections, newCount };
 }
 
+// Collect a single virtual item the instant a target is FOUND (the hunt's
+// reveal-and-collect). Extends the existing per-Area discovery entry with the
+// item emoji — preserving the {name, source_url, first_seen} shape the
+// Collections screen already renders. Idempotent by placeKey (re-finding the
+// same place keeps the first item). Persists immediately and returns the map.
+async function collectItem(areaLabel, place, item) {
+  const key = placeKey(place);
+  if (!key) return await readCollections();
+  const area = areaLabel || "Your Area";
+  const collections = await readCollections();
+  const entry = collections[area] || { discovered: {} };
+  const discovered = { ...entry.discovered };
+  if (!discovered[key]) {
+    discovered[key] = {
+      name: place?.name || "",
+      source_url: place?.source_url || null,
+      first_seen: new Date().toISOString(),
+      item: item || FALLBACK_ITEM,
+    };
+  } else if (!discovered[key].item && item) {
+    discovered[key] = { ...discovered[key], item };
+  }
+  collections[area] = { ...entry, discovered };
+  await AsyncStorage.setItem(COLLECTIONS_KEY, JSON.stringify(collections)).catch(() => {});
+  return collections;
+}
+
 // --- Personal bests (per-Area, for the scorecard) ----------------------------
 async function readBests() {
   try {
@@ -460,6 +513,44 @@ function regionForStops(stops, coords) {
     // pad the span by ~40%, with a small floor so a tight cluster isn't over-zoomed
     latitudeDelta: Math.max((maxLat - minLat) * 1.4, 0.004),
     longitudeDelta: Math.max((maxLng - minLng) * 1.4, 0.004),
+  };
+}
+
+// A map region for the HUNT: frame ONLY the current target's search zone (+ the
+// user if known) — never all stops, which would leak the other targets'
+// locations by zooming to encompass them. Spans ~2.5× the zone so the whole
+// circle is comfortably visible with the user in frame.
+function regionForHunt(target, coords) {
+  if (!target?.place) {
+    // No target (shouldn't happen on a live hunt) — fall back to the user.
+    if (coords) {
+      return {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
+        latitudeDelta: 0.01,
+        longitudeDelta: 0.01,
+      };
+    }
+    return { latitude: 0, longitude: 0, latitudeDelta: 0.05, longitudeDelta: 0.05 };
+  }
+  const lats = [target.place.lat];
+  const lngs = [target.place.lng];
+  if (coords) {
+    lats.push(coords.latitude);
+    lngs.push(coords.longitude);
+  }
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+  // The zone radius in degrees (rough): ~111km per degree lat. Pad so the full
+  // ~200m circle fits with margin even when the user is at its centre.
+  const zoneDeg = (SEARCH_ZONE_RADIUS_M / 111000) * 2.6;
+  return {
+    latitude: (minLat + maxLat) / 2,
+    longitude: (minLng + maxLng) / 2,
+    latitudeDelta: Math.max((maxLat - minLat) * 1.6, zoneDeg),
+    longitudeDelta: Math.max((maxLng - minLng) * 1.6, zoneDeg),
   };
 }
 
@@ -671,7 +762,7 @@ function Celebration({ play = true, points, streakWeeks, newSpots, elapsedS, isB
     <View style={styles.celebrateWrap} onLayout={(e) => setWidth(e.nativeEvent.layout.width)}>
       {play ? <Confetti width={width} /> : null}
       <Animated.View style={[styles.celebrateBanner, { opacity: pop, transform: [{ scale }] }]}>
-        <Text style={styles.celebrateTitle}>🎉 Quest complete!</Text>
+        <Text style={styles.celebrateTitle}>🎉 Hunt complete!</Text>
         <Text style={styles.celebratePoints}>+{shown} points</Text>
         <View style={styles.celebrateChips}>
           {newSpots > 0 ? (
@@ -762,6 +853,31 @@ export default function App() {
   // pop-out card, or null when the map is clean. It is intentionally kept OUT of
   // the completion effect's deps so it never re-fires scoring/history.
   const [selectedStop, setSelectedStop] = useState(null);
+  // --- HUNT state (scavenger hunt = Level 2) ----------------------------------
+  // The order_index of the target currently being REVEALED (the "You found it!"
+  // moment), or null when none is showing. Set on a find (GPS ≤ find radius or
+  // manual reveal); cleared when the user taps "Next clue" — which advances the
+  // hunt to the next not-found target. Gates the completion auto-present so the
+  // final reveal isn't covered.
+  const [findReveal, setFindReveal] = useState(null);
+  const [hintShown, setHintShown] = useState(false); // current target's hint revealed
+  const [escapeArmed, setEscapeArmed] = useState(false); // the "reveal anyway" fallback shown after a while
+  // Warmer/colder: last proximity band we buzzed for (so haptics fire on band
+  // CHANGE, not every GPS tick — the metal-detector throttle).
+  const lastBandRef = useRef(null);
+  // Find guard: order indices whose find has already been triggered this quest,
+  // so GPS jitter around the find radius can't re-fire the reveal. Reset per quest.
+  const foundFiredRef = useRef(new Set());
+  // Snapshot of the Area's ALREADY-discovered placeKeys taken when a quest is
+  // generated, BEFORE any find collects into the set. The completion "+N new
+  // spots" delta diffs against this — because collectItem() now writes each find
+  // into `discovered` live, a completion-time diff against the merged set would
+  // always be 0. Captured per quest in startQuest/resumeQuest.
+  const preQuestDiscoveredRef = useRef(new Set());
+  // Animated values for the find reveal (card pop) + item collect (fly-to-rail).
+  const revealCardAnim = useRef(new Animated.Value(0)).current;
+  const collectAnim = useRef(new Animated.Value(0)).current;
+  const warmthAnim = useRef(new Animated.Value(0)).current; // pulsing warmer/colder indicator
   // The pop-out stop card and the completion overlay are each driven by a plain
   // Animated.Value (0→1) via Animated.timing/spring — no gesture-handler /
   // reanimated, so it's rock-solid in Expo Go SDK 54.
@@ -818,8 +934,9 @@ export default function App() {
     }).start();
   }, [screen, revealAnim]);
 
-  // Tapping a map dot or a list row selects a stop → its pop-out card.
-  // Tapping a second dot while a card is open SWAPS the content (re-selection).
+  // Tapping a FOUND target's dot opens its post-reveal detail card (lore + photo
+  // bonus). Only found targets are pinned/tappable — unfound ones aren't on the
+  // map, so this never reveals a place early.
   function selectStop(orderIndex) {
     setSelectedStop(orderIndex);
   }
@@ -854,7 +971,7 @@ export default function App() {
           const parsed = JSON.parse(raw);
           const q = parsed?.quest;
           const prog = parsed?.progress || {};
-          const done = q ? q.stops.filter((s) => prog[s.order_index]?.photoUri).length : 0;
+          const done = q ? q.stops.filter((s) => prog[s.order_index]?.found).length : 0;
           if (q && done < q.stops.length) setSaved(parsed);
         }
       } catch {
@@ -952,10 +1069,112 @@ export default function App() {
     return () => sub && sub.remove();
   }, [screen]);
 
-  // Fire quest_completed exactly once, when the last stop's photo lands.
+  // --- Warmer/colder + auto-find (the metal-detector loop) --------------------
+  // Runs on every live position update for the CURRENT target (first not-found
+  // stop). Computes the proximity band, buzzes ONLY on a band CHANGE (throttle —
+  // not every GPS tick), pulsing stronger the hotter we get, and AUTO-TRIGGERS
+  // the find when we reach the find radius. Lives here (not in the watcher
+  // callback, which closes over a stale [screen]) so it always sees the live
+  // coords + the freshest progress/target.
+  useEffect(() => {
+    if (screen !== "ready" || !quest || !coords || findReveal != null) return;
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    if (!target?.place) return;
+    const dist = distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng);
+
+    // Reached the find radius → reveal + collect (guarded inside findStop).
+    if (dist <= FIND_RADIUS_M) {
+      findStop(target.order_index, false);
+      return;
+    }
+
+    // Band change → haptic pulse, stronger the hotter. Throttles by band id.
+    const band = proximityBand(dist);
+    if (band && band.id !== lastBandRef.current) {
+      const prev = lastBandRef.current;
+      lastBandRef.current = band.id;
+      // Only buzz when getting WARMER (or first reading) — colder is silent, so
+      // it reads as a metal detector, not a nag.
+      const order = ["cold", "cool", "warm", "hot"];
+      if (prev == null || order.indexOf(band.id) > order.indexOf(prev)) {
+        const style =
+          band.id === "hot"
+            ? Haptics.ImpactFeedbackStyle.Heavy
+            : band.id === "warm"
+            ? Haptics.ImpactFeedbackStyle.Medium
+            : Haptics.ImpactFeedbackStyle.Light;
+        Haptics.impactAsync(style).catch(() => {});
+      }
+    }
+  }, [coords, screen, quest, progress, findReveal]);
+
+  // Pulse the warmer/colder indicator continuously, FASTER the hotter. Re-armed
+  // whenever the current target's band changes. A looping scale breath via the
+  // existing Animated API (Expo-Go safe). Idle (slow) when cold.
   useEffect(() => {
     if (screen !== "ready" || !quest) return;
-    const done = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    const dist =
+      coords && target?.place
+        ? distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng)
+        : null;
+    const band = proximityBand(dist);
+    // Pulse period shrinks as we heat up (metal-detector quickening).
+    const period =
+      band?.id === "hot" ? 380 : band?.id === "warm" ? 650 : band?.id === "cool" ? 1000 : 1500;
+    warmthAnim.setValue(0);
+    const loop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(warmthAnim, { toValue: 1, duration: period, useNativeDriver: true }),
+        Animated.timing(warmthAnim, { toValue: 0, duration: period, useNativeDriver: true }),
+      ])
+    );
+    loop.start();
+    return () => loop.stop();
+    // Re-run when the band would change (distance bucket) — keyed on a coarse
+    // band id rather than raw coords so it doesn't restart on every GPS tick.
+  }, [
+    screen,
+    quest,
+    findReveal,
+    proximityBand(
+      coords && quest
+        ? (() => {
+            const t = quest.stops.find((s) => !progress[s.order_index]?.found);
+            return t?.place
+              ? distanceM(coords.latitude, coords.longitude, t.place.lat, t.place.lng)
+              : null;
+          })()
+        : null
+    )?.id,
+  ]);
+
+  // Arm the manual "reveal anyway" escape after a while on the SAME clue, so a
+  // GPS/accessibility issue can never trap the user. Resets per target (keyed on
+  // the current target's order_index + findReveal).
+  useEffect(() => {
+    if (screen !== "ready" || !quest || findReveal != null) {
+      return;
+    }
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    if (!target) return;
+    setEscapeArmed(false);
+    const id = setTimeout(() => setEscapeArmed(true), ESCAPE_AFTER_MS);
+    return () => clearTimeout(id);
+    // Re-arm when the active target changes (its order_index) or a reveal closes.
+  }, [
+    screen,
+    quest,
+    findReveal,
+    quest?.stops.find((s) => !progress[s.order_index]?.found)?.order_index,
+  ]);
+
+  // Fire quest_completed exactly once, when the last target is FOUND. In the hunt
+  // a stop is "done" when found (reveal+collect), NOT when a photo lands — the
+  // photo is now an optional post-reveal bonus.
+  useEffect(() => {
+    if (screen !== "ready" || !quest) return;
+    const done = quest.stops.filter((s) => progress[s.order_index]?.found).length;
     if (done === quest.stops.length && !completedFiredRef.current) {
       completedFiredRef.current = true;
       track("quest_completed", { stops: quest.stops.length });
@@ -967,9 +1186,9 @@ export default function App() {
       // live (see checkIn). To avoid double-counting, completion only banks the
       // +100 completion BONUS. The recap badge still SHOWS the full quest value
       // (check-ins + bonus) so the celebration reflects everything earned.
-      const checkinCount = quest.stops.filter((s) => progress[s.order_index]?.checkedIn).length;
+      const foundCount = quest.stops.filter((s) => progress[s.order_index]?.found).length;
       const bonusToBank = POINTS_PER_QUEST; // the not-yet-awarded portion
-      const earned = checkinCount * POINTS_PER_CHECKIN + POINTS_PER_QUEST; // display total
+      const earned = foundCount * POINTS_PER_CHECKIN + POINTS_PER_QUEST; // display total
       setPointsEarned(earned);
 
       // Completion time: elapsed since the quest went live. null if we never
@@ -1021,10 +1240,19 @@ export default function App() {
         // Local data only — but fire an analytics ping that points were earned.
         track("points_earned", { points: earned, total: next.total, streak_weeks: next.streak_weeks });
 
-        // Collections: record this quest's stops into the Area's discovery set,
-        // computing the "+N new spots" delta against the pre-merge set.
-        const { collections: nextCollections, newCount } = await recordCollections(areaLabel, quest.stops);
+        // Collections: stops are ALREADY in the discovery set (collectItem wrote
+        // each find live). recordCollections is now idempotent-safe and just
+        // ensures any edge-case stop is present. The "+N new spots" delta is
+        // computed against the PRE-QUEST snapshot (taken before any find), since a
+        // diff against the now-merged set would always be 0.
+        const { collections: nextCollections } = await recordCollections(areaLabel, quest.stops);
         setCollections(nextCollections);
+        const preSet = preQuestDiscoveredRef.current;
+        let newCount = 0;
+        for (const s of quest.stops) {
+          const k = placeKey(s.place);
+          if (k && !preSet.has(k)) newCount += 1;
+        }
         setNewSpots(newCount);
 
         // Personal bests: best points + fastest time per Area, for the scorecard.
@@ -1056,16 +1284,20 @@ export default function App() {
   // on subsequent renders — once the user closes it, the floating Recap button
   // re-opens it. An already-complete resume pre-sets the guard (see resumeQuest)
   // so reopening such a quest doesn't slam the overlay back up.
+  // The find REVEAL overlay must be dismissed before the completion overlay
+  // auto-presents — otherwise the final find's reveal/collect animation is
+  // covered instantly. `findReveal` (the stop being revealed) gates this: while
+  // it's set the user is reading the reveal, and dismissing it advances/completes.
   useEffect(() => {
     if (screen !== "ready" || !quest) return;
-    const done = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
+    const done = quest.stops.filter((s) => progress[s.order_index]?.found).length;
     const allDone = done === quest.stops.length;
-    if (allDone && !recapAutoPresentedRef.current) {
+    if (allDone && !findReveal && !recapAutoPresentedRef.current) {
       recapAutoPresentedRef.current = true;
       setSelectedStop(null); // clear any open stop card so the overlay is clean
       setRecapOpen(true);
     }
-  }, [screen, quest, progress]);
+  }, [screen, quest, progress, findReveal]);
 
   // Start a quest. With NO args this is the simple one-tap default: request
   // permission → current GPS → quick quest (byte-identical to the original).
@@ -1097,6 +1329,12 @@ export default function App() {
     setSelectedStop(null);
     setRecapOpen(false);
     recapAutoPresentedRef.current = false;
+    // Fresh hunt: no reveal showing, no hint, escape disarmed, bands/finds reset.
+    setFindReveal(null);
+    setHintShown(false);
+    setEscapeArmed(false);
+    lastBandRef.current = null;
+    foundFiredRef.current = new Set();
     try {
       let latitude, longitude;
       if (hasPlace) {
@@ -1149,6 +1387,13 @@ export default function App() {
       // the reveal card AND durable into the saved-history snapshot (the gallery
       // card reads it back; `travelMode` state would have reset on a cold-start
       // resume). Defaults to "walk" for the simple one-tap path.
+      // Snapshot the Area's already-discovered places BEFORE any find collects
+      // into the set, so the completion "+N new spots" delta is accurate (finds
+      // now write into `discovered` live).
+      const startArea = data.origin?.label || "Your Area";
+      preQuestDiscoveredRef.current = new Set(
+        Object.keys(collections[startArea]?.discovered || {})
+      );
       setQuest({ ...data, mode: opts.mode || "walk" });
       setSaved(null);
       // Freshly generated quests open on the animated REVEAL card (the "<Area>
@@ -1171,7 +1416,7 @@ export default function App() {
           const parsed = JSON.parse(raw);
           const q = parsed?.quest;
           const prog = parsed?.progress || {};
-          const done = q ? q.stops.filter((s) => prog[s.order_index]?.photoUri).length : 0;
+          const done = q ? q.stops.filter((s) => prog[s.order_index]?.found).length : 0;
           if (q && done < q.stops.length) setSaved(parsed);
         }
       } catch {
@@ -1199,10 +1444,11 @@ export default function App() {
     setQuest(saved.quest);
     const restored = saved.progress || {};
     setProgress(restored);
-    // Pre-seed the award guard with stops already checked in last session, so a
-    // resumed quest can't re-award points for a stop that already banked them.
+    // Pre-seed the award guard with stops already FOUND last session, so a
+    // resumed hunt can't re-award points for a target that already banked them.
+    // The hunt resumes at the first not-found target with prior finds intact.
     awardedRef.current = new Set(
-      Object.keys(restored).filter((k) => restored[k]?.checkedIn).map((k) => Number(k))
+      Object.keys(restored).filter((k) => restored[k]?.found).map((k) => Number(k))
     );
     setCoords(null);
     // Restore the walked-so-far path so the watcher keeps appending to it
@@ -1220,7 +1466,7 @@ export default function App() {
     // Restore the original start time so the completion timer survives a resume.
     // Falls back to now() for quests saved before we tracked start time.
     startedAtRef.current = saved.startedAt || Date.now();
-    const done = saved.quest.stops.filter((s) => saved.progress?.[s.order_index]?.photoUri).length;
+    const done = saved.quest.stops.filter((s) => saved.progress?.[s.order_index]?.found).length;
     completedFiredRef.current = done === saved.quest.stops.length;
     celebratedRef.current = completedFiredRef.current; // already-complete resume shouldn't re-celebrate
     // Clean map on resume. If the resumed quest is ALREADY complete, arm the
@@ -1230,6 +1476,27 @@ export default function App() {
     setSelectedStop(null);
     setRecapOpen(false);
     recapAutoPresentedRef.current = completedFiredRef.current;
+    // Hunt resumes at the CURRENT clue (first not-found target) with finds intact.
+    // Pre-seed the find guard from the already-found stops so they can't re-fire.
+    foundFiredRef.current = new Set(
+      Object.keys(restored).filter((k) => restored[k]?.found).map((k) => Number(k))
+    );
+    // Re-derive the pre-quest discovered snapshot for the "+N new spots" delta:
+    // the Area's discovered set MINUS this quest's own stops (so spots found this
+    // quest still count as new even though collectItem already wrote them live).
+    const resumeArea = saved.quest.origin?.label || "Your Area";
+    const resumeDiscovered = new Set(
+      Object.keys(collections[resumeArea]?.discovered || {})
+    );
+    for (const s of saved.quest.stops) {
+      const k = placeKey(s.place);
+      if (k) resumeDiscovered.delete(k);
+    }
+    preQuestDiscoveredRef.current = resumeDiscovered;
+    setFindReveal(null);
+    setHintShown(false);
+    setEscapeArmed(false);
+    lastBandRef.current = null;
     setSaved(null);
     setScreen("ready");
     track("quest_resumed", { stops: saved.quest.stops?.length });
@@ -1275,30 +1542,37 @@ export default function App() {
     setFeedbackSent(true);
   }
 
-  // The single chokepoint for BOTH the in-range GPS button and the "I'm here"
-  // manual override. Checking in is now the CORE earning event: it banks points
-  // immediately, logs the place to the persistent Visited history, and persists
-  // synchronously — all guarded so re-checking-in the same stop never
-  // double-awards (once per stop per quest).
+  // The single CHOKEPOINT for banking a FIND. Called by findStop() on every find
+  // path (GPS-triggered, "found it" tap, or manual reveal fallback). The find is
+  // now the CORE earning event: it banks points immediately, marks the target
+  // FOUND, records the place into Visited AND its virtual_item into Collections,
+  // and persists synchronously — all guarded so finding the same target twice
+  // (GPS jitter around the find radius) never double-awards (once per target per
+  // quest).
   async function checkIn(orderIndex) {
-    // Idempotency guard: points + visited record happen exactly once per stop
+    // Idempotency guard: points + visited + collect happen exactly once per target
     // per quest. The render-closure check covers the normal (re-rendered) case;
-    // the synchronous ref wins the sub-frame race two simultaneous taps (the GO
-    // button + the "I'm here" override coexist) could otherwise slip past, since
-    // we yield at the first await before any re-render.
-    if (progress[orderIndex]?.checkedIn || awardedRef.current.has(orderIndex)) return;
+    // the synchronous ref wins the sub-frame race two near-simultaneous triggers
+    // (a GPS tick + the "found it" tap) could otherwise slip past, since we yield
+    // at the first await before any re-render.
+    if (progress[orderIndex]?.found || awardedRef.current.has(orderIndex)) return;
     awardedRef.current.add(orderIndex);
 
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 
     const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
     const area = quest?.origin?.label || "Your Area";
     const key = placeKey(stop?.place);
+    const item = stop?.virtual_item || FALLBACK_ITEM;
 
     // Compute the next progress explicitly so we can persist it synchronously
-    // below (don't rely on the debounced persist effect — the task wants the
-    // award durable the instant it happens, closing any kill-between window).
-    const next = { ...progress, [orderIndex]: { ...progress[orderIndex], checkedIn: true } };
+    // below (don't rely on the debounced persist effect — the award must be
+    // durable the instant it happens, closing any kill-between window). `found`
+    // is the hunt's completion/resume predicate; `checkedIn` kept for back-compat.
+    const next = {
+      ...progress,
+      [orderIndex]: { ...progress[orderIndex], checkedIn: true, found: true },
+    };
     setProgress(next);
 
     // Persist the active-quest blob right now with the freshest route path, so a
@@ -1308,13 +1582,13 @@ export default function App() {
       JSON.stringify({ quest, progress: next, startedAt: startedAtRef.current, routePath: routePathRef.current })
     ).catch(() => {});
 
-    track("stop_checked_in", { order_index: orderIndex });
+    track("stop_found", { order_index: orderIndex });
 
-    // Bank the per-check-in points (lifetime total only — not quests_completed
-    // or streak). Then push the fresh total to the cloud profile if signed in.
+    // Bank the per-find points (lifetime total only — not quests_completed or
+    // streak). Then push the fresh total to the cloud profile if signed in.
     const score2 = await addCheckinPoints(POINTS_PER_CHECKIN);
     setScore(score2);
-    track("checkin_points_earned", { points: POINTS_PER_CHECKIN, total: score2.total });
+    track("find_points_earned", { points: POINTS_PER_CHECKIN, total: score2.total });
     if (userRef.current) {
       pushScore(userRef.current, score2)
         .then(() => loadProfile(userRef.current.id))
@@ -1331,6 +1605,48 @@ export default function App() {
       visited_at: new Date().toISOString(),
     });
     setVisited(list);
+
+    // COLLECT the virtual item into the Area's collection right now (don't wait
+    // for completion — a find should be durable on its own). Records the item
+    // emoji alongside the existing {name, source_url, first_seen} entry.
+    if (key) {
+      const c = await collectItem(area, stop?.place, item);
+      setCollections(c);
+    }
+  }
+
+  // Trigger a FIND: the animated reveal-and-collect moment. Called when the user
+  // reaches the find radius (GPS), taps "I found it!", or uses the manual reveal
+  // escape. Guarded by foundFiredRef so GPS jitter can't double-fire the reveal.
+  // `viaEscape` distinguishes the safety fallback (no-trap) for analytics; it
+  // still grants the item + points (a small reward is fine — keeps it un-trappy).
+  function findStop(orderIndex, viaEscape = false) {
+    if (foundFiredRef.current.has(orderIndex)) return;
+    foundFiredRef.current.add(orderIndex);
+    setSelectedStop(null); // close any open card so the reveal owns the screen
+    setEscapeArmed(false);
+    setFindReveal(orderIndex); // show the reveal overlay for this target
+    track("stop_revealed", { order_index: orderIndex, via: viaEscape ? "escape" : "found" });
+    // Bank points + visited + collect the item (idempotent chokepoint).
+    checkIn(orderIndex);
+    // Play the reveal card pop + the item "collect" fly. Reset to 0 first so a
+    // second find in the same session re-plays the animation.
+    revealCardAnim.setValue(0);
+    collectAnim.setValue(0);
+    Animated.spring(revealCardAnim, { toValue: 1, friction: 6, tension: 60, useNativeDriver: true }).start();
+    Animated.sequence([
+      Animated.delay(500),
+      Animated.timing(collectAnim, { toValue: 1, duration: 650, useNativeDriver: true }),
+    ]).start();
+  }
+
+  // Advance past the current reveal to the NEXT clue (or completion). Clearing
+  // findReveal un-gates the completion auto-present effect when it was the last.
+  function nextClue() {
+    setFindReveal(null);
+    setHintShown(false);
+    setEscapeArmed(false);
+    lastBandRef.current = null; // re-arm warmer/colder for the new target
   }
 
   async function takePhoto(orderIndex) {
@@ -1711,7 +2027,7 @@ export default function App() {
     // OR a cold-start quest rehydrated from disk at launch (`saved`). A quest still
     // in memory that's already complete is excluded — there's nothing to resume.
     const liveInProgress =
-      quest && quest.stops.some((s) => !progress[s.order_index]?.photoUri);
+      quest && quest.stops.some((s) => !progress[s.order_index]?.found);
     const savedQuest = liveInProgress ? quest : saved?.quest;
     return (
       <ScrollView style={styles.scroll} contentContainerStyle={styles.welcomeContent}>
@@ -2358,11 +2674,13 @@ export default function App() {
             },
           ]}
         >
-          <Text style={styles.revealKicker}>NEW QUEST UNLOCKED</Text>
-          <Text style={styles.revealTheme}>{quest.theme}</Text>
-          {quest.origin?.label ? (
-            <Text style={styles.revealArea}>📍 {quest.origin.label}</Text>
-          ) : null}
+          <Text style={styles.revealKicker}>SCAVENGER HUNT UNLOCKED</Text>
+          <Text style={styles.revealTheme}>
+            {quest.origin?.label ? `${quest.origin.label} Hunt` : quest.theme}
+          </Text>
+          <Text style={styles.revealArea} numberOfLines={2}>
+            {stopCount} hidden place{stopCount === 1 ? "" : "s"} to find
+          </Text>
 
           <View style={styles.revealStatsRow}>
             <View style={styles.revealStat}>
@@ -2372,7 +2690,7 @@ export default function App() {
             <View style={styles.revealStatDivider} />
             <View style={styles.revealStat}>
               <Text style={styles.revealStatNum}>{stopCount}</Text>
-              <Text style={styles.revealStatLabel}>{stopCount === 1 ? "stop" : "stops"}</Text>
+              <Text style={styles.revealStatLabel}>{stopCount === 1 ? "find" : "finds"}</Text>
             </View>
           </View>
 
@@ -2383,92 +2701,146 @@ export default function App() {
           >
             <Text style={styles.revealBeginText}>Begin</Text>
           </TouchableOpacity>
-          <Text style={styles.revealHint}>Tap to start your adventure</Text>
+          <Text style={styles.revealHint}>Follow the clues. No pins — you have to hunt.</Text>
         </Animated.View>
       </View>
     );
   }
 
-  // screen === "ready" — MAP-FIRST, Pokémon-GO-style layout: a full-screen map
-  // with selectable numbered stop dots and floating round controls at the
-  // corners/sides. Tapping a stop pops out a centered detail CARD (the full
-  // check-in/photo/override flow); completion surfaces as a full-screen overlay.
-  const doneCount = quest.stops.filter((s) => progress[s.order_index]?.photoUri).length;
+  // screen === "ready" — SCAVENGER HUNT, Pokémon-GO-style layout: a full-screen
+  // map showing ONLY the current target's ~200m search ZONE (a Circle, never a
+  // pin) + the live user dot. A floating clue card riddles the place (name
+  // hidden), a warmer/colder meter tracks live GPS distance, and reaching the
+  // find radius reveals + collects. Completion surfaces as a full-screen overlay.
+  const doneCount = quest.stops.filter((s) => progress[s.order_index]?.found).length;
   const allDone = doneCount === quest.stops.length;
-  // The stop whose detail is shown in the pop-out card.
+  // The CURRENT target = first not-found stop in walking order. null once all
+  // found (the hunt is complete). Its name/pin stay HIDDEN until found.
+  const currentTarget = quest.stops.find((s) => !progress[s.order_index]?.found) || null;
+  // Live distance to the current target + its proximity band (warmer/colder).
+  const targetDist =
+    coords && currentTarget?.place
+      ? distanceM(coords.latitude, coords.longitude, currentTarget.place.lat, currentTarget.place.lng)
+      : null;
+  const band = proximityBand(targetDist);
+  // The stop being REVEALED right now (the "You found it!" moment), if any.
+  const revealStop =
+    findReveal != null ? quest.stops.find((s) => s.order_index === findReveal) : null;
+  // The stop whose post-reveal detail is shown in the pop-out card (FOUND stops
+  // only — tapping a collected target dot to re-read its lore / add a photo).
   const activeStop =
     selectedStop != null ? quest.stops.find((s) => s.order_index === selectedStop) : null;
 
-  // --- Renderers for the pop-out card / completion overlay ---------------------
+  // --- Renderers for the hunt UI -----------------------------------------------
+  // Post-reveal detail card for an ALREADY-FOUND target. The name + lore are now
+  // safe to show (the place has been found); offers the optional quest_prompt
+  // photo bonus + source/flag. Reached by tapping a found target's dot, or right
+  // after the reveal via "Add a photo".
   function renderStopDetail(s) {
     const state = progress[s.order_index] || {};
-    const dist = coords ? distanceM(coords.latitude, coords.longitude, s.place.lat, s.place.lng) : null;
-    const inRange = dist != null && dist <= CHECKIN_RADIUS_M;
-    const completed = Boolean(state.photoUri);
+    const item = s.virtual_item || FALLBACK_ITEM;
     return (
       <ScrollView
         style={styles.cardScroll}
         contentContainerStyle={styles.cardScrollContent}
         showsVerticalScrollIndicator={false}
       >
+        <View style={styles.foundBanner}>
+          <Text style={styles.foundBannerText}>✓ Found it!  {item}</Text>
+        </View>
         <Text style={styles.stopTitle} numberOfLines={2}>
-          {completed ? "✓ " : ""}
-          {s.order_index}. {s.place.name}
-        </Text>
-        <Text style={styles.distance}>
-          {dist != null ? `${dist} m away` : `${s.place.distance_m} m from start`}
-          {inRange ? " · you're here!" : ""}
+          {s.place.name}
         </Text>
         <Text style={styles.body}>{s.description}</Text>
         <Text style={styles.why}>Why: {s.reason}</Text>
         {s.lore_hook ? <Text style={styles.lore}>{s.lore_hook}</Text> : null}
-        <View style={styles.questBox}>
-          <Text style={styles.questText}>
-            {QUEST_EMOJI[s.quest_type] || "🎯"}  {s.quest_prompt}
-          </Text>
-        </View>
-
-        {/* Check-in → photo flow (unchanged behavior). */}
-        {state.photoUri ? (
-          <>
-            <View style={styles.foundBanner}>
-              <Text style={styles.foundBannerText}>✓ Found it!</Text>
-            </View>
-            <Image source={{ uri: state.photoUri }} style={styles.photo} />
-          </>
-        ) : state.checkedIn ? (
-          <TouchableOpacity style={[styles.actionBtn, styles.actionBtnGo]} onPress={() => takePhoto(s.order_index)}>
-            <Text style={styles.actionText}>📷 Snap it to claim!</Text>
-          </TouchableOpacity>
-        ) : (
-          <>
-            <TouchableOpacity
-              style={[styles.actionBtn, inRange && styles.actionBtnGo, !inRange && styles.actionBtnDisabled]}
-              onPress={() => checkIn(s.order_index)}
-              disabled={!inRange}
-            >
-              <Text style={styles.actionText}>
-                {inRange ? "📍 GO! Check in here" : "Walk closer to check in"}
-              </Text>
-            </TouchableOpacity>
-            {/* Manual override so bad GPS never dead-ends the user */}
-            <Text style={styles.override} onPress={() => checkIn(s.order_index)}>
-              Can't check in? I'm here →
+        {s.quest_prompt ? (
+          <View style={styles.questBox}>
+            <Text style={styles.questText}>
+              {QUEST_EMOJI[s.quest_type] || "📷"}  {s.quest_prompt}
             </Text>
-          </>
+          </View>
+        ) : null}
+
+        {/* Optional photo BONUS (no longer gates completion). */}
+        {state.photoUri ? (
+          <Image source={{ uri: state.photoUri }} style={styles.photo} />
+        ) : (
+          <TouchableOpacity style={[styles.actionBtn, styles.actionBtnGo]} onPress={() => takePhoto(s.order_index)}>
+            <Text style={styles.actionText}>📷 Snap a photo (bonus)</Text>
+          </TouchableOpacity>
         )}
 
         <View style={styles.cardFooter}>
           <Text style={styles.source} onPress={() => Linking.openURL(s.place.source_url)}>
             source ↗
           </Text>
-          {/* Per-stop flag (UX-SPEC learning loop) — records name + source + reason. */}
           <Text style={styles.flagLink} onPress={() => flagStop(s)}>
             {flagged[s.order_index] ? "✓ flagged — thanks" : "something off with this stop?"}
           </Text>
         </View>
         <View style={{ height: 8 }} />
       </ScrollView>
+    );
+  }
+
+  // The animated "You found it!" REVEAL: shows the place name + lore (safe now)
+  // and the collected virtual item flying into the collection rail. Overlays the
+  // map; "Next clue" (or "Finish the hunt") advances via nextClue().
+  function renderFindReveal(s) {
+    const item = s.virtual_item || FALLBACK_ITEM;
+    const remaining = quest.stops.filter((st) => !progress[st.order_index]?.found).length;
+    const isLast = remaining === 0;
+    const cardScaleR = revealCardAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] });
+    // The item "collects": pops up then flies toward the top-right collection rail.
+    const itemScale = collectAnim.interpolate({ inputRange: [0, 0.4, 1], outputRange: [1, 1.4, 0.4] });
+    const itemTranslateY = collectAnim.interpolate({ inputRange: [0, 1], outputRange: [0, -260] });
+    const itemTranslateX = collectAnim.interpolate({ inputRange: [0, 1], outputRange: [0, 120] });
+    const itemOpacity = collectAnim.interpolate({ inputRange: [0, 0.7, 1], outputRange: [1, 1, 0] });
+    return (
+      <View style={styles.revealOverlay}>
+        <Confetti width={SCREEN_W} />
+        <Animated.View style={[styles.findCard, { opacity: revealCardAnim, transform: [{ scale: cardScaleR }] }]}>
+          <Text style={styles.findKicker}>YOU FOUND IT!</Text>
+          <Text style={styles.findName} numberOfLines={3}>
+            {s.place.name}
+          </Text>
+          {s.lore_hook || s.reason ? (
+            <Text style={styles.findLore} numberOfLines={6}>
+              {s.lore_hook || s.reason}
+            </Text>
+          ) : null}
+
+          {/* Collected item — flies toward the collection rail. */}
+          <View style={styles.collectWrap}>
+            <Animated.Text
+              style={[
+                styles.collectItem,
+                { opacity: itemOpacity, transform: [{ translateY: itemTranslateY }, { translateX: itemTranslateX }, { scale: itemScale }] },
+              ]}
+            >
+              {item}
+            </Animated.Text>
+            <Text style={styles.collectCaption}>{item} added to your collection</Text>
+          </View>
+
+          <View style={styles.findActions}>
+            {!s.quest_prompt ? null : (
+              // Opens the camera OVER the reveal (no findReveal/selectedStop
+              // churn): the photo attaches in place, the reveal stays up, and the
+              // user advances only via "Next clue" → full nextClue() cleanup. This
+              // avoids un-gating completion early on the last find and avoids
+              // leaking the next clue's hint via a missed lastBandRef/hintShown reset.
+              <Text style={styles.findPhotoLink} onPress={() => takePhoto(s.order_index)}>
+                📷 Add a photo
+              </Text>
+            )}
+            <TouchableOpacity style={styles.findNextBtn} onPress={nextClue} activeOpacity={0.85}>
+              <Text style={styles.findNextText}>{isLast ? "Finish the hunt 🎉" : "Next clue →"}</Text>
+            </TouchableOpacity>
+          </View>
+        </Animated.View>
+      </View>
     );
   }
 
@@ -2499,6 +2871,12 @@ export default function App() {
             />
           );
         })()}
+
+        {/* Hunt framing: N places found, N items collected. */}
+        <Text style={styles.discoverLine}>
+          Hunt complete — {doneCount} place{doneCount === 1 ? "" : "s"} found,{" "}
+          {doneCount} item{doneCount === 1 ? "" : "s"} collected.
+        </Text>
 
         {/* Honest, count-led collections line for this Area. */}
         {newSpots > 0 ? (
@@ -2570,25 +2948,33 @@ export default function App() {
     <View style={styles.mapScreen}>
       <StatusBar style="dark" />
 
-      {/* FULL-SCREEN map: numbered dots in walking order, route line, "you are here". */}
+      {/* FULL-SCREEN map: the current target's SEARCH ZONE (a Circle, never a
+          pin — the place is "somewhere in here") + the live user dot. NO planned
+          route polyline and NO unfound-target pin (either would leak locations).
+          We frame ONLY the current zone + user (regionForHunt), never all stops. */}
       <MapView
         style={StyleSheet.absoluteFill}
         // Expo Go: default provider (Apple Maps), no custom style — keeps the
         // working test flow intact. Built app: Google provider + stylized map.
         provider={isExpoGo ? undefined : PROVIDER_GOOGLE}
         customMapStyle={isExpoGo ? undefined : mapStyle}
-        initialRegion={regionForStops(quest.stops, coords)}
+        initialRegion={regionForHunt(currentTarget, coords)}
         showsUserLocation
         showsMyLocationButton={false}
       >
-        {/* PLANNED route: the accent line connecting the stops in walking order. */}
-        <Polyline
-          coordinates={quest.stops.map((s) => ({ latitude: s.place.lat, longitude: s.place.lng }))}
-          strokeColor={ACCENT}
-          strokeWidth={4}
-        />
-        {/* WALKED path: the live breadcrumb of where you've ACTUALLY been —
-            thicker + translucent green, visually distinct from the planned line. */}
+        {/* SEARCH ZONE: a ~200m circle around the current target. The user knows
+            the place is in here but must hunt — no exact pin is drawn for it. */}
+        {currentTarget?.place ? (
+          <Circle
+            center={{ latitude: currentTarget.place.lat, longitude: currentTarget.place.lng }}
+            radius={SEARCH_ZONE_RADIUS_M}
+            strokeColor={band?.color || ACCENT}
+            strokeWidth={3}
+            fillColor="rgba(31,111,178,0.14)"
+          />
+        ) : null}
+        {/* WALKED breadcrumb: where you've ACTUALLY been. Kept (it reveals only
+            your own trail, not the targets). */}
         {routePath.length >= 2 ? (
           <Polyline
             coordinates={routePath.map((p) => ({ latitude: p.latitude, longitude: p.longitude }))}
@@ -2596,23 +2982,24 @@ export default function App() {
             strokeWidth={7}
           />
         ) : null}
-        {quest.stops.map((s) => {
-          const completed = Boolean(progress[s.order_index]?.photoUri);
-          const isSelected = selectedStop === s.order_index;
-          return (
-            <Marker
-              // Key folds in completed/selected so the custom marker re-renders
-              // its style when those change (RN-maps caches marker children).
-              key={`${s.order_index}-${completed ? "d" : "o"}-${isSelected ? "s" : "n"}`}
-              coordinate={{ latitude: s.place.lat, longitude: s.place.lng }}
-              title={s.place.name}
-              anchor={{ x: 0.5, y: 0.5 }}
-              onPress={() => selectStop(s.order_index)}
-            >
-              <MapPin orderIndex={s.order_index} completed={completed} selected={isSelected} />
-            </Marker>
-          );
-        })}
+        {/* FOUND targets get a pin (revealed already — safe to show). Unfound
+            targets are NEVER pinned, so the hunt stays a hunt. */}
+        {quest.stops
+          .filter((s) => progress[s.order_index]?.found)
+          .map((s) => {
+            const isSelected = selectedStop === s.order_index;
+            return (
+              <Marker
+                key={`${s.order_index}-d-${isSelected ? "s" : "n"}`}
+                coordinate={{ latitude: s.place.lat, longitude: s.place.lng }}
+                title={s.place.name}
+                anchor={{ x: 0.5, y: 0.5 }}
+                onPress={() => selectStop(s.order_index)}
+              >
+                <MapPin orderIndex={s.order_index} completed selected={isSelected} />
+              </Marker>
+            );
+          })}
       </MapView>
 
       {/* ===== Floating HUD (Pokémon-GO style). pointerEvents box-none so the
@@ -2655,14 +3042,82 @@ export default function App() {
         </TouchableOpacity>
       </View>
 
-      {/* Top-center: compact progress chip ("2/3" or "Complete!"). */}
+      {/* Top-center: compact progress chip ("2/3 found" or "Hunt complete!"). */}
       <View style={styles.hudProgress} pointerEvents="box-none">
         <View style={[styles.progressChip, allDone && styles.progressChipDone]}>
           <Text style={styles.progressChipText}>
-            {allDone ? "🎉 Complete!" : `${doneCount}/${quest.stops.length} stops`}
+            {allDone ? "🎉 Hunt complete!" : `${doneCount}/${quest.stops.length} found`}
           </Text>
         </View>
       </View>
+
+      {/* ===== HUNT HUD: the clue card + warmer/colder meter. Shown while the
+              hunt is live (a current target exists) and no reveal/completion is
+              up. Pinned near the bottom above the FABs; pointerEvents box-none so
+              map drags between elements still pan. ===== */}
+      {currentTarget && !allDone && findReveal == null && !recapOpen ? (
+        <View style={styles.huntHud} pointerEvents="box-none">
+          {/* Warmer/colder meter — reflects live GPS distance, pulsing. */}
+          <Animated.View
+            style={[
+              styles.warmthMeter,
+              { borderColor: band?.color || ACCENT },
+              {
+                transform: [
+                  {
+                    scale: warmthAnim.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [1, band?.id === "hot" ? 1.06 : band?.id === "warm" ? 1.04 : 1.02],
+                    }),
+                  },
+                ],
+                opacity: warmthAnim.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }),
+              },
+            ]}
+          >
+            <Text style={[styles.warmthLabel, { color: band?.color || ACCENT }]}>
+              {coords ? band?.label : "📡 Finding your location…"}
+            </Text>
+            <Text style={styles.warmthHint}>
+              {coords ? band?.hint : "Make sure location is on to play the hunt."}
+            </Text>
+          </Animated.View>
+
+          {/* The CLUE card — the riddle. Name is HIDDEN. 🔍 Hint reveals `hint`. */}
+          <View style={styles.clueCard}>
+            <Text style={styles.clueKicker}>
+              CLUE {doneCount + 1} OF {quest.stops.length}
+            </Text>
+            <Text style={styles.clueText}>
+              {currentTarget.clue ||
+                "Somewhere in this circle hides your next discovery. Explore to find it!"}
+            </Text>
+            {hintShown && (currentTarget.hint || currentTarget.description) ? (
+              <Text style={styles.clueHint}>💡 {currentTarget.hint || currentTarget.description}</Text>
+            ) : null}
+            <View style={styles.clueActions}>
+              {!hintShown ? (
+                <Text style={styles.hintBtn} onPress={() => setHintShown(true)}>
+                  🔍 Hint
+                </Text>
+              ) : (
+                <Text style={styles.hintBtnUsed}>💡 Hint shown</Text>
+              )}
+              <Text style={styles.foundItBtn} onPress={() => findStop(currentTarget.order_index, false)}>
+                I found it! →
+              </Text>
+            </View>
+            {/* No-trap fallback: a manual "reveal anyway" surfaces after a while,
+                or immediately once the hint is shown. Reveals + counts as found so
+                GPS/accessibility issues never trap the user. */}
+            {escapeArmed || hintShown ? (
+              <Text style={styles.escapeLink} onPress={() => findStop(currentTarget.order_index, true)}>
+                Can't find it? Reveal this place →
+              </Text>
+            ) : null}
+          </View>
+        </View>
+      ) : null}
 
       {/* Bottom-left: profile/score button — chunky, shows lifetime points,
           opens the Profile/Scorecard. */}
@@ -2713,6 +3168,14 @@ export default function App() {
             </Animated.View>
           </View>
         </View>
+      ) : null}
+
+      {/* ===== FIND REVEAL overlay (full-screen). The animated "You found it!"
+              moment: place name + lore revealed, the virtual item flying into the
+              collection. Shown until "Next clue" / "Finish the hunt". Sits ABOVE
+              the clue HUD; the completion auto-present waits for this to clear. ===== */}
+      {revealStop ? (
+        <View style={StyleSheet.absoluteFill}>{renderFindReveal(revealStop)}</View>
       ) : null}
 
       {/* ===== Completion OVERLAY (full-screen, scrollable). Holds the
@@ -2861,6 +3324,82 @@ const styles = StyleSheet.create({
   celebrateChip: { color: GREEN, backgroundColor: "#fff", borderRadius: 12, paddingVertical: 5, paddingHorizontal: 11, fontSize: 13, fontWeight: "800", overflow: "hidden" },
   celebrateBest: { color: "#FFE08A", fontSize: 15, fontWeight: "800", marginTop: 12 },
   discoverLine: { fontSize: 16, color: GREEN, fontWeight: "800", textAlign: "center", marginBottom: 14 },
+
+  // --- Scavenger-hunt HUD (clue card + warmer/colder meter) -------------------
+  huntHud: { position: "absolute", left: 14, right: 14, bottom: 96, alignItems: "stretch" },
+  warmthMeter: {
+    backgroundColor: CARD,
+    borderRadius: 18,
+    borderWidth: 2.5,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    alignItems: "center",
+    marginBottom: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 6,
+  },
+  warmthLabel: { fontSize: 20, fontWeight: "900", letterSpacing: 0.2 },
+  warmthHint: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 3, textAlign: "center" },
+  clueCard: {
+    backgroundColor: CARD,
+    borderRadius: 20,
+    padding: 18,
+    borderWidth: 1,
+    borderColor: BORDER,
+    shadowColor: "#000",
+    shadowOpacity: 0.2,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
+  },
+  clueKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
+  clueText: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 8, lineHeight: 25 },
+  clueHint: { fontSize: 15, fontWeight: "700", color: GREEN, marginTop: 10, lineHeight: 21 },
+  clueActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14 },
+  hintBtn: { fontSize: 16, fontWeight: "800", color: ACCENT, paddingVertical: 6, paddingHorizontal: 4 },
+  hintBtnUsed: { fontSize: 15, fontWeight: "700", color: MUTE, paddingVertical: 6 },
+  foundItBtn: {
+    fontSize: 16,
+    fontWeight: "900",
+    color: INK,
+    backgroundColor: AMBER,
+    borderRadius: 22,
+    overflow: "hidden",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  escapeLink: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 12, textAlign: "center", textDecorationLine: "underline" },
+
+  // --- Find REVEAL overlay (you found it! + collect) --------------------------
+  revealOverlay: { flex: 1, backgroundColor: SCRIM, alignItems: "center", justifyContent: "center", padding: 24 },
+  findCard: {
+    width: "100%",
+    maxWidth: 420,
+    backgroundColor: CARD,
+    borderRadius: 26,
+    padding: 26,
+    alignItems: "center",
+    borderWidth: 3,
+    borderColor: GREEN,
+    shadowColor: "#000",
+    shadowOpacity: 0.35,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 18,
+  },
+  findKicker: { fontSize: 14, fontWeight: "900", color: GREEN, letterSpacing: 2, textTransform: "uppercase" },
+  findName: { fontSize: 26, fontWeight: "900", color: INK, textAlign: "center", marginTop: 10, lineHeight: 31, letterSpacing: -0.4 },
+  findLore: { fontSize: 15, color: INK, opacity: 0.82, textAlign: "center", marginTop: 12, lineHeight: 22 },
+  collectWrap: { alignItems: "center", marginTop: 18, height: 64, justifyContent: "center" },
+  collectItem: { fontSize: 44 },
+  collectCaption: { fontSize: 13, fontWeight: "800", color: GREEN, marginTop: 4 },
+  findActions: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 18, marginTop: 22 },
+  findPhotoLink: { fontSize: 15, fontWeight: "800", color: ACCENT, textDecorationLine: "underline" },
+  findNextBtn: { backgroundColor: AMBER, borderRadius: 26, paddingVertical: 14, paddingHorizontal: 28, minHeight: 44, alignItems: "center", justifyContent: "center" },
+  findNextText: { fontSize: 17, fontWeight: "900", color: INK, letterSpacing: 0.2 },
 
   // Energetic check-in / found states
   actionBtnGo: { backgroundColor: AMBER },
