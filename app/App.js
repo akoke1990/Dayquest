@@ -8,12 +8,19 @@ import {
   Linking,
   Platform,
   ScrollView,
+  Share,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
+// expo-linking: parse incoming deep links (dayquest://friend?uid= and
+// dayquest://join?hunt=) into { hostname, queryParams }. Autolinked — needs no
+// app.json plugin entry. The OAuth redirect also rides the dayquest:// scheme,
+// so the handler filters STRICTLY on hostname ("friend"/"join") and ignores the
+// rest (the OAuth redirect has no such host), keeping sign-in untouched.
+import * as ExpoLinking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
 import * as Location from "expo-location";
 import * as Haptics from "expo-haptics";
@@ -25,11 +32,22 @@ import * as Sharing from "expo-sharing";
 // ImagePicker cache — which iOS evicts — into the persistent document dir.
 import { File, Directory, Paths } from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE, TEASER } from "./config";
+import { API_BASE, TEASER, APP_SCHEME } from "./config";
 // Optional, anonymous-first auth layer. `authConfigured` is false by default
 // (empty Supabase keys), in which case every auth helper is a safe no-op and the
 // sign-in UI is hidden — the app runs exactly as it does today.
 import { authConfigured } from "./lib/supabase";
+// Social layer (friends, shared-hunt results, leaderboard) — Supabase-direct,
+// RLS-protected. Every helper is a safe no-op when unconfigured or signed out,
+// so the solo/guest flow is untouched.
+import {
+  requestFriend,
+  acceptFriend,
+  declineFriend,
+  listFriends,
+  postHuntResult,
+  leaderboard as fetchLeaderboard,
+} from "./lib/social";
 // Native Apple sign-in button + types. The module is safe to import on all
 // platforms; the button/sheet only render on iOS (gated below).
 import * as AppleAuthentication from "expo-apple-authentication";
@@ -971,6 +989,26 @@ export default function App() {
   const userRef = useRef(null); // latest user for the completion effect (avoids re-subscribing)
   userRef.current = user;
 
+  // --- Multiplayer (friends + shared hunts + leaderboard) ---------------------
+  // ALL gated behind being signed in. Guests/unconfigured see a "sign in to play
+  // with friends" prompt; the solo flow never touches any of this.
+  const [friends, setFriends] = useState({ friends: [], incoming: [], outgoing: [] });
+  const [friendsBusy, setFriendsBusy] = useState(false);
+  const [friendsNote, setFriendsNote] = useState(""); // inline status ("Request sent!" etc.)
+  const [leaderRows, setLeaderRows] = useState([]); // current shared-hunt leaderboard
+  const [leaderBusy, setLeaderBusy] = useState(false);
+  const [leaderReturn, setLeaderReturn] = useState("welcome"); // where the leaderboard's Back goes
+  // A deep link (friend/join) can arrive during "hydrating" or before `user`
+  // resolves. We stash it here and process it ONCE the launch auth decision has
+  // settled (see the deep-link effect), so the link never races the boot.
+  const pendingLinkRef = useRef(null);
+  const [joinNote, setJoinNote] = useState(""); // "joining…" / far-from-area banner
+  // True once the authoritative launch decision (in the hydration effect) has
+  // run. Deep links are queued until this flips so they never race boot/auth.
+  const [booted, setBooted] = useState(false);
+  // Bumped whenever a deep link arrives warm, so the dispatch effect re-runs.
+  const [linkTick, setLinkTick] = useState(0);
+
   // On launch: ensure an install id exists, then check for an in-progress quest
   // to offer a Resume. We do this BEFORE showing Welcome to avoid a flash of the
   // no-resume state. "In progress" = saved quest exists and not all stops done.
@@ -1018,6 +1056,8 @@ export default function App() {
         }
       }
       setScreen(sessionUser || guestChosen ? "welcome" : "signin");
+      // Launch decision settled — release any deep link that arrived during boot.
+      setBooted(true);
     })();
   }, []);
 
@@ -1033,6 +1073,87 @@ export default function App() {
     });
     return unsub;
   }, []);
+
+  // --- Deep links: dayquest://friend?uid=… and dayquest://join?hunt=… ---------
+  // Two arrival paths: cold-start (getInitialURL) and warm (addEventListener).
+  // A link can land before boot/auth settles, so we STASH it in a ref and the
+  // dispatch effect below replays it once `booted` is true. We filter STRICTLY
+  // on the parsed hostname ("friend"/"join"); the OAuth redirect rides the same
+  // dayquest:// scheme but has NO such host, so it's naturally ignored here.
+  useEffect(() => {
+    let mounted = true;
+    function handle(url) {
+      if (!url || !mounted) return;
+      let parsed;
+      try {
+        parsed = ExpoLinking.parse(url);
+      } catch {
+        return;
+      }
+      const host = parsed?.hostname;
+      if (host !== "friend" && host !== "join") return; // ignore OAuth + anything else
+      pendingLinkRef.current = { host, params: parsed.queryParams || {} };
+      // Nudge the dispatcher: if we're already booted, process now; otherwise
+      // the booted-flip effect will pick it up.
+      setLinkTick((t) => t + 1);
+    }
+    ExpoLinking.getInitialURL()
+      .then((url) => url && handle(url))
+      .catch(() => {});
+    const sub = ExpoLinking.addEventListener("url", ({ url }) => handle(url));
+    return () => {
+      mounted = false;
+      sub?.remove?.();
+    };
+  }, []);
+
+  // Dispatch a stashed deep link once the launch decision has settled. Friend
+  // links and join links both require sign-in (multiplayer is gated): if signed
+  // out, we route to the sign-in screen and KEEP the pending link so it replays
+  // the moment `user` becomes set. Configured-but-signed-out and unconfigured
+  // both fall back to sign-in / the gentle prompt without losing the intent.
+  useEffect(() => {
+    if (!booted) return;
+    const pending = pendingLinkRef.current;
+    if (!pending) return;
+
+    // Multiplayer requires Supabase configured. If not, drop the link to the
+    // sign-in screen's "coming soon" state — nothing else we can do.
+    if (!authConfigured) {
+      pendingLinkRef.current = null;
+      return;
+    }
+    // Not signed in yet → send to sign-in and WAIT (keep the pending link). The
+    // effect re-runs when `user` flips after a successful sign-in.
+    if (!user) {
+      setScreen("signin");
+      return;
+    }
+
+    // Signed in — consume the link.
+    pendingLinkRef.current = null;
+    if (pending.host === "friend") {
+      const uid = pending.params.uid;
+      (async () => {
+        const res = await requestFriend(userRef.current, uid);
+        if (res?.ignored) {
+          setFriendsNote("That's your own invite link 🙂");
+        } else if (res?.error) {
+          setFriendsNote(res.error);
+        } else if (res?.accepted) {
+          setFriendsNote("You're now friends!");
+        } else if (res?.existing) {
+          setFriendsNote("You're already connected.");
+        } else {
+          setFriendsNote("Friend request sent!");
+        }
+        openFriends();
+      })();
+    } else if (pending.host === "join") {
+      const hid = pending.params.hunt;
+      if (hid) joinHunt(hid);
+    }
+  }, [booted, user, linkTick]);
 
   // Persist the active quest + progress whenever it changes while playing, so
   // the quest survives an app close (UX-SPEC §1.7).
@@ -1290,6 +1411,22 @@ export default function App() {
             .then((p) => p && setProfile(p))
             .catch(() => {});
         }
+
+        // SHARED HUNT result → leaderboard. Only when this quest has a hunt_id
+        // (a shared hunt) AND the user is signed in. Solo/guest quests have no
+        // hunt_id, so postHuntResult is a no-op and the leaderboard never grows
+        // a row for them. Best-effort; upserts on (user_id, hunt_id) so a re-
+        // complete just refreshes the row. Reuses the already-computed values.
+        if (userRef.current && quest.hunt_id) {
+          postHuntResult(userRef.current, {
+            hunt_id: quest.hunt_id,
+            area: areaLabel,
+            found_count: foundCount,
+            total_stops: quest.stops.length,
+            time_seconds: timeS,
+            points: earned,
+          }).catch(() => {});
+        }
       })();
 
       // Completed quests should not reappear as a "Resume" offer.
@@ -1380,21 +1517,36 @@ export default function App() {
       // distance — we just send the mode. Omitted for the default walk so the
       // simple one-tap URL stays minimal.
       if (opts.mode && opts.mode !== "walk") params.set("mode", opts.mode);
+      // SHARED HUNT (multiplayer). `shared=1` asks the server to mint a durable
+      // hunt_id (the host starting a friend hunt). `huntId` (a joiner) fetches
+      // the SAME existing hunt by id so everyone gets identical clues/places.
+      // The server returns the quest WITH a `hunt_id` in both cases. Solo quests
+      // send neither, so their URL/response are byte-identical to before.
+      if (opts.shared) params.set("shared", "1");
+      if (opts.huntId) {
+        params.set("shared", "1");
+        params.set("hunt_id", String(opts.huntId));
+      }
 
       // No-repeat: exclude the places the user has already visited so each quest
       // in an area stays fresh. Build a comma-separated list of placeKeys from the
       // newest ~100 visited records (URLSearchParams URL-encodes the value). Built
       // here so EVERY entry point (welcome fast-path, New Quest FAB, completion,
       // setup) excludes visited. Best-effort: a read failure just sends no exclude.
-      try {
-        const visitedList = await readVisited(); // newest-first
-        const excludeKeys = visitedList
-          .slice(0, 100)
-          .map((v) => v.placeKey)
-          .filter(Boolean);
-        if (excludeKeys.length) params.set("exclude", excludeKeys.join(","));
-      } catch {
-        /* no exclude — quest still builds, just may repeat places */
+      // EXCEPTION: a shared-hunt JOIN (opts.huntId) must send NO exclude — the
+      // server returns the stored hunt verbatim so every player gets IDENTICAL
+      // clues/places; a per-joiner exclude would diverge the hunt.
+      if (!opts.huntId) {
+        try {
+          const visitedList = await readVisited(); // newest-first
+          const excludeKeys = visitedList
+            .slice(0, 100)
+            .map((v) => v.placeKey)
+            .filter(Boolean);
+          if (excludeKeys.length) params.set("exclude", excludeKeys.join(","));
+        } catch {
+          /* no exclude — quest still builds, just may repeat places */
+        }
       }
 
       const res = await fetch(`${API_BASE}/quest?${params.toString()}`);
@@ -1412,13 +1564,44 @@ export default function App() {
       preQuestDiscoveredRef.current = new Set(
         Object.keys(collections[startArea]?.discovered || {})
       );
+      // The spread preserves data.hunt_id when the server returns one (shared
+      // start OR join), so it rides the quest object through to the completion
+      // effect → hunt_results upsert. Solo quests have no hunt_id (no-op there).
       setQuest({ ...data, mode: opts.mode || "walk" });
       setSaved(null);
+
+      // JOIN gracefulness: if the joiner is far from the hunt's area, surface a
+      // gentle banner (don't block — they can still see the clues/leaderboard).
+      // We compare the joiner's coords to the hunt origin when both are known.
+      if (opts.huntId) {
+        const oLat = data.origin?.lat;
+        const oLng = data.origin?.lng;
+        if (Number.isFinite(oLat) && Number.isFinite(oLng)) {
+          const farM = distanceM(latitude, longitude, oLat, oLng);
+          if (farM > 3000) {
+            setJoinNote(
+              `Heads up — this hunt is in ${data.origin?.label || "another area"}, about ` +
+                `${(farM / 1000).toFixed(1)} km away. You can follow along, but the finds are there.`
+            );
+          } else {
+            setJoinNote("");
+          }
+        }
+      } else {
+        setJoinNote("");
+      }
+
       // Freshly generated quests open on the animated REVEAL card (the "<Area>
       // Quest" collectible). Tapping it enters the map ("ready"). resumeQuest()
       // goes straight to "ready", so resumed/in-progress quests never see this.
       setScreen("reveal");
-      track("quest_started", { stops: data.stops?.length, size: opts.size || "quick", placed: hasPlace });
+      track("quest_started", {
+        stops: data.stops?.length,
+        size: opts.size || "quick",
+        placed: hasPlace,
+        shared: Boolean(opts.shared || opts.huntId),
+        joined: Boolean(opts.huntId),
+      });
     } catch (e) {
       // A failed start already wiped the in-memory progress at the top of this
       // function, but `quest` still holds the PREVIOUS quest. Drop that stale
@@ -1796,6 +1979,114 @@ export default function App() {
     setAuthError("");
     setScreen("profile");
     track("profile_opened");
+  }
+
+  // --- Friends (Supabase-direct, RLS) -----------------------------------------
+  // Load the friend graph and show the Friends screen. Gated behind sign-in by
+  // the caller; if somehow reached signed-out, the screen renders the prompt.
+  async function openFriends() {
+    setFriendsNote("");
+    setScreen("friends");
+    track("friends_opened");
+    await refreshFriends();
+  }
+
+  async function refreshFriends() {
+    if (!user) return;
+    setFriendsBusy(true);
+    try {
+      const next = await listFriends(userRef.current);
+      setFriends(next);
+    } finally {
+      setFriendsBusy(false);
+    }
+  }
+
+  // Share MY invite link. Opening it on a friend's phone creates a request to me.
+  async function shareFriendInvite() {
+    if (!user) return;
+    const link = `${APP_SCHEME}://friend?uid=${user.id}`;
+    track("friend_invite_shared");
+    try {
+      await Share.share({
+        message: `Add me on DayQuest! Tap to send me a friend request:\n${link}`,
+      });
+    } catch {
+      /* user dismissed the share sheet — nothing to do */
+    }
+  }
+
+  async function onAcceptFriend(friendshipId) {
+    if (!user) return;
+    setFriendsBusy(true);
+    const res = await acceptFriend(userRef.current, friendshipId);
+    setFriendsNote(res.error ? res.error : "Friend added!");
+    await refreshFriends();
+  }
+
+  async function onDeclineFriend(friendshipId) {
+    if (!user) return;
+    setFriendsBusy(true);
+    const res = await declineFriend(userRef.current, friendshipId);
+    setFriendsNote(res.error ? res.error : "Request removed.");
+    await refreshFriends();
+  }
+
+  // --- Shared hunts (multiplayer) ---------------------------------------------
+  // Host a shared hunt: start via /quest?shared=1 (server mints a hunt_id). The
+  // Invite action below shares the join link once the quest is live. Reuses the
+  // current Setup choices (place/size/mode) exactly like startSetupQuest.
+  function startSharedHunt() {
+    if (!setupReady) return;
+    track("shared_hunt_started");
+    const base = { shared: true, size: setupSize, mode: travelMode };
+    if (setupMode === "place" && setupPlace) {
+      startQuest({ ...base, lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name });
+    } else {
+      startQuest(base);
+    }
+  }
+
+  // Share the CURRENT shared hunt's join link. Friends opening it join the same
+  // hunt (identical clues/places). No-op if the active quest isn't shared.
+  async function shareHuntInvite() {
+    const hid = quest?.hunt_id;
+    if (!hid) return;
+    const link = `${APP_SCHEME}://join?hunt=${hid}`;
+    track("hunt_invite_shared");
+    try {
+      await Share.share({
+        message: `Join my DayQuest hunt! We race the same clues — tap to play:\n${link}`,
+      });
+    } catch {
+      /* dismissed */
+    }
+  }
+
+  // Join an existing shared hunt by id (from a deep link). Fetches the SAME
+  // stored hunt from the server and drops into it. Needs device location to
+  // frame the map; the far-from-area case is handled gracefully in startQuest.
+  function joinHunt(huntId) {
+    if (!huntId) return;
+    track("hunt_joined", { hunt_id: huntId });
+    startQuest({ huntId });
+  }
+
+  // --- Leaderboard ------------------------------------------------------------
+  // Open the per-shared-hunt leaderboard for a given hunt_id, remembering where
+  // Back returns to.
+  async function openLeaderboard(huntId, returnTo = "welcome") {
+    if (!huntId) return;
+    setLeaderReturn(returnTo);
+    setScreen("leaderboard");
+    track("leaderboard_opened");
+    setLeaderBusy(true);
+    try {
+      const rows = await fetchLeaderboard(userRef.current, huntId);
+      setLeaderRows(rows);
+    } finally {
+      setLeaderBusy(false);
+    }
   }
 
   // --- Quest Setup sheet ------------------------------------------------------
@@ -2194,6 +2485,23 @@ export default function App() {
           📜 My Quests
         </Text>
 
+        {/* MULTIPLAYER entry — gated behind sign-in. Signed in: go to Friends.
+            Configured-but-signed-out OR unconfigured: a gentle "sign in to play
+            with friends" prompt that routes to the sign-in screen. The solo flow
+            above is untouched either way. */}
+        {user ? (
+          <Text style={styles.historyLink} onPress={openFriends}>
+            👥 Friends
+          </Text>
+        ) : (
+          <Text
+            style={styles.historyLink}
+            onPress={() => (authConfigured ? setScreen("signin") : null)}
+          >
+            👥 Sign in to play with friends
+          </Text>
+        )}
+
         {/* OPTIONAL sign-in entry — NOT a gate. Hidden entirely unless Supabase
             is configured. Shows the signed-in name once signed in, otherwise a
             gentle "save your profile" invite. The whole app works without it. */}
@@ -2291,6 +2599,169 @@ export default function App() {
             {authBusy ? <ActivityIndicator style={{ marginTop: 16 }} color={ACCENT} /> : null}
             {authError ? <Text style={styles.error}>{authError}</Text> : null}
           </>
+        )}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  // --- FRIENDS screen ---------------------------------------------------------
+  // Gated behind sign-in (the entry hides it for guests). Lists accepted friends,
+  // incoming pending requests (Accept/Decline), and an Add-friend (share invite
+  // link) action. All via Supabase RLS through lib/social.js.
+  if (screen === "friends") {
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Friends</Text>
+
+        {!user ? (
+          <>
+            <Text style={styles.intro}>
+              Sign in to add friends, hunt together, and climb the leaderboard.
+            </Text>
+            {authConfigured ? (
+              <TouchableOpacity style={styles.button} onPress={() => setScreen("signin")}>
+                <Text style={styles.buttonText}>Sign in</Text>
+              </TouchableOpacity>
+            ) : (
+              <Text style={styles.permNote}>Friends are coming soon.</Text>
+            )}
+          </>
+        ) : (
+          <>
+            <Text style={styles.intro}>
+              Share your invite link so friends can add you — then hunt the same
+              clues and race the leaderboard.
+            </Text>
+
+            <TouchableOpacity style={styles.button} onPress={shareFriendInvite}>
+              <Text style={styles.buttonText}>➕ Add a friend (share link)</Text>
+            </TouchableOpacity>
+
+            {friendsNote ? <Text style={styles.friendsNote}>{friendsNote}</Text> : null}
+            {friendsBusy ? <ActivityIndicator style={{ marginTop: 12 }} color={ACCENT} /> : null}
+
+            {/* Incoming requests (Accept / Decline). */}
+            {friends.incoming.length > 0 ? (
+              <>
+                <Text style={styles.setupSectionLabel}>Requests</Text>
+                {friends.incoming.map((f) => (
+                  <View key={f.friendshipId} style={styles.friendRow}>
+                    <Text style={styles.friendName} numberOfLines={1}>
+                      {f.display_name}
+                    </Text>
+                    <View style={styles.friendActions}>
+                      <TouchableOpacity
+                        style={styles.friendAccept}
+                        onPress={() => onAcceptFriend(f.friendshipId)}
+                        disabled={friendsBusy}
+                      >
+                        <Text style={styles.friendAcceptText}>Accept</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.friendDecline}
+                        onPress={() => onDeclineFriend(f.friendshipId)}
+                        disabled={friendsBusy}
+                      >
+                        <Text style={styles.friendDeclineText}>Decline</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ))}
+              </>
+            ) : null}
+
+            {/* Accepted friends. */}
+            <Text style={styles.setupSectionLabel}>Your friends</Text>
+            {friends.friends.length === 0 ? (
+              <Text style={styles.permNote}>
+                No friends yet. Share your invite link to add one.
+              </Text>
+            ) : (
+              friends.friends.map((f) => (
+                <View key={f.friendshipId} style={styles.friendRow}>
+                  <Text style={styles.friendName} numberOfLines={1}>
+                    👤 {f.display_name}
+                  </Text>
+                  <TouchableOpacity
+                    style={styles.friendDecline}
+                    onPress={() => onDeclineFriend(f.friendshipId)}
+                    disabled={friendsBusy}
+                  >
+                    <Text style={styles.friendDeclineText}>Remove</Text>
+                  </TouchableOpacity>
+                </View>
+              ))
+            )}
+
+            {/* Outgoing pending (informational). */}
+            {friends.outgoing.length > 0 ? (
+              <>
+                <Text style={styles.setupSectionLabel}>Pending (sent)</Text>
+                {friends.outgoing.map((f) => (
+                  <View key={f.friendshipId} style={styles.friendRow}>
+                    <Text style={styles.friendName} numberOfLines={1}>
+                      {f.display_name}
+                    </Text>
+                    <Text style={styles.friendPending}>Awaiting…</Text>
+                  </View>
+                ))}
+              </>
+            ) : null}
+          </>
+        )}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  // --- LEADERBOARD screen -----------------------------------------------------
+  // Per-shared-hunt ranking (fastest → most found → most points), profile-joined.
+  // "Back" returns to wherever it was opened from (reveal / ready / welcome).
+  if (screen === "leaderboard") {
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text
+          style={styles.backLink}
+          onPress={() => setScreen(leaderReturn === "reveal" ? "reveal" : leaderReturn)}
+        >
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Leaderboard</Text>
+        <Text style={styles.intro}>Fastest time wins. You vs your friends on this hunt.</Text>
+
+        {leaderBusy ? (
+          <ActivityIndicator style={{ marginTop: 20 }} color={ACCENT} />
+        ) : leaderRows.length === 0 ? (
+          <Text style={styles.permNote}>
+            No results yet. Finish the hunt (and have a friend finish too) to see the
+            ranking here.
+          </Text>
+        ) : (
+          leaderRows.map((r) => (
+            <View
+              key={r.userId}
+              style={[styles.leaderRow, r.isMe && styles.leaderRowMe]}
+            >
+              <Text style={styles.leaderRank}>{r.rank}</Text>
+              <Text style={styles.leaderName} numberOfLines={1}>
+                {r.isMe ? "You" : r.display_name}
+              </Text>
+              <View style={styles.leaderStats}>
+                <Text style={styles.leaderTime}>
+                  {r.time_seconds == null ? "—" : formatDuration(r.time_seconds)}
+                </Text>
+                <Text style={styles.leaderMeta}>
+                  {r.found_count}/{r.total_stops} · {r.points} pts
+                </Text>
+              </View>
+            </View>
+          ))
         )}
         <View style={{ height: 40 }} />
       </ScrollView>
@@ -2700,6 +3171,25 @@ export default function App() {
         >
           <Text style={styles.buttonText}>Start Quest</Text>
         </TouchableOpacity>
+
+        {/* HUNT WITH FRIENDS — a shared hunt everyone races on identical clues.
+            Gated behind sign-in: signed-in users get the button; otherwise a
+            gentle prompt. The solo "Start Quest" above is unchanged. */}
+        {user ? (
+          <TouchableOpacity
+            style={[styles.secondaryBtn, !setupReady && styles.buttonDisabled]}
+            onPress={startSharedHunt}
+            disabled={!setupReady}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.secondaryBtnText}>👥 Hunt with friends</Text>
+          </TouchableOpacity>
+        ) : authConfigured ? (
+          <Text style={styles.setupLink} onPress={() => setScreen("signin")}>
+            👥 Sign in to hunt with friends
+          </Text>
+        ) : null}
+
         {setupMode === "place" && !setupPlace ? (
           <Text style={styles.permNote}>Find a place above to start questing there.</Text>
         ) : null}
@@ -2775,6 +3265,12 @@ export default function App() {
             </View>
           </View>
 
+          {/* SHARED HUNT join banner: shown when the joiner is far from the
+              hunt's area (set in startQuest). Gentle, non-blocking. */}
+          {quest.hunt_id && joinNote ? (
+            <Text style={styles.joinBanner}>{joinNote}</Text>
+          ) : null}
+
           <TouchableOpacity
             style={styles.revealBeginBtn}
             onPress={() => setScreen("ready")}
@@ -2782,6 +3278,27 @@ export default function App() {
           >
             <Text style={styles.revealBeginText}>Begin</Text>
           </TouchableOpacity>
+
+          {/* SHARED HUNT actions: invite friends to race the identical hunt, and
+              peek at the live leaderboard. Only on a shared hunt (has hunt_id). */}
+          {quest.hunt_id ? (
+            <>
+              <TouchableOpacity
+                style={styles.secondaryBtn}
+                onPress={shareHuntInvite}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.secondaryBtnText}>📨 Invite friends</Text>
+              </TouchableOpacity>
+              <Text
+                style={styles.setupLink}
+                onPress={() => openLeaderboard(quest.hunt_id, "reveal")}
+              >
+                🏆 Leaderboard
+              </Text>
+            </>
+          ) : null}
+
           <Text style={styles.revealHint}>Follow the clues. No pins — you have to hunt.</Text>
         </Animated.View>
       </View>
@@ -3001,6 +3518,24 @@ export default function App() {
         ) : null}
 
         {renderRecap()}
+
+        {/* SHARED HUNT: surface the leaderboard + a re-invite on completion. The
+            hunt_results row was upserted by the completion effect; the buttons
+            read/share live. Only on a shared hunt (has hunt_id). */}
+        {quest.hunt_id ? (
+          <View style={styles.sharedRecapCard}>
+            <Text style={styles.sharedRecapTitle}>You vs your friends</Text>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => openLeaderboard(quest.hunt_id, "ready")}
+            >
+              <Text style={styles.buttonText}>🏆 See the leaderboard</Text>
+            </TouchableOpacity>
+            <Text style={styles.setupLink} onPress={shareHuntInvite}>
+              📨 Invite more friends
+            </Text>
+          </View>
+        ) : null}
 
         {/* Quick delight signal + optional note after completion (UX-SPEC §1.8). */}
         <View style={styles.feedbackCard}>
@@ -3701,6 +4236,29 @@ const styles = StyleSheet.create({
   button: { backgroundColor: ACCENT, paddingVertical: 16, paddingHorizontal: 36, borderRadius: 30, marginTop: 28, alignSelf: "center" },
   buttonText: { color: "#fff", fontSize: 18, fontWeight: "700" },
   buttonDisabled: { opacity: 0.4 },
+
+  // --- Multiplayer (friends + shared hunts + leaderboard) ---------------------
+  secondaryBtn: { backgroundColor: "#fff", borderWidth: 2, borderColor: ACCENT, paddingVertical: 14, paddingHorizontal: 30, borderRadius: 30, marginTop: 14, alignSelf: "center" },
+  secondaryBtnText: { color: ACCENT, fontSize: 16, fontWeight: "800" },
+  joinBanner: { fontSize: 13, color: INK, opacity: 0.8, textAlign: "center", marginTop: 14, marginBottom: 2, lineHeight: 18, backgroundColor: TINT, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 12 },
+  friendsNote: { fontSize: 14, color: GREEN, fontWeight: "700", textAlign: "center", marginTop: 14 },
+  friendRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, marginTop: 10 },
+  friendName: { flex: 1, fontSize: 16, fontWeight: "700", color: INK, marginRight: 10 },
+  friendActions: { flexDirection: "row", gap: 8 },
+  friendAccept: { backgroundColor: ACCENT, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 18 },
+  friendAcceptText: { color: "#fff", fontWeight: "800", fontSize: 14 },
+  friendDecline: { backgroundColor: "#fff", borderWidth: 1.5, borderColor: BORDER, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 18 },
+  friendDeclineText: { color: MUTE, fontWeight: "800", fontSize: 14 },
+  friendPending: { fontSize: 13, color: MUTE, fontWeight: "700" },
+  sharedRecapCard: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 16, marginTop: 18, alignItems: "center" },
+  sharedRecapTitle: { fontSize: 17, fontWeight: "800", color: INK },
+  leaderRow: { flexDirection: "row", alignItems: "center", backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, marginTop: 10 },
+  leaderRowMe: { borderColor: ACCENT, borderWidth: 2, backgroundColor: TINT },
+  leaderRank: { fontSize: 18, fontWeight: "900", color: ACCENT, width: 30 },
+  leaderName: { flex: 1, fontSize: 16, fontWeight: "700", color: INK, marginRight: 8 },
+  leaderStats: { alignItems: "flex-end" },
+  leaderTime: { fontSize: 16, fontWeight: "800", color: INK },
+  leaderMeta: { fontSize: 12, color: MUTE, fontWeight: "600", marginTop: 2 },
 
   // --- Quest Setup sheet ------------------------------------------------------
   setupLink: { fontSize: 14, color: ACCENT, fontWeight: "700", textAlign: "center", marginTop: 16 },
