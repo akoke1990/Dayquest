@@ -6,6 +6,7 @@ import {
   Dimensions,
   Image,
   Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -29,8 +30,12 @@ import { API_BASE, TEASER } from "./config";
 // (empty Supabase keys), in which case every auth helper is a safe no-op and the
 // sign-in UI is hidden — the app runs exactly as it does today.
 import { authConfigured } from "./lib/supabase";
+// Native Apple sign-in button + types. The module is safe to import on all
+// platforms; the button/sheet only render on iOS (gated below).
+import * as AppleAuthentication from "expo-apple-authentication";
 import {
   signInWithProvider,
+  signInWithAppleNative,
   signOut,
   getCurrentUser,
   onAuthChange,
@@ -1799,7 +1804,14 @@ export default function App() {
     setAuthError("");
     track("sign_in_started", { provider });
     try {
-      const res = await signInWithProvider(provider);
+      // iOS Apple uses the NATIVE flow (Apple's system sheet → identity token →
+      // supabase.signInWithIdToken). It returns the same shape as the web-redirect
+      // helper, so everything below is identical. Google (and Apple on non-iOS)
+      // keep the existing web-redirect OAuth.
+      const res =
+        provider === "apple" && Platform.OS === "ios"
+          ? await signInWithAppleNative()
+          : await signInWithProvider(provider);
       if (res.canceled) {
         return; // user backed out — no error
       }
@@ -1826,6 +1838,27 @@ export default function App() {
     } finally {
       setAuthBusy(false);
     }
+  }
+
+  // The "Continue with Apple" control. On iOS we MUST use Apple's own branded
+  // button (App Store Guideline 4.8 / Apple HIG) — rendered with an explicit
+  // width+height (it draws blank without them). `cornerRadius` matches the site's
+  // surrounding buttons (28 on the rounded sign-in screen, 12 on the profile
+  // card). On Android there is no Apple sign-in, so we render nothing.
+  function renderAppleButton({ cornerRadius }) {
+    if (Platform.OS !== "ios") return null;
+    return (
+      <AppleAuthentication.AppleAuthenticationButton
+        buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+        buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+        cornerRadius={cornerRadius}
+        style={[styles.appleBtn, authBusy && styles.actionBtnDisabled]}
+        onPress={() => {
+          if (authBusy) return;
+          handleSignIn("apple");
+        }}
+      />
+    );
   }
 
   async function handleSignOut() {
@@ -1988,16 +2021,7 @@ export default function App() {
               >
                 <Text style={styles.oauthBtnText}>Continue with Google</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={[styles.oauthBtn, styles.oauthBtnApple, styles.signinBtn, authBusy && styles.actionBtnDisabled]}
-                onPress={() => handleSignIn("apple")}
-                disabled={authBusy}
-                activeOpacity={0.85}
-              >
-                <Text style={[styles.oauthBtnText, styles.oauthBtnTextApple]}>
-                  Continue with Apple
-                </Text>
-              </TouchableOpacity>
+              {renderAppleButton({ cornerRadius: 28 })}
               {authBusy ? <ActivityIndicator style={{ marginTop: 16 }} color={ACCENT} /> : null}
               {authError ? <Text style={styles.error}>{authError}</Text> : null}
             </>
@@ -2210,15 +2234,7 @@ export default function App() {
             >
               <Text style={styles.oauthBtnText}>Continue with Google</Text>
             </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.oauthBtn, styles.oauthBtnApple, authBusy && styles.actionBtnDisabled]}
-              onPress={() => handleSignIn("apple")}
-              disabled={authBusy}
-            >
-              <Text style={[styles.oauthBtnText, styles.oauthBtnTextApple]}>
-                Continue with Apple
-              </Text>
-            </TouchableOpacity>
+            {renderAppleButton({ cornerRadius: 12 })}
 
             {authBusy ? <ActivityIndicator style={{ marginTop: 16 }} color={ACCENT} /> : null}
             {authError ? <Text style={styles.error}>{authError}</Text> : null}
@@ -3519,8 +3535,9 @@ const styles = StyleSheet.create({
   profileEmail: { fontSize: 14, color: INK, opacity: 0.6, marginTop: 2 },
   oauthBtn: { backgroundColor: "#fff", borderRadius: 12, paddingVertical: 15, alignItems: "center", marginTop: 14, borderWidth: 1, borderColor: BORDER },
   oauthBtnText: { color: INK, fontSize: 16, fontWeight: "700" },
-  oauthBtnApple: { backgroundColor: "#000", borderColor: "#000" },
-  oauthBtnTextApple: { color: "#fff" },
+  // Apple's native button needs an explicit width+height or it renders blank.
+  // Full-width + 50pt matches the adjacent Google button's footprint at both sites.
+  appleBtn: { width: "100%", height: 50, marginTop: 14 },
 
   // Points-earned badge on the completion recap
   pointsBadge: { backgroundColor: GREEN, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 20, marginBottom: 14 },

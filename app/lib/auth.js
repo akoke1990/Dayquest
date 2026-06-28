@@ -8,6 +8,9 @@
 
 import * as WebBrowser from "expo-web-browser";
 import * as AuthSession from "expo-auth-session";
+// Native Apple sign-in. Safe to import on every platform — the module loads
+// everywhere; only `signInAsync` / `isAvailableAsync` / the button are iOS-only.
+import * as AppleAuthentication from "expo-apple-authentication";
 import { supabase, authConfigured } from "./supabase";
 import { APP_SCHEME } from "../config";
 
@@ -73,6 +76,37 @@ export async function signInWithProvider(provider) {
     return { user: sessionData?.user || null };
   } catch (e) {
     return { error: e?.message || "Sign-in failed." };
+  }
+}
+
+// Native iOS "Sign in with Apple" (App-Store-compliant, Guideline 4.8). Runs
+// Apple's system sheet via expo-apple-authentication, then exchanges the
+// returned identity token for a Supabase session via signInWithIdToken. Returns
+// the SAME shape as signInWithProvider ({ user } | { canceled: true } | { error })
+// so the caller's post-sign-in path (profile upsert/session) is identical to
+// Google's. iOS only — callers gate the entry on Platform.OS === "ios". Never throws.
+export async function signInWithAppleNative() {
+  if (!authConfigured || !supabase) return { error: "Sign-in isn't set up yet." };
+  try {
+    const credential = await AppleAuthentication.signInAsync({
+      requestedScopes: [
+        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+        AppleAuthentication.AppleAuthenticationScope.EMAIL,
+      ],
+    });
+    const token = credential?.identityToken;
+    if (!token) return { error: "Apple didn't return a sign-in token." };
+
+    const { data, error } = await supabase.auth.signInWithIdToken({
+      provider: "apple",
+      token,
+    });
+    if (error) return { error: error.message };
+    return { user: data?.user || null };
+  } catch (e) {
+    // User tapped Cancel on Apple's sheet — not an error, no toast.
+    if (e?.code === "ERR_REQUEST_CANCELED") return { canceled: true };
+    return { error: e?.message || "Apple sign-in failed." };
   }
 }
 

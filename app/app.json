@@ -21,11 +21,13 @@
           "photosPermission": "DayQuest accesses your photos so you can pick an image for a stop."
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-apple-authentication"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.akoke18.dayquest"
+      "bundleIdentifier": "com.akoke18.dayquest",
+      "usesAppleSignIn": true
     },
     "android": {
       "adaptiveIcon": {

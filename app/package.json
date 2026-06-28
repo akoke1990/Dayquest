@@ -6,6 +6,7 @@
     "@react-native-async-storage/async-storage": "2.2.0",
     "@supabase/supabase-js": "^2.108.2",
     "expo": "^54.0.35",
+    "expo-apple-authentication": "~8.0.8",
     "expo-auth-session": "~7.0.11",
     "expo-constants": "~18.0.13",
     "expo-crypto": "~15.0.9",
