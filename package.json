@@ -8,7 +8,8 @@
     "quest": "node generate-quest.js",
     "serve": "node server.js",
     "ingest:gv": "node scripts/ingest-gv.js",
-    "ingest:pois": "node scripts/ingest-pois.js"
+    "ingest:pois": "node scripts/ingest-pois.js",
+    "pull:nyc": "node scripts/pull-nyc.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",
