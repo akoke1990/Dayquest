@@ -94,6 +94,23 @@ const FIND_RADIUS_M = 50; // within this of the target → FOUND IT (reveal + co
 // makes the warmer/colder signal feel deliberate (the geocaching trick). The
 // ≤FIND_RADIUS_M find-trigger is NOT gated — it always reads raw live distance.
 const HEAT_MOVE_M = 12;
+// Net-travel gate for the warmer/colder TREND (closer-since-last-move). LARGER
+// than the band gate on purpose: a distance delta over a single 12m gated move
+// can be swamped by tens-of-metres GPS error, so the trend (the fragile garnish)
+// only commits to a direction after ≥ this much net travel. Below it we fall
+// back to the trustworthy absolute band STATE — never assert a wrong direction.
+const TREND_MOVE_M = 28;
+// Gentle auto-follow: re-center on the user at a LOCKED zoom only after this long
+// without a manual pan, so it never fights an active gesture (the FAB is the
+// instant manual escape hatch).
+const FOLLOW_IDLE_MS = 8000;
+// Locked auto-follow zoom (degrees). Constant so the zoom doesn't drift as you
+// walk away from the zone (regionForHunt's span varies; this does not).
+const FOLLOW_DELTA = 0.008;
+// Pinch-zoom bounds (Munzee's runaway-zoom cautionary tale): a pinch can't fling
+// the map to space or into the pavement.
+const MAP_MIN_ZOOM = 12;
+const MAP_MAX_ZOOM = 19;
 // After this long on one clue we surface the manual "reveal anyway" escape, so a
 // GPS/accessibility issue can never trap the user on a clue.
 const ESCAPE_AFTER_MS = 45000;
@@ -118,6 +135,12 @@ function proximityBand(distM) {
 }
 const SCREEN_H = Dimensions.get("window").height; // for sheet peek/expanded sizing
 const SCREEN_W = Dimensions.get("window").width; // confetti spread on the find reveal
+// Approx height of the bottom clue sheet in its PEEK rest state — used to lift
+// the score/primary/recenter FABs above it so the peek sheet never occludes them
+// (per the wireframe: FABs sit above the sheet). The expanded sheet rises over
+// the FABs, which is fine (the user is reading the clue then, not tapping a FAB).
+const SHEET_PEEK_H = 196;
+const SHEET_CLEARANCE = SHEET_PEEK_H + 26; // FAB bottom offset
 
 // --- Local persistence (pause/resume) + anonymous analytics -----------------
 const STORE_KEY = "dayquest.activeQuest.v1"; // { quest, progress }
@@ -936,8 +959,20 @@ export default function App() {
   // the catch is structurally geo-gated to the solved place — it can't be opened
   // from anywhere else. Reset in nextClue() when the find completes.
   const [catching, setCatching] = useState(false);
-  const [hintShown, setHintShown] = useState(false); // current target's hint revealed
+  // Hint-ladder rung currently unlocked on the CURRENT target:
+  //   0 = clue only · 1 = nudge revealed · 2 = strong hint (stop.hint) revealed.
+  // Rung 3 (reveal) is the existing `escapeArmed` give-up path — never a counter
+  // value, so the no-trap reveal logic below stays exactly as it was. Reset per
+  // target in nextClue() and the per-target reset effect.
+  const [hintRung, setHintRung] = useState(0);
   const [escapeArmed, setEscapeArmed] = useState(false); // the "reveal anyway" fallback shown after a while
+  // Warmer/colder TREND (closer/farther since the last *significant* move),
+  // folded into the directive line. "warmer" | "colder" | null (no reading yet /
+  // move too small to trust). GPS-noise-safe: only updates on ≥ TREND_MOVE_M of
+  // net travel (a larger gate than the 12m band gate) so a single jittery step
+  // can't claim a direction; below that we fall back to the band STATE alone.
+  const [trend, setTrend] = useState(null);
+  const prevHeatDistRef = useRef(null); // target distance at the last trend update
   // Warmer/colder: last proximity band we buzzed for (so haptics fire on band
   // CHANGE, not every GPS tick — the metal-detector throttle).
   const lastBandRef = useRef(null);
@@ -982,9 +1017,22 @@ export default function App() {
   const [recapOpen, setRecapOpen] = useState(false);
   const recapAutoPresentedRef = useRef(false); // guard: auto-present completion once
 
-  // Clue card collapse state. Starts open; the handle/tab toggles it so the
-  // clue can be tucked against the left edge to keep the map clear.
-  const [cluePanelOpen, setCluePanelOpen] = useState(true);
+  // Bottom clue-sheet rest state. The sheet has two rest states:
+  //   false = PEEK (default): clue + directive + action row, map owns the screen.
+  //   true  = EXPANDED: full clue + the 3-rung hint ladder.
+  // Tap the header (or the grabber) toggles; a PanResponder swipe is an
+  // enhancement on top. A "collapse to slim tab" power-user state is kept too.
+  const [sheetExpanded, setSheetExpanded] = useState(false);
+  const [sheetCollapsed, setSheetCollapsed] = useState(false); // tucked to a slim tab
+
+  // --- Map recenter / auto-follow (the worst current bug: map never recenters) -
+  // A ref to the live MapView so we can animateToRegion (the file previously set
+  // initialRegion ONCE and never recentered). `lastUserInteractRef` timestamps
+  // the last manual pan (via onPanDrag) so gentle auto-follow never fights an
+  // active pan; `followArmedRef` is bumped each new clue to re-frame immediately.
+  const mapRef = useRef(null);
+  const lastUserInteractRef = useRef(0);
+  const mapReadyRef = useRef(false);
 
   // Pop the stop card in/out whenever a stop is selected/deselected.
   useEffect(() => {
@@ -1319,6 +1367,89 @@ export default function App() {
     }
   }, [heatCoords, screen, quest, progress, findReveal]);
 
+  // --- Warmer/colder TREND (closer-since-last-move) ---------------------------
+  // Folds into the directive line: did the LAST meaningful move take us closer or
+  // farther? GPS-noise-safe per the design's caution — we only COMMIT a direction
+  // after ≥ TREND_MOVE_M of net travel (a larger gate than the 12m band gate);
+  // until then we leave prevHeatDistRef untouched so small steps accumulate, and
+  // the directive falls back to the trustworthy band STATE rather than asserting
+  // a direction it can't support. A crisp haptic + the existing visual pulse
+  // (warmthAnim/edge-glow) carry the cue — no audio dep (deferred, item #5).
+  useEffect(() => {
+    if (screen !== "ready" || !quest || !heatCoords || findReveal != null) return;
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    if (!target?.place) return;
+    const dist = distanceM(
+      heatCoords.latitude,
+      heatCoords.longitude,
+      target.place.lat,
+      target.place.lng
+    );
+    const prev = prevHeatDistRef.current;
+    if (prev == null) {
+      // First gated reading on this target — seed the baseline, no trend yet.
+      prevHeatDistRef.current = dist;
+      return;
+    }
+    const delta = prev - dist; // +ve = got closer
+    if (Math.abs(delta) < TREND_MOVE_M) return; // within GPS noise — don't claim a direction
+    prevHeatDistRef.current = dist;
+    if (delta > 0) {
+      setTrend("warmer");
+      // A crisp confirming buzz on a real "warmer" step (paired w/ the visual pulse).
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    } else {
+      setTrend("colder");
+    }
+  }, [heatCoords, screen, quest, progress, findReveal]);
+
+  // --- Map recenter on every NEW clue -----------------------------------------
+  // The headline map fix: frame the current target's search zone + the user
+  // whenever the active target CHANGES (advance to clue 2, or a reveal closes to
+  // the next target). Keyed on the target's order_index ONLY — NOT coords — so it
+  // re-frames on a new clue, never on every GPS tick (which would fight the
+  // user). coords is read inside but intentionally omitted from deps.
+  useEffect(() => {
+    if (screen !== "ready" || !quest || findReveal != null) return;
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    if (!target?.place || !mapRef.current) return;
+    mapRef.current.animateToRegion(regionForHunt(target, coords), 600);
+    // Hold off gentle auto-follow for the idle window so this zone+user framing
+    // survives (otherwise the next GPS tick's user-centered follow would stomp
+    // it — the exact strand-on-the-wrong-patch bug this recenter exists to kill).
+    lastUserInteractRef.current = Date.now();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    screen,
+    quest,
+    findReveal,
+    quest?.stops.find((s) => !progress[s.order_index]?.found)?.order_index,
+  ]);
+
+  // --- Gentle, debounced auto-follow ------------------------------------------
+  // If the user hasn't manually panned (or we haven't just programmatically
+  // framed) in FOLLOW_IDLE_MS, ease-recenter on them at a LOCKED zoom
+  // (FOLLOW_DELTA — a constant span, so the zoom never drifts as they walk away
+  // from the zone). Driven off the 12m-gated `heatCoords` (NOT raw `coords`) so
+  // it's genuinely debounced — re-centers roughly every HEAT_MOVE_M of travel,
+  // not on every GPS tick — and so it never stomps the new-clue / FAB framing
+  // (those bump lastUserInteractRef to hold this off for the idle window).
+  // Paused while a reveal is up. The recenter FAB is the instant manual override.
+  useEffect(() => {
+    if (screen !== "ready" || !quest || findReveal != null || !heatCoords) return;
+    if (Date.now() - lastUserInteractRef.current < FOLLOW_IDLE_MS) return;
+    if (!mapRef.current) return;
+    mapRef.current.animateToRegion(
+      {
+        latitude: heatCoords.latitude,
+        longitude: heatCoords.longitude,
+        latitudeDelta: FOLLOW_DELTA,
+        longitudeDelta: FOLLOW_DELTA,
+      },
+      500
+    );
+  }, [heatCoords, screen, quest, findReveal]);
+
   // Pulse the warmer/colder indicator continuously, FASTER the hotter. Re-armed
   // whenever the current target's band changes. A looping scale breath via the
   // existing Animated API (Expo-Go safe). Idle (slow) when cold.
@@ -1408,6 +1539,9 @@ export default function App() {
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     if (!target) return;
     setEscapeArmed(false);
+    setHintRung(0); // re-collapse the hint ladder when the active target changes
+    setTrend(null); // and clear the warmer/colder trend
+    prevHeatDistRef.current = null;
     const id = setTimeout(() => setEscapeArmed(true), ESCAPE_AFTER_MS);
     return () => clearTimeout(id);
     // Re-arm when the active target changes (its order_index) or a reveal closes.
@@ -1599,10 +1733,15 @@ export default function App() {
     setSelectedStop(null);
     setRecapOpen(false);
     recapAutoPresentedRef.current = false;
-    // Fresh hunt: no reveal showing, no hint, escape disarmed, bands/finds reset.
+    // Fresh hunt: no reveal showing, hint ladder collapsed, escape disarmed,
+    // sheet back to peek, trend cleared, bands/finds reset.
     setFindReveal(null);
-    setHintShown(false);
+    setHintRung(0);
     setEscapeArmed(false);
+    setSheetExpanded(false);
+    setSheetCollapsed(false);
+    setTrend(null);
+    prevHeatDistRef.current = null;
     lastBandRef.current = null;
     lastHeatPosRef.current = null; // re-arm the heat movement gate
     setHeatCoords(null); // fresh quest → no gated fix → glow starts cold
@@ -1818,8 +1957,12 @@ export default function App() {
     }
     preQuestDiscoveredRef.current = resumeDiscovered;
     setFindReveal(null);
-    setHintShown(false);
+    setHintRung(0);
     setEscapeArmed(false);
+    setSheetExpanded(false);
+    setSheetCollapsed(false);
+    setTrend(null);
+    prevHeatDistRef.current = null;
     lastBandRef.current = null;
     lastHeatPosRef.current = null; // re-arm the heat movement gate
     setHeatCoords(null); // resumed quest → re-acquire a gated fix before glowing
@@ -2046,9 +2189,27 @@ export default function App() {
     setFindReveal(null);
     setCatching(false); // tear down the camera-catch overlay if it was up
     completingRef.current = false; // re-arm the catch-completion guard for the next find
-    setHintShown(false);
+    setHintRung(0); // re-collapse the hint ladder for the new target
     setEscapeArmed(false);
+    setSheetExpanded(false); // drop the clue sheet back to peek for the new clue
+    setSheetCollapsed(false);
+    setTrend(null); // clear the warmer/colder trend for the new target
+    prevHeatDistRef.current = null;
     lastBandRef.current = null; // re-arm warmer/colder for the new target
+  }
+
+  // Manual recenter (the 📍 FAB): re-frame the current target's search zone + the
+  // user, exactly like the new-clue recenter. Also clears the auto-follow idle
+  // gate so a tap immediately re-arms gentle follow afterward.
+  function recenterToHunt() {
+    const target = quest?.stops.find((s) => !progress[s.order_index]?.found);
+    if (!mapRef.current) return;
+    mapRef.current.animateToRegion(regionForHunt(target, coords), 500);
+    // Hold off auto-follow for the idle window so this manual framing survives
+    // (otherwise the next gated heat tick would re-center on the user and undo
+    // it). Auto-follow resumes naturally once FOLLOW_IDLE_MS elapses.
+    lastUserInteractRef.current = Date.now();
+    Haptics.selectionAsync().catch(() => {});
   }
 
   async function takePhoto(orderIndex) {
@@ -3277,6 +3438,62 @@ export default function App() {
       ? distanceM(heatCoords.latitude, heatCoords.longitude, currentTarget.place.lat, currentTarget.place.lng)
       : null;
   const band = proximityBand(targetDist);
+
+  // --- Unified directive line (band STATE + warmer/colder TREND) --------------
+  // Folds the old standalone bottom warmth meter into ONE micro-line in the clue
+  // sheet: the moment-to-moment "what do I do now". The edge-glow carries the
+  // STATE (color/intensity); this carries the WORDS. Prefers the trend (the
+  // actionable "this way / double back") when we have one we trust, and falls
+  // back to the absolute band STATE — never asserting a direction we can't
+  // support (GPS-noise caution). No fix yet → a "move a few steps" prompt.
+  let directive;
+  if (!band) {
+    directive = "📡 Finding your location…";
+  } else if (band.id === "hot") {
+    directive = "🔥🔥 Red hot — you're right on top of it!";
+  } else if (trend === "warmer") {
+    directive = "🔥 Warmer — keep heading this way";
+  } else if (trend === "colder") {
+    directive = "🧊 Colder — try doubling back";
+  } else {
+    // No trustworthy trend yet → lean on the absolute band state.
+    directive =
+      band.id === "warm"
+        ? "🔥 Warm — it's nearby; move to get a reading"
+        : band.id === "cool"
+        ? "📡 On the trail — move a few steps to get a reading"
+        : "🧭 Cold — explore to pick up the trail";
+  }
+
+  // --- Hint-ladder content ----------------------------------------------------
+  // Difficulty pip ("◆◆◇ HARD") — sets expectations (a hard clue SHOULD feel
+  // hard). Reads quest/target difficulty defensively (server-supplied), default
+  // "hard" (the only difficulty the app currently requests).
+  const difficulty = (quest.difficulty || currentTarget?.difficulty || "hard").toLowerCase();
+  const diffPip =
+    difficulty === "impossible"
+      ? "◆◆◆ IMPOSSIBLE"
+      : difficulty === "hard"
+      ? "◆◆◇ HARD"
+      : difficulty === "medium"
+      ? "◆◇◇ MEDIUM"
+      : "◇◇◇ EASY";
+  // Rung 1 = system-derived NUDGE: place.kind (when present) + the warmer/colder
+  // steer. Degrades gracefully when kind is blank (Wikipedia-sourced places have
+  // kind: "") — drop the category clause and use the steer alone.
+  const targetKind = (currentTarget?.place?.kind || "").trim();
+  const steer =
+    trend === "warmer"
+      ? "you're getting warmer — keep heading the way the glow brightened"
+      : trend === "colder"
+      ? "you've cooled off — double back toward where the glow was warmer"
+      : band?.id === "warm" || band?.id === "hot"
+      ? "you're close — move around to feel the glow warm up"
+      : "move a bit to feel the warmer/colder glow steer you";
+  const nudgeText = targetKind
+    ? `It's a ${targetKind}, and ${steer}.`
+    : `${steer.charAt(0).toUpperCase()}${steer.slice(1)}.`;
+
   // ITEM-INTEGRITY GATE: are we physically inside the current target's geofence
   // RIGHT NOW? Uses RAW live `coords` (not the movement-gated `heatCoords`) so it
   // matches the auto-find trigger exactly, with the same GENEROUS FIND_RADIUS_M
@@ -3605,12 +3822,28 @@ export default function App() {
           route polyline and NO unfound-target pin (either would leak locations).
           We frame ONLY the current zone + user (regionForHunt), never all stops. */}
       <MapView
+        ref={mapRef}
         style={StyleSheet.absoluteFill}
         // Expo Go: default provider (Apple Maps), no custom style — keeps the
         // working test flow intact. Built app: Google provider + stylized map.
         provider={isExpoGo ? undefined : PROVIDER_GOOGLE}
         customMapStyle={isExpoGo ? undefined : mapStyle}
+        // First frame only — the map now also RECENTERS via mapRef.animateToRegion
+        // on each new clue + the recenter FAB + gentle auto-follow (effects above).
         initialRegion={regionForHunt(currentTarget, coords)}
+        // Lock zoom bounds so a pinch can't fling the map to space / into the
+        // pavement (Munzee runaway-zoom cautionary tale).
+        minZoomLevel={MAP_MIN_ZOOM}
+        maxZoomLevel={MAP_MAX_ZOOM}
+        // Timestamp manual pans so auto-follow never fights an active gesture.
+        // (onPanDrag fires on a user drag, NOT on programmatic animateToRegion —
+        // unlike onRegionChangeComplete, which would suppress our own follow.)
+        onPanDrag={() => {
+          lastUserInteractRef.current = Date.now();
+        }}
+        onMapReady={() => {
+          mapReadyRef.current = true;
+        }}
         showsUserLocation
         showsMyLocationButton={false}
       >
@@ -3735,138 +3968,191 @@ export default function App() {
         </View>
       </View>
 
-      {/* ===== HUNT HUD: the clue card + warmer/colder meter. Shown while the
-              hunt is live (a current target exists) and no reveal/completion is
-              up. Pinned near the bottom above the FABs; pointerEvents box-none so
-              map drags between elements still pan. ===== */}
+      {/* ===== RECENTER FAB (📍): re-frame the current target's search zone +
+              the user. The headline fix for "the map never recenters" — also
+              re-arms gentle auto-follow. Bottom-right, stacked ABOVE the primary
+              FAB so it clears the clue sheet (which docks below it). ===== */}
       {currentTarget && !allDone && findReveal == null && !recapOpen ? (
-        <View style={styles.huntHud} pointerEvents="box-none">
-          {/* Warmer/colder meter — reflects live GPS distance, pulsing. Stays
-              pinned at the bottom so the map + meter remain the focus; the clue
-              moved out to the left side-panel below. */}
-          <Animated.View
-            style={[
-              styles.warmthMeter,
-              { borderColor: band?.color || ACCENT },
-              {
-                transform: [
-                  {
-                    scale: warmthAnim.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [1, band?.id === "hot" ? 1.06 : band?.id === "warm" ? 1.04 : 1.02],
-                    }),
-                  },
-                ],
-                opacity: warmthAnim.interpolate({ inputRange: [0, 1], outputRange: [0.92, 1] }),
-              },
-            ]}
-          >
-            <Text style={[styles.warmthLabel, { color: band?.color || ACCENT }]}>
-              {band ? band.label : "📡 Finding your location…"}
-            </Text>
-            <Text style={styles.warmthHint}>
-              {band ? band.hint : "Make sure location is on to play the hunt."}
-            </Text>
-          </Animated.View>
-        </View>
+        <PressBounce style={styles.recenterFab} onPress={recenterToHunt}>
+          <Text style={styles.recenterFabIcon}>📍</Text>
+        </PressBounce>
       ) : null}
 
-      {/* ===== CLUE CARD: the riddle as its own prominent, TAPPABLE card. The
-              card body is a TouchableOpacity — tapping it reveals the hint (tap
-              to expand the clue). Docked to the LEFT edge and collapsible via a
-              handle/tab so it never covers the whole map; the map stays
-              interactive (box-none lets touches pass through the gaps). When
-              collapsed only the slim tab shows (📜 + clue number); tapping it
-              re-expands. Same render guard as the map tint so they appear/
-              disappear together. ===== */}
+      {/* ===== BOTTOM CLUE SHEET (peek / expanded / collapsed-tab). Full-width,
+              opaque cream + ink (legible in sun, NOT translucent), re-readable —
+              the clue is the product. Replaces the old left-docked rail AND the
+              standalone bottom warmth meter (now folded into the directive line).
+                • PEEK (default): kicker + difficulty pip + clue + directive +
+                  [💡 Nudge] + [I found it!].
+                • EXPANDED (tap header / swipe up): full clue + the 3-rung hint
+                  ladder.
+                • COLLAPSED: a slim 📜 tab for a clean map.
+              Tap-to-toggle is the reliable baseline; the grabber + header are the
+              tap targets. pointerEvents box-none on the wrap so map gaps still
+              pan. ===== */}
       {currentTarget && !allDone && findReveal == null && !recapOpen ? (
-        <View style={styles.cluePanelWrap} pointerEvents="box-none">
-          {cluePanelOpen ? (
-            <View style={styles.cluePanel}>
-              <ScrollView
-                style={styles.cluePanelScroll}
-                contentContainerStyle={styles.cluePanelScrollContent}
-                showsVerticalScrollIndicator={false}
+        <View style={styles.sheetWrap} pointerEvents="box-none">
+          {sheetCollapsed ? (
+            // COLLAPSED: only a slim tab. Tap to bring the sheet back to peek.
+            <TouchableOpacity
+              style={styles.sheetTab}
+              onPress={() => setSheetCollapsed(false)}
+              activeOpacity={0.85}
+            >
+              <Text style={styles.sheetTabIcon}>📜</Text>
+              <Text style={styles.sheetTabNum}>{doneCount + 1}/{quest.stops.length}</Text>
+              <Text style={styles.sheetTabChevron}>▲</Text>
+            </TouchableOpacity>
+          ) : (
+            // Expanded gets a DEFINITE height so the inner ScrollView (flex:1)
+            // can actually scroll — header + action row stay pinned, the clue +
+            // ladder scroll between them. Peek stays content-sized (short).
+            <View style={[styles.clueSheet, sheetExpanded && styles.clueSheetExpanded]}>
+              {/* Grabber + header row. Tapping anywhere on the header toggles
+                  peek⇄expanded; the grabber is the visual swipe affordance. */}
+              <TouchableOpacity
+                style={styles.sheetHeader}
+                activeOpacity={0.8}
+                onPress={() => setSheetExpanded((v) => !v)}
               >
-                <Text style={styles.clueKicker}>
-                  CLUE {doneCount + 1} OF {quest.stops.length}
-                </Text>
-                {/* TAPPABLE clue body: tap to reveal the hint. Once the hint is
-                    already shown, tapping is a no-op affordance (still readable). */}
-                <TouchableOpacity
-                  activeOpacity={hintShown ? 1 : 0.7}
-                  onPress={() => !hintShown && setHintShown(true)}
+                <View style={styles.sheetGrabber} />
+                <View style={styles.sheetHeaderRow}>
+                  <Text style={styles.clueKicker}>
+                    CLUE {doneCount + 1} OF {quest.stops.length}
+                  </Text>
+                  <Text style={styles.diffPip}>{diffPip}</Text>
+                </View>
+              </TouchableOpacity>
+
+              {sheetExpanded ? (
+                // EXPANDED: full clue (scrollable) + the 3-rung hint ladder.
+                <ScrollView
+                  style={styles.sheetScroll}
+                  contentContainerStyle={styles.sheetScrollContent}
+                  showsVerticalScrollIndicator={false}
                 >
                   <Text style={styles.clueText}>
                     {currentTarget.clue ||
                       "Somewhere in this circle hides your next discovery. Explore to find it!"}
                   </Text>
-                  {hintShown && (currentTarget.hint || currentTarget.description) ? (
-                    <Text style={styles.clueHint}>💡 {currentTarget.hint || currentTarget.description}</Text>
+
+                  <Text style={styles.ladderHeading}>HINT LADDER</Text>
+
+                  {/* Rung 1 — system-derived NUDGE (place.kind + warmer/colder
+                      steer; degrades gracefully when kind is blank). */}
+                  {hintRung >= 1 ? (
+                    <View style={styles.rungOpen}>
+                      <Text style={styles.rungLabel}>① 💡 Nudge</Text>
+                      <Text style={styles.rungBody}>{nudgeText}</Text>
+                    </View>
                   ) : (
-                    <Text style={styles.clueTapHint}>👆 Tap the clue for a hint</Text>
+                    <TouchableOpacity
+                      style={styles.rungBtn}
+                      onPress={() => setHintRung(1)}
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.rungLabel}>① 💡 Nudge</Text>
+                      <Text style={styles.rungAction}>tap to reveal</Text>
+                    </TouchableOpacity>
                   )}
-                </TouchableOpacity>
-                <View style={styles.clueActions}>
-                  {!hintShown ? (
-                    <Text style={styles.hintBtn} onPress={() => setHintShown(true)}>
-                      🔍 Hint
-                    </Text>
+
+                  {/* Rung 2 — the strong hint (stop.hint). Locked until rung 1. */}
+                  {hintRung >= 2 ? (
+                    <View style={styles.rungOpen}>
+                      <Text style={styles.rungLabel}>② 🔦 Big hint</Text>
+                      <Text style={styles.rungBody}>
+                        {currentTarget.hint ||
+                          currentTarget.description ||
+                          "No extra hint for this one — trust the clue and the glow."}
+                      </Text>
+                    </View>
                   ) : (
-                    <Text style={styles.hintBtnUsed}>💡 Hint shown</Text>
+                    <TouchableOpacity
+                      style={[styles.rungBtn, hintRung < 1 && styles.rungBtnLocked]}
+                      onPress={() => hintRung >= 1 && setHintRung(2)}
+                      activeOpacity={hintRung >= 1 ? 0.8 : 1}
+                    >
+                      <Text style={styles.rungLabel}>② 🔦 Big hint</Text>
+                      <Text style={styles.rungAction}>
+                        {hintRung >= 1 ? "tap to reveal" : "locked → tap ①"}
+                      </Text>
+                    </TouchableOpacity>
                   )}
-                  {/* "I found it!" grants the item ONLY when physically in the
-                      geofence. Out of zone it's a friendly nudge (not a grant) so
-                      the item always requires real presence — the give-up link
-                      below is the no-trap path. */}
-                  <Text
-                    style={[styles.foundItBtn, !inGeofence && styles.foundItBtnDim]}
-                    onPress={() =>
-                      inGeofence
-                        ? findStop(currentTarget.order_index, { awardItem: true })
-                        : Alert.alert(
-                            "Get closer to catch it",
-                            "You're not there yet — head into the spot to collect the item."
-                          )
-                    }
-                  >
-                    I found it! →
+
+                  {/* Rung 3 — REVEAL. The existing never-trap give-up: reveals the
+                      place NAME and ADVANCES, grants NO item/points. Surfaces once
+                      rung 2 is open, OR auto-arms at ESCAPE_AFTER_MS (the 45s
+                      never-trap, unchanged). */}
+                  {hintRung >= 2 || escapeArmed ? (
+                    <TouchableOpacity
+                      style={styles.rungReveal}
+                      onPress={() =>
+                        findStop(currentTarget.order_index, { viaEscape: true, awardItem: false })
+                      }
+                      activeOpacity={0.8}
+                    >
+                      <Text style={styles.rungRevealText}>③ 🗺️ Show me where (still counts)</Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <View style={[styles.rungBtn, styles.rungBtnLocked]}>
+                      <Text style={styles.rungLabel}>③ 🗺️ Show me where</Text>
+                      <Text style={styles.rungAction}>locked → tap ②</Text>
+                    </View>
+                  )}
+                </ScrollView>
+              ) : (
+                // PEEK: ~2 lines of clue + the directive micro-line.
+                <View style={styles.sheetPeekBody}>
+                  <Text style={styles.clueTextPeek} numberOfLines={2}>
+                    {currentTarget.clue ||
+                      "Somewhere in this circle hides your next discovery. Explore to find it!"}
+                  </Text>
+                  <Text style={[styles.directiveLine, { color: band?.color || ACCENT }]}>
+                    {directive}
                   </Text>
                 </View>
-                {/* No-trap fallback: a manual "reveal anyway" surfaces after a
-                    while, or immediately once the hint is shown. It reveals the
-                    place NAME and ADVANCES — but grants NO item and NO points
-                    (they didn't actually go there). Keeps GPS/accessibility
-                    issues from ever trapping the user. */}
-                {escapeArmed || hintShown ? (
-                  <Text
-                    style={styles.escapeLink}
-                    onPress={() => findStop(currentTarget.order_index, { viaEscape: true, awardItem: false })}
-                  >
-                    Can't find it? Reveal this place (no item) →
-                  </Text>
-                ) : null}
-              </ScrollView>
-              {/* Collapse handle on the panel's right edge — tucks it away. */}
+              )}
+
+              {/* Action row — always present in both rest states. [💡 Nudge]
+                  jumps the user to the expanded ladder at rung ≥1; [I found it!]
+                  grants the item ONLY when physically in the geofence (out of
+                  zone → friendly "get closer" nudge, never a grant). */}
+              <View style={styles.sheetActions}>
+                <TouchableOpacity
+                  style={styles.nudgeBtn}
+                  activeOpacity={0.8}
+                  onPress={() => {
+                    setHintRung((r) => Math.max(r, 1));
+                    setSheetExpanded(true);
+                  }}
+                >
+                  <Text style={styles.nudgeBtnText}>💡 Nudge</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.foundItBtn, !inGeofence && styles.foundItBtnDim]}
+                  activeOpacity={0.85}
+                  onPress={() =>
+                    inGeofence
+                      ? findStop(currentTarget.order_index, { awardItem: true })
+                      : Alert.alert(
+                          "Get closer to catch it",
+                          "You're not there yet — head into the spot to collect the item."
+                        )
+                  }
+                >
+                  <Text style={styles.foundItBtnText}>I found it! →</Text>
+                </TouchableOpacity>
+              </View>
+
+              {/* Tuck-away to a slim tab for a clean map (power-user). */}
               <TouchableOpacity
-                style={styles.clueHandle}
-                onPress={() => setCluePanelOpen(false)}
-                activeOpacity={0.85}
+                style={styles.sheetCollapseLink}
+                onPress={() => setSheetCollapsed(true)}
+                activeOpacity={0.7}
               >
-                <Text style={styles.clueHandleIcon}>‹</Text>
+                <Text style={styles.sheetCollapseText}>▾ hide</Text>
               </TouchableOpacity>
             </View>
-          ) : (
-            // Collapsed: only a slim tab against the left edge. Tap to expand.
-            <TouchableOpacity
-              style={styles.clueTab}
-              onPress={() => setCluePanelOpen(true)}
-              activeOpacity={0.85}
-            >
-              <Text style={styles.clueTabIcon}>📜</Text>
-              <Text style={styles.clueTabNum}>{doneCount + 1}/{quest.stops.length}</Text>
-              <Text style={styles.clueTabChevron}>›</Text>
-            </TouchableOpacity>
           )}
         </View>
       ) : null}
@@ -4092,109 +4378,162 @@ const styles = StyleSheet.create({
   // stays transparent so nothing ever tints the center.
   edgeGlow: { borderWidth: 36, borderRadius: 48, backgroundColor: "transparent" },
 
-  // --- Scavenger-hunt HUD (clue card + warmer/colder meter) -------------------
-  huntHud: { position: "absolute", left: 14, right: 14, bottom: 96, alignItems: "stretch" },
-  warmthMeter: {
-    backgroundColor: CARD,
-    borderRadius: 24,
-    borderWidth: 4,
-    paddingVertical: 13,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    marginBottom: 10,
-    shadowColor: OUTLINE,
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 6,
-  },
-  warmthLabel: { fontSize: 21, fontWeight: "900", letterSpacing: 0.2 },
-  warmthHint: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 3, textAlign: "center" },
-  // --- Clue SIDE-PANEL (left-docked, collapsible) -----------------------------
-  // Vertically centered against the left edge; capped height so an expanded hint
-  // never runs off-screen (the inner ScrollView takes over). Leaves the right
-  // portion of the map clear so the warmer/colder meter + Circle stay the focus.
-  cluePanelWrap: {
+  // --- Recenter FAB (📍) ------------------------------------------------------
+  // Stacked above the bottom-right primary FAB so it clears the clue sheet.
+  recenterFab: {
     position: "absolute",
-    left: 0,
-    top: SCREEN_H * 0.16,
-    maxHeight: SCREEN_H * 0.5,
-  },
-  cluePanel: {
-    flexDirection: "row",
-    alignItems: "stretch",
-    // Explicit width (not maxWidth): a vertical ScrollView inside a flex row
-    // needs a determinate parent width or the text column can collapse/overflow.
-    // ~72% leaves the right of the map (and the search Circle) visibly clear.
-    width: SCREEN_W * 0.72,
+    bottom: SHEET_CLEARANCE + 88, // sits one FAB-height above the primary FAB
+    right: 22,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     backgroundColor: CARD,
-    borderTopRightRadius: 26,
-    borderBottomRightRadius: 26,
-    borderWidth: 4,
-    borderLeftWidth: 0,
-    borderColor: OUTLINE,
-    shadowColor: OUTLINE,
-    shadowOpacity: 0.24,
-    shadowRadius: 16,
-    shadowOffset: { width: 3, height: 7 },
-    elevation: 8,
-  },
-  cluePanelScroll: { flex: 1 },
-  cluePanelScrollContent: { padding: 16, paddingRight: 4 },
-  // The collapse handle — a slim grabber on the panel's right edge.
-  clueHandle: {
-    width: 28,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: TINT,
-    borderTopRightRadius: 22,
-    borderBottomRightRadius: 22,
-  },
-  clueHandleIcon: { fontSize: 22, fontWeight: "900", color: ACCENT },
-  // Collapsed tab — only this shows when the panel is tucked away.
-  clueTab: {
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 15,
-    paddingHorizontal: 12,
-    backgroundColor: CARD,
-    borderTopRightRadius: 22,
-    borderBottomRightRadius: 22,
     borderWidth: 4,
-    borderLeftWidth: 0,
     borderColor: OUTLINE,
     shadowColor: OUTLINE,
-    shadowOpacity: 0.22,
-    shadowRadius: 12,
-    shadowOffset: { width: 3, height: 5 },
-    elevation: 6,
+    shadowOpacity: 0.3,
+    shadowRadius: 9,
+    shadowOffset: { width: 0, height: 5 },
+    elevation: 7,
   },
-  clueTabIcon: { fontSize: 22 },
-  clueTabNum: { fontSize: 12, fontWeight: "900", color: ACCENT, marginTop: 4, letterSpacing: 0.5 },
-  clueTabChevron: { fontSize: 18, fontWeight: "900", color: MUTE, marginTop: 2 },
+  recenterFabIcon: { fontSize: 24 },
+
+  // --- Bottom CLUE SHEET (peek / expanded / collapsed) ------------------------
+  // Full-width, docked at the very bottom. Opaque cream/ink (sunlight-legible,
+  // NOT translucent). The peek state shows ~2 lines of clue + the directive; the
+  // expanded state scrolls the full clue + the 3-rung ladder.
+  sheetWrap: { position: "absolute", left: 0, right: 0, bottom: 0 },
+  clueSheet: {
+    backgroundColor: CARD,
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    borderWidth: 4,
+    borderBottomWidth: 0,
+    borderColor: OUTLINE,
+    paddingHorizontal: 18,
+    paddingTop: 8,
+    paddingBottom: 26,
+    maxHeight: SCREEN_H * 0.62,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.26,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: -6 },
+    elevation: 12,
+  },
+  // A definite height ONLY when expanded so the inner ScrollView (flex:1) scrolls
+  // a long clue + the full ladder without pushing the pinned action row off-screen.
+  clueSheetExpanded: { height: SCREEN_H * 0.6 },
+  sheetHeader: { paddingBottom: 6 },
+  sheetGrabber: {
+    alignSelf: "center",
+    width: 44,
+    height: 5,
+    borderRadius: 3,
+    backgroundColor: BORDER,
+    marginTop: 2,
+    marginBottom: 8,
+  },
+  sheetHeaderRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
+  diffPip: { fontSize: 12, fontWeight: "900", color: MUTE, letterSpacing: 1 },
   clueKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
-  clueText: { fontSize: 19, fontWeight: "900", color: INK, marginTop: 8, lineHeight: 26 },
-  clueHint: { fontSize: 15, fontWeight: "800", color: GREEN, marginTop: 10, lineHeight: 21 },
-  clueTapHint: { fontSize: 12, fontWeight: "800", color: MUTE, marginTop: 8, fontStyle: "italic" },
-  clueActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14 },
-  hintBtn: { fontSize: 16, fontWeight: "900", color: ACCENT, paddingVertical: 6, paddingHorizontal: 4 },
-  hintBtnUsed: { fontSize: 15, fontWeight: "800", color: MUTE, paddingVertical: 6 },
-  foundItBtn: {
-    fontSize: 16,
-    fontWeight: "900",
-    color: INK,
-    backgroundColor: AMBER,
+  // Peek clue text (2-line clamp) + the full-size expanded clue text.
+  sheetPeekBody: { marginTop: 6 },
+  clueTextPeek: { fontSize: 17, fontWeight: "900", color: INK, lineHeight: 23 },
+  clueText: { fontSize: 19, fontWeight: "900", color: INK, marginTop: 6, lineHeight: 27 },
+  // The unified directive micro-line (band STATE + warmer/colder TREND).
+  directiveLine: { fontSize: 16, fontWeight: "900", marginTop: 10, letterSpacing: 0.2 },
+  sheetScroll: { flex: 1, marginTop: 4 },
+  sheetScrollContent: { paddingBottom: 6 },
+  // Hint ladder
+  ladderHeading: { fontSize: 12, fontWeight: "900", color: MUTE, letterSpacing: 1.5, marginTop: 18, marginBottom: 8 },
+  rungBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: TINT,
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: BORDER,
+  },
+  rungBtnLocked: { opacity: 0.5 },
+  rungOpen: {
+    backgroundColor: "#F1F8FF",
+    borderRadius: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    borderWidth: 2,
+    borderColor: BORDER,
+  },
+  rungLabel: { fontSize: 15, fontWeight: "900", color: INK },
+  rungAction: { fontSize: 13, fontWeight: "800", color: ACCENT },
+  rungBody: { fontSize: 15, fontWeight: "700", color: INK, marginTop: 6, lineHeight: 21 },
+  rungReveal: {
+    backgroundColor: ACCENT,
+    borderRadius: 16,
+    paddingVertical: 13,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    alignItems: "center",
+  },
+  rungRevealText: { fontSize: 15, fontWeight: "900", color: "#fff" },
+  // Action row (both rest states)
+  sheetActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14, gap: 12 },
+  nudgeBtn: {
+    backgroundColor: TINT,
     borderRadius: 22,
-    overflow: "hidden",
-    paddingVertical: 11,
+    paddingVertical: 12,
     paddingHorizontal: 20,
     borderWidth: 3,
     borderColor: OUTLINE,
   },
+  nudgeBtnText: { fontSize: 16, fontWeight: "900", color: ACCENT },
+  foundItBtn: {
+    flex: 1,
+    backgroundColor: AMBER,
+    borderRadius: 22,
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    alignItems: "center",
+  },
+  foundItBtnText: { fontSize: 16, fontWeight: "900", color: INK },
   // Out-of-geofence "I found it!" — dimmed to signal it won't grant the item yet
   // (tapping nudges "get closer"). Still tappable so it can deliver the nudge.
-  foundItBtnDim: { opacity: 0.45 },
-  escapeLink: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 12, textAlign: "center", textDecorationLine: "underline" },
+  foundItBtnDim: { opacity: 0.55 },
+  sheetCollapseLink: { alignSelf: "center", marginTop: 12, paddingVertical: 2 },
+  sheetCollapseText: { fontSize: 13, fontWeight: "800", color: MUTE },
+  // Collapsed slim tab (clean-map power-user state).
+  sheetTab: {
+    alignSelf: "center",
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    backgroundColor: CARD,
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    borderWidth: 4,
+    borderBottomWidth: 0,
+    borderColor: OUTLINE,
+    paddingVertical: 10,
+    paddingHorizontal: 22,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.22,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 8,
+  },
+  sheetTabIcon: { fontSize: 20 },
+  sheetTabNum: { fontSize: 13, fontWeight: "900", color: ACCENT, letterSpacing: 0.5 },
+  sheetTabChevron: { fontSize: 14, fontWeight: "900", color: MUTE },
 
   // --- Find REVEAL overlay (you found it! + collect) --------------------------
   revealOverlay: { flex: 1, backgroundColor: SCRIM, alignItems: "center", justifyContent: "center", padding: 24 },
@@ -4466,7 +4805,9 @@ const styles = StyleSheet.create({
   // Bottom-left score/profile FAB.
   scoreFab: {
     position: "absolute",
-    bottom: 38,
+    // Lifted above the bottom clue sheet (the peek sheet docks at the screen
+    // bottom; FABs sit above it per the wireframe so nothing is occluded).
+    bottom: SHEET_CLEARANCE,
     left: 22,
     width: 76,
     height: 76,
@@ -4489,7 +4830,7 @@ const styles = StyleSheet.create({
   // Bottom-right primary action FAB (New Quest / Recap).
   primaryFab: {
     position: "absolute",
-    bottom: 38,
+    bottom: SHEET_CLEARANCE,
     right: 22,
     minWidth: 92,
     height: 76,
