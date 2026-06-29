@@ -699,7 +699,7 @@ function RouteTrace({ stops, routePath }) {
 // count-up to the points earned and a pop-in badge. Chosen over a confetti lib
 // to keep the only new dep at expo-haptics and avoid native surface risk —
 // per the spec's "when in doubt, hand-roll with Animated."
-const CONFETTI_COLORS = ["#1F6FB2", "#3FAE4E", "#F5B400", "#3B82C4", "#7BD389"];
+const CONFETTI_COLORS = ["#1773D6", "#27C04A", "#FFB300", "#FF5B6E", "#7A5CFF"];
 const CONFETTI_N = 22;
 
 function Confetti({ width }) {
@@ -830,6 +830,47 @@ function MapPin({ orderIndex, completed, selected }) {
     >
       <Text style={styles.pinText}>{completed ? "✓" : orderIndex}</Text>
     </Animated.View>
+  );
+}
+
+// A behavior-transparent press wrapper that adds a juicy scale-bounce on touch.
+// It is PURELY chrome: the TouchableOpacity stays the OUTER element and carries
+// `style` (so position/margin/alignSelf — including the absolutely-positioned
+// FABs — resolve exactly as before), forwarding every prop. The Animated.View
+// is INNER and only scales the children off press in/out. So onPress/disabled/
+// hitSlop/accessibility/layout all behave identically — this just makes the
+// button content squish on tap. The app's other TouchableOpacity call sites are
+// untouched.
+function PressBounce({ style, children, scaleTo = 0.93, ...rest }) {
+  const scale = useRef(new Animated.Value(1)).current;
+  const pressIn = () =>
+    Animated.spring(scale, {
+      toValue: scaleTo,
+      friction: 6,
+      tension: 200,
+      useNativeDriver: true,
+    }).start();
+  const pressOut = () =>
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 4,
+      tension: 180,
+      useNativeDriver: true,
+    }).start();
+  return (
+    <TouchableOpacity
+      {...rest}
+      style={style}
+      onPressIn={pressIn}
+      onPressOut={pressOut}
+      activeOpacity={0.85}
+    >
+      <Animated.View
+        style={{ transform: [{ scale }], alignItems: "center", justifyContent: "center" }}
+      >
+        {children}
+      </Animated.View>
+    </TouchableOpacity>
   );
 }
 
@@ -2428,9 +2469,9 @@ export default function App() {
           <View style={styles.resumeBox}>
             <Text style={styles.resumeLabel}>You have a quest in progress</Text>
             <Text style={styles.resumeTheme} numberOfLines={2}>{savedQuest.theme}</Text>
-            <TouchableOpacity style={styles.button} onPress={resumeQuest}>
+            <PressBounce style={styles.button} onPress={resumeQuest}>
               <Text style={styles.buttonText}>Resume your quest</Text>
-            </TouchableOpacity>
+            </PressBounce>
             <Text style={styles.abandonLink} onPress={abandonQuest}>
               Abandon quest
             </Text>
@@ -2452,13 +2493,13 @@ export default function App() {
             Quest Setup (UX-SPEC core loop). On the error screen we keep the
             primary as a direct "Try again" one-tap retry. */}
         {screen === "error" ? (
-          <TouchableOpacity style={styles.button} onPress={() => startQuest()}>
+          <PressBounce style={styles.button} onPress={() => startQuest()}>
             <Text style={styles.buttonText}>Try again</Text>
-          </TouchableOpacity>
+          </PressBounce>
         ) : (
-          <TouchableOpacity style={styles.button} onPress={openSetup}>
+          <PressBounce style={styles.button} onPress={openSetup}>
             <Text style={styles.buttonText}>Start a Quest</Text>
-          </TouchableOpacity>
+          </PressBounce>
         )}
         {/* Fast path retained: a one-tap quest at your current location. */}
         <Text style={styles.setupLink} onPress={() => startQuest()}>
@@ -3164,13 +3205,13 @@ export default function App() {
           <Text style={styles.sizeDetail}>A longer hunt · 7–8 finds</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
+        <PressBounce
           style={[styles.button, !setupReady && styles.buttonDisabled]}
           onPress={startSetupQuest}
           disabled={!setupReady}
         >
           <Text style={styles.buttonText}>Start Quest</Text>
-        </TouchableOpacity>
+        </PressBounce>
 
         {/* HUNT WITH FRIENDS — a shared hunt everyone races on identical clues.
             Gated behind sign-in: signed-in users get the button; otherwise a
@@ -3271,13 +3312,12 @@ export default function App() {
             <Text style={styles.joinBanner}>{joinNote}</Text>
           ) : null}
 
-          <TouchableOpacity
+          <PressBounce
             style={styles.revealBeginBtn}
             onPress={() => setScreen("ready")}
-            activeOpacity={0.85}
           >
             <Text style={styles.revealBeginText}>Begin</Text>
-          </TouchableOpacity>
+          </PressBounce>
 
           {/* SHARED HUNT actions: invite friends to race the identical hunt, and
               peek at the live leaderboard. Only on a shared hunt (has hunt_id). */}
@@ -3449,9 +3489,9 @@ export default function App() {
             {/* COLLECT step = catch the collectible with the camera (geo-gated to
                 here). The skip is the never-trap escape — it collects + advances
                 without the camera. */}
-            <TouchableOpacity style={styles.findCatchBtn} onPress={openCatch} activeOpacity={0.85}>
+            <PressBounce style={styles.findCatchBtn} onPress={openCatch}>
               <Text style={styles.findCatchText}>📸 Catch your {item}!</Text>
-            </TouchableOpacity>
+            </PressBounce>
             <Text style={styles.findPhotoLink} onPress={() => completeCatch(s.order_index)}>
               {isLast ? "Skip camera, just collect & finish 🎉" : "Skip camera, just collect →"}
             </Text>
@@ -3807,30 +3847,29 @@ export default function App() {
 
       {/* Bottom-left: profile/score button — chunky, shows lifetime points,
           opens the Profile/Scorecard. */}
-      <TouchableOpacity style={styles.scoreFab} onPress={openScorecard} activeOpacity={0.85}>
+      <PressBounce style={styles.scoreFab} onPress={openScorecard}>
         <Text style={styles.scoreFabPts}>{profilePoints}</Text>
         <Text style={styles.scoreFabLabel}>pts</Text>
-      </TouchableOpacity>
+      </PressBounce>
 
       {/* Bottom-right: the prominent PRIMARY action. "Recap" once complete
           (re-opens the completion overlay), otherwise "New Quest". */}
       {allDone ? (
-        <TouchableOpacity
+        <PressBounce
           style={[styles.primaryFab, styles.primaryFabRecap]}
           onPress={() => {
             setSelectedStop(null);
             setRecapOpen(true);
           }}
-          activeOpacity={0.85}
         >
           <Text style={styles.primaryFabIcon}>🎉</Text>
           <Text style={styles.primaryFabText}>Recap</Text>
-        </TouchableOpacity>
+        </PressBounce>
       ) : (
-        <TouchableOpacity style={styles.primaryFab} onPress={() => startQuest()} activeOpacity={0.85}>
+        <PressBounce style={styles.primaryFab} onPress={() => startQuest()}>
           <Text style={styles.primaryFabIcon}>＋</Text>
           <Text style={styles.primaryFabText}>New Quest</Text>
-        </TouchableOpacity>
+        </PressBounce>
       )}
 
       {/* ===== Pop-out stop CARD (replaces the old expanded bottom sheet). A
@@ -3884,29 +3923,36 @@ export default function App() {
   );
 }
 
-// --- Palette (Pokémon-GO style) ---------------------------------------------
-// One source of truth for the app chrome. Bright cool blue primary, vivid grass
-// green secondary, crisp white cards on a light cool background, bold dark text,
-// and a warm amber pop reserved for rewards / points / the active CTA.
+// --- Palette (CARTOON GAME style) -------------------------------------------
+// One source of truth for the app chrome. Punched-up, candy-bright but cohesive:
+// a saturated game blue primary, vivid grass green, a sunny amber reward pop,
+// and two playful secondary pops (coral + grape) for sticker accents. Crisp
+// white cards on a soft sky background, a genuinely dark INK for sunlight
+// legibility, and a dark ink-blue OUTLINE for the bold cartoon strokes.
 //
-// The four legacy names are kept (CREAM/INK/ACCENT/GREEN) and simply re-pointed
-// so every existing StyleSheet reference flips at once:
-//   CREAM  -> light cool background (was warm cream)
-//   INK    -> bold cool-dark text   (was warm near-black)
-//   ACCENT -> PoGo primary blue     (was terracotta)
-//   GREEN  -> vivid grass green      (was muted forest)
-const CREAM = "#EAF4FB"; // light cool background
+// The legacy names are kept (CREAM/INK/ACCENT/GREEN/AMBER…) and simply
+// re-pointed so every existing StyleSheet reference flips at once:
+//   CREAM  -> soft sky background
+//   INK    -> bold cool-dark text (kept very dark = sunlight legibility anchor)
+//   ACCENT -> saturated game blue (chrome / CTAs)
+//   GREEN  -> candy grass green
+//   AMBER  -> sunny gold reward pop (balanced: white reads on it on chrome,
+//             INK reads on it on the big CTAs)
+const CREAM = "#E4F2FF"; // soft sky background (brighter, cooler-candy)
 const CARD = "#FFFFFF"; // crisp white cards
-const INK = "#10243B"; // bold cool-dark text (deep navy)
-const ACCENT = "#1F6FB2"; // PoGo primary blue (deeper, for chrome/CTAs)
-const ACCENT_LIGHT = "#3B82C4"; // brighter sky-blue (lines, lighter chrome)
-const GREEN = "#3FAE4E"; // vivid grass green
-const AMBER = "#F5B400"; // warm reward / points / active-CTA pop
-const BORDER = "#CFE2F0"; // cool card border
-const TINT = "#DCECF8"; // selected-segment cool tint
-const SCRIM = "rgba(16,36,59,0.55)"; // navy scrim over the map for pop-out cards
+const INK = "#0E2236"; // bold cool-dark text (deep navy — legibility anchor)
+const ACCENT = "#1773D6"; // saturated game blue (chrome/CTAs)
+const ACCENT_LIGHT = "#3F9BFF"; // brighter sky-blue (lines, lighter chrome)
+const GREEN = "#27C04A"; // candy grass green (punchier)
+const AMBER = "#FFB300"; // sunny gold reward / points / active-CTA pop
+const CORAL = "#FF5B6E"; // playful secondary pop (badges / alerts / accents)
+const GRAPE = "#7A5CFF"; // second playful pop (purple accent)
+const OUTLINE = "#0E2236"; // bold cartoon-outline stroke (dark ink-blue)
+const BORDER = "#CFE2F0"; // light card/list separator (hairlines, dividers)
+const TINT = "#D6EAFF"; // selected-segment cool tint
+const SCRIM = "rgba(14,34,54,0.58)"; // navy scrim over the map for pop-out cards
 const NAVY = "#0C1B2C"; // dark recap-card background (cool, share artifact)
-const MUTE = "#7C92A6"; // muted placeholder / chevron text
+const MUTE = "#6E869B"; // muted placeholder / chevron text
 
 const styles = StyleSheet.create({
   center: { flex: 1, backgroundColor: CREAM, alignItems: "center", justifyContent: "center", padding: 28 },
@@ -3920,115 +3966,122 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 420,
     backgroundColor: CARD,
-    borderRadius: 28,
+    borderRadius: 36,
     paddingHorizontal: 26,
-    paddingTop: 30,
-    paddingBottom: 26,
+    paddingTop: 32,
+    paddingBottom: 28,
     alignItems: "center",
-    borderWidth: 3,
-    borderColor: AMBER,
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 12 },
+    borderWidth: 5,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 14 },
     elevation: 18,
   },
-  revealKicker: { fontSize: 13, fontWeight: "900", color: GREEN, letterSpacing: 2, textTransform: "uppercase" },
-  revealTheme: { fontSize: 28, fontWeight: "900", color: INK, letterSpacing: -0.6, textAlign: "center", marginTop: 12, lineHeight: 33 },
-  revealArea: { fontSize: 16, fontWeight: "800", color: ACCENT, marginTop: 10 },
+  revealKicker: { fontSize: 14, fontWeight: "900", color: GREEN, letterSpacing: 2.5, textTransform: "uppercase" },
+  revealTheme: { fontSize: 32, fontWeight: "900", color: INK, letterSpacing: -0.6, textAlign: "center", marginTop: 12, lineHeight: 37 },
+  revealArea: { fontSize: 16, fontWeight: "900", color: ACCENT, marginTop: 10 },
   revealStatsRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", marginTop: 22, marginBottom: 4 },
   revealStat: { alignItems: "center", paddingHorizontal: 22 },
-  revealStatNum: { fontSize: 30, fontWeight: "900", color: INK },
-  revealStatLabel: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 2 },
-  revealStatDivider: { width: 1.5, height: 44, backgroundColor: BORDER },
+  revealStatNum: { fontSize: 32, fontWeight: "900", color: INK },
+  revealStatLabel: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 2 },
+  revealStatDivider: { width: 2, height: 44, backgroundColor: BORDER, borderRadius: 1 },
   revealBeginBtn: {
     backgroundColor: AMBER,
     borderRadius: 30,
-    paddingVertical: 16,
+    paddingVertical: 17,
     paddingHorizontal: 64,
     marginTop: 26,
-    minHeight: 44,
+    minHeight: 52,
     alignItems: "center",
     justifyContent: "center",
+    borderWidth: 4,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 8,
   },
-  revealBeginText: { color: INK, fontSize: 20, fontWeight: "900", letterSpacing: 0.3 },
-  revealHint: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 12 },
+  revealBeginText: { color: INK, fontSize: 21, fontWeight: "900", letterSpacing: 0.3 },
+  revealHint: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 14 },
 
   // Welcome teaser + resume
-  teaserCard: { backgroundColor: "#fff", borderRadius: 18, padding: 20, marginTop: 28, width: "100%", borderWidth: 1, borderColor: BORDER },
-  teaserKicker: { fontSize: 12, fontWeight: "800", color: ACCENT, letterSpacing: 1, textTransform: "uppercase" },
-  teaserPlace: { fontSize: 22, fontWeight: "800", color: INK, marginTop: 6, letterSpacing: -0.3 },
+  teaserCard: { backgroundColor: "#fff", borderRadius: 24, padding: 20, marginTop: 28, width: "100%", borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.16, shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
+  teaserKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
+  teaserPlace: { fontSize: 23, fontWeight: "900", color: INK, marginTop: 6, letterSpacing: -0.3 },
   teaserFact: { fontSize: 15, color: INK, opacity: 0.82, marginTop: 8, lineHeight: 22 },
-  teaserArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 10 },
+  teaserArea: { fontSize: 13, color: GREEN, fontWeight: "800", marginTop: 10 },
   permNote: { fontSize: 12, color: INK, opacity: 0.55, textAlign: "center", marginTop: 14, lineHeight: 17 },
   // Lifetime score + weekly streak strip on Welcome
-  scoreRow: { flexDirection: "row", marginTop: 20, width: "100%", justifyContent: "space-around", backgroundColor: "#fff", borderRadius: 16, paddingVertical: 14, borderWidth: 1, borderColor: BORDER },
+  scoreRow: { flexDirection: "row", marginTop: 20, width: "100%", justifyContent: "space-around", backgroundColor: "#fff", borderRadius: 22, paddingVertical: 16, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 4 },
   scoreStat: { alignItems: "center" },
-  scoreNum: { fontSize: 22, fontWeight: "800", color: INK },
-  scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
-  historyLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 16, textDecorationLine: "underline" },
+  scoreNum: { fontSize: 24, fontWeight: "900", color: INK },
+  scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2, fontWeight: "700" },
+  historyLink: { fontSize: 15, color: ACCENT, fontWeight: "800", marginTop: 16, textDecorationLine: "underline" },
   // Welcome nav row to the game-layer views
   navRow: { flexDirection: "row", marginTop: 24, gap: 14 },
   navLink: { fontSize: 15, color: ACCENT, fontWeight: "800", textDecorationLine: "underline" },
 
   // Collections screen
-  collCard: { backgroundColor: "#fff", borderRadius: 16, marginTop: 14, borderWidth: 1, borderColor: BORDER, overflow: "hidden" },
+  collCard: { backgroundColor: "#fff", borderRadius: 22, marginTop: 14, borderWidth: 3, borderColor: OUTLINE, overflow: "hidden", shadowColor: OUTLINE, shadowOpacity: 0.13, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
   collHeader: { flexDirection: "row", alignItems: "center", padding: 16 },
-  collArea: { fontSize: 17, fontWeight: "800", color: INK },
-  collCount: { fontSize: 14, color: GREEN, fontWeight: "700", marginTop: 3 },
-  collPlace: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 8, borderTopWidth: 1, borderTopColor: BORDER },
-  collThumb: { width: 40, height: 40, borderRadius: 8, marginRight: 12 },
+  collArea: { fontSize: 18, fontWeight: "900", color: INK },
+  collCount: { fontSize: 14, color: GREEN, fontWeight: "800", marginTop: 3 },
+  collPlace: { flexDirection: "row", alignItems: "center", paddingHorizontal: 16, paddingVertical: 9, borderTopWidth: 1, borderTopColor: BORDER },
+  collThumb: { width: 42, height: 42, borderRadius: 12, marginRight: 12 },
   collThumbEmpty: { backgroundColor: CREAM, alignItems: "center", justifyContent: "center" },
-  collThumbMark: { color: ACCENT, fontSize: 18, fontWeight: "800" },
-  collPlaceName: { flex: 1, fontSize: 15, color: INK, fontWeight: "600" },
+  collThumbMark: { color: ACCENT, fontSize: 18, fontWeight: "900" },
+  collPlaceName: { flex: 1, fontSize: 15, color: INK, fontWeight: "700" },
   // Chevron used by the Collections accordion header.
-  listChevron: { fontSize: 24, color: MUTE, fontWeight: "700", marginLeft: 8 },
+  listChevron: { fontSize: 24, color: MUTE, fontWeight: "900", marginLeft: 8 },
 
   // Places Visited screen (individual check-ins, newest-first)
-  visitRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: BORDER },
+  visitRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 20, padding: 13, marginTop: 12, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 7, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
   visitMeta: { flex: 1, marginLeft: 12 },
-  visitName: { fontSize: 16, fontWeight: "800", color: INK },
-  visitArea: { fontSize: 13, color: GREEN, fontWeight: "700", marginTop: 2 },
-  visitDate: { fontSize: 12, color: INK, opacity: 0.55, marginTop: 3 },
+  visitName: { fontSize: 16, fontWeight: "900", color: INK },
+  visitArea: { fontSize: 13, color: GREEN, fontWeight: "800", marginTop: 2 },
+  visitDate: { fontSize: 12, color: INK, opacity: 0.55, marginTop: 3, fontWeight: "600" },
 
   // Scorecard screen
-  scoreSectionTitle: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 28 },
-  bestCard: { backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 14, borderWidth: 1, borderColor: BORDER },
-  bestArea: { fontSize: 16, fontWeight: "800", color: INK },
+  scoreSectionTitle: { fontSize: 20, fontWeight: "900", color: INK, marginTop: 28, letterSpacing: -0.3 },
+  bestCard: { backgroundColor: "#fff", borderRadius: 22, padding: 17, marginTop: 14, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.12, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
+  bestArea: { fontSize: 17, fontWeight: "900", color: INK },
   bestStatsRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 12 },
   bestStat: { alignItems: "center", flex: 1 },
-  bestNum: { fontSize: 19, fontWeight: "800", color: ACCENT },
-  bestLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2 },
+  bestNum: { fontSize: 21, fontWeight: "900", color: ACCENT },
+  bestLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2, fontWeight: "700" },
 
   // Completion celebration (hand-rolled Animated)
   celebrateWrap: { width: "100%", alignItems: "center", marginBottom: 16, overflow: "hidden" },
   confettiLayer: { position: "absolute", top: 0, left: 0, right: 0, height: 260 },
-  celebrateBanner: { width: "100%", backgroundColor: GREEN, borderRadius: 18, paddingVertical: 20, paddingHorizontal: 18, alignItems: "center" },
-  celebrateTitle: { color: "#fff", fontSize: 20, fontWeight: "800" },
-  celebratePoints: { color: "#fff", fontSize: 38, fontWeight: "900", letterSpacing: -1, marginTop: 4 },
+  celebrateBanner: { width: "100%", backgroundColor: GREEN, borderRadius: 26, paddingVertical: 22, paddingHorizontal: 18, alignItems: "center", borderWidth: 4, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.3, shadowRadius: 14, shadowOffset: { width: 0, height: 8 }, elevation: 8 },
+  celebrateTitle: { color: "#fff", fontSize: 22, fontWeight: "900", letterSpacing: 0.2 },
+  celebratePoints: { color: "#fff", fontSize: 44, fontWeight: "900", letterSpacing: -1, marginTop: 4 },
   celebrateChips: { flexDirection: "row", flexWrap: "wrap", justifyContent: "center", gap: 8, marginTop: 12 },
-  celebrateChip: { color: GREEN, backgroundColor: "#fff", borderRadius: 12, paddingVertical: 5, paddingHorizontal: 11, fontSize: 13, fontWeight: "800", overflow: "hidden" },
-  celebrateBest: { color: "#FFE08A", fontSize: 15, fontWeight: "800", marginTop: 12 },
-  discoverLine: { fontSize: 16, color: GREEN, fontWeight: "800", textAlign: "center", marginBottom: 14 },
+  celebrateChip: { color: GREEN, backgroundColor: "#fff", borderRadius: 16, paddingVertical: 6, paddingHorizontal: 13, fontSize: 13, fontWeight: "900", overflow: "hidden" },
+  celebrateBest: { color: "#FFE08A", fontSize: 16, fontWeight: "900", marginTop: 12 },
+  discoverLine: { fontSize: 16, color: GREEN, fontWeight: "900", textAlign: "center", marginBottom: 14 },
 
   // --- Scavenger-hunt HUD (clue card + warmer/colder meter) -------------------
   huntHud: { position: "absolute", left: 14, right: 14, bottom: 96, alignItems: "stretch" },
   warmthMeter: {
     backgroundColor: CARD,
-    borderRadius: 18,
-    borderWidth: 2.5,
-    paddingVertical: 12,
+    borderRadius: 24,
+    borderWidth: 4,
+    paddingVertical: 13,
     paddingHorizontal: 16,
     alignItems: "center",
     marginBottom: 10,
-    shadowColor: "#000",
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 6,
   },
-  warmthLabel: { fontSize: 20, fontWeight: "900", letterSpacing: 0.2 },
-  warmthHint: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 3, textAlign: "center" },
+  warmthLabel: { fontSize: 21, fontWeight: "900", letterSpacing: 0.2 },
+  warmthHint: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 3, textAlign: "center" },
   // --- Clue SIDE-PANEL (left-docked, collapsible) -----------------------------
   // Vertically centered against the left edge; capped height so an expanded hint
   // never runs off-screen (the inner ScrollView takes over). Leaves the right
@@ -4047,56 +4100,56 @@ const styles = StyleSheet.create({
     // ~72% leaves the right of the map (and the search Circle) visibly clear.
     width: SCREEN_W * 0.72,
     backgroundColor: CARD,
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
-    borderWidth: 1,
+    borderTopRightRadius: 26,
+    borderBottomRightRadius: 26,
+    borderWidth: 4,
     borderLeftWidth: 0,
-    borderColor: BORDER,
-    shadowColor: "#000",
-    shadowOpacity: 0.2,
-    shadowRadius: 14,
-    shadowOffset: { width: 2, height: 6 },
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.24,
+    shadowRadius: 16,
+    shadowOffset: { width: 3, height: 7 },
     elevation: 8,
   },
   cluePanelScroll: { flex: 1 },
   cluePanelScrollContent: { padding: 16, paddingRight: 4 },
   // The collapse handle — a slim grabber on the panel's right edge.
   clueHandle: {
-    width: 26,
+    width: 28,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: TINT,
-    borderTopRightRadius: 20,
-    borderBottomRightRadius: 20,
+    borderTopRightRadius: 22,
+    borderBottomRightRadius: 22,
   },
   clueHandleIcon: { fontSize: 22, fontWeight: "900", color: ACCENT },
   // Collapsed tab — only this shows when the panel is tucked away.
   clueTab: {
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 14,
-    paddingHorizontal: 10,
+    paddingVertical: 15,
+    paddingHorizontal: 12,
     backgroundColor: CARD,
-    borderTopRightRadius: 16,
-    borderBottomRightRadius: 16,
-    borderWidth: 1,
+    borderTopRightRadius: 22,
+    borderBottomRightRadius: 22,
+    borderWidth: 4,
     borderLeftWidth: 0,
-    borderColor: BORDER,
-    shadowColor: "#000",
-    shadowOpacity: 0.18,
-    shadowRadius: 10,
-    shadowOffset: { width: 2, height: 4 },
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.22,
+    shadowRadius: 12,
+    shadowOffset: { width: 3, height: 5 },
     elevation: 6,
   },
-  clueTabIcon: { fontSize: 20 },
+  clueTabIcon: { fontSize: 22 },
   clueTabNum: { fontSize: 12, fontWeight: "900", color: ACCENT, marginTop: 4, letterSpacing: 0.5 },
   clueTabChevron: { fontSize: 18, fontWeight: "900", color: MUTE, marginTop: 2 },
   clueKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
-  clueText: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 8, lineHeight: 25 },
-  clueHint: { fontSize: 15, fontWeight: "700", color: GREEN, marginTop: 10, lineHeight: 21 },
+  clueText: { fontSize: 19, fontWeight: "900", color: INK, marginTop: 8, lineHeight: 26 },
+  clueHint: { fontSize: 15, fontWeight: "800", color: GREEN, marginTop: 10, lineHeight: 21 },
   clueActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14 },
-  hintBtn: { fontSize: 16, fontWeight: "800", color: ACCENT, paddingVertical: 6, paddingHorizontal: 4 },
-  hintBtnUsed: { fontSize: 15, fontWeight: "700", color: MUTE, paddingVertical: 6 },
+  hintBtn: { fontSize: 16, fontWeight: "900", color: ACCENT, paddingVertical: 6, paddingHorizontal: 4 },
+  hintBtnUsed: { fontSize: 15, fontWeight: "800", color: MUTE, paddingVertical: 6 },
   foundItBtn: {
     fontSize: 16,
     fontWeight: "900",
@@ -4104,10 +4157,12 @@ const styles = StyleSheet.create({
     backgroundColor: AMBER,
     borderRadius: 22,
     overflow: "hidden",
-    paddingVertical: 10,
+    paddingVertical: 11,
     paddingHorizontal: 20,
+    borderWidth: 3,
+    borderColor: OUTLINE,
   },
-  escapeLink: { fontSize: 13, fontWeight: "700", color: MUTE, marginTop: 12, textAlign: "center", textDecorationLine: "underline" },
+  escapeLink: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 12, textAlign: "center", textDecorationLine: "underline" },
 
   // --- Find REVEAL overlay (you found it! + collect) --------------------------
   revealOverlay: { flex: 1, backgroundColor: SCRIM, alignItems: "center", justifyContent: "center", padding: 24 },
@@ -4115,105 +4170,105 @@ const styles = StyleSheet.create({
     width: "100%",
     maxWidth: 420,
     backgroundColor: CARD,
-    borderRadius: 26,
-    padding: 26,
+    borderRadius: 34,
+    padding: 28,
     alignItems: "center",
-    borderWidth: 3,
-    borderColor: GREEN,
-    shadowColor: "#000",
-    shadowOpacity: 0.35,
-    shadowRadius: 22,
-    shadowOffset: { width: 0, height: 12 },
+    borderWidth: 5,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.4,
+    shadowRadius: 24,
+    shadowOffset: { width: 0, height: 14 },
     elevation: 18,
   },
-  findKicker: { fontSize: 14, fontWeight: "900", color: GREEN, letterSpacing: 2, textTransform: "uppercase" },
-  findName: { fontSize: 26, fontWeight: "900", color: INK, textAlign: "center", marginTop: 10, lineHeight: 31, letterSpacing: -0.4 },
+  findKicker: { fontSize: 14, fontWeight: "900", color: GREEN, letterSpacing: 2.5, textTransform: "uppercase" },
+  findName: { fontSize: 28, fontWeight: "900", color: INK, textAlign: "center", marginTop: 10, lineHeight: 33, letterSpacing: -0.4 },
   findLore: { fontSize: 15, color: INK, opacity: 0.82, textAlign: "center", marginTop: 12, lineHeight: 22 },
   collectWrap: { alignItems: "center", marginTop: 18, height: 64, justifyContent: "center" },
-  collectItem: { fontSize: 44 },
-  collectCaption: { fontSize: 13, fontWeight: "800", color: GREEN, marginTop: 4 },
+  collectItem: { fontSize: 48 },
+  collectCaption: { fontSize: 13, fontWeight: "900", color: GREEN, marginTop: 4 },
   findActions: { flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, marginTop: 22 },
   findPhotoLink: { fontSize: 15, fontWeight: "800", color: ACCENT, textDecorationLine: "underline" },
-  findNextBtn: { backgroundColor: AMBER, borderRadius: 26, paddingVertical: 14, paddingHorizontal: 28, minHeight: 44, alignItems: "center", justifyContent: "center" },
-  findNextText: { fontSize: 17, fontWeight: "900", color: INK, letterSpacing: 0.2 },
+  findNextBtn: { backgroundColor: AMBER, borderRadius: 28, paddingVertical: 15, paddingHorizontal: 30, minHeight: 52, alignItems: "center", justifyContent: "center", borderWidth: 4, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.28, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 6 },
+  findNextText: { fontSize: 18, fontWeight: "900", color: INK, letterSpacing: 0.2 },
   // Prominent primary CTA for the camera-catch (the COLLECT step).
-  findCatchBtn: { backgroundColor: AMBER, borderRadius: 26, paddingVertical: 15, paddingHorizontal: 30, minHeight: 48, alignItems: "center", justifyContent: "center" },
-  findCatchText: { fontSize: 18, fontWeight: "900", color: INK, letterSpacing: 0.2 },
+  findCatchBtn: { backgroundColor: AMBER, borderRadius: 28, paddingVertical: 16, paddingHorizontal: 32, minHeight: 52, alignItems: "center", justifyContent: "center", borderWidth: 4, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.28, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 6 },
+  findCatchText: { fontSize: 19, fontWeight: "900", color: INK, letterSpacing: 0.2 },
 
   // Energetic check-in / found states
   actionBtnGo: { backgroundColor: AMBER },
-  foundBanner: { backgroundColor: GREEN, borderRadius: 12, paddingVertical: 10, alignItems: "center", marginTop: 12 },
-  foundBannerText: { color: "#fff", fontSize: 16, fontWeight: "800" },
+  foundBanner: { backgroundColor: GREEN, borderRadius: 18, paddingVertical: 11, alignItems: "center", marginTop: 12, borderWidth: 3, borderColor: OUTLINE },
+  foundBannerText: { color: "#fff", fontSize: 16, fontWeight: "900" },
 
   // Optional sign-in / profile entry on Welcome
   profileLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 16, textDecorationLine: "underline" },
   profileLinkDisabled: { fontSize: 13, color: INK, opacity: 0.4, marginTop: 16 },
 
   // Profile screen
-  profileCard: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 16, padding: 16, marginTop: 16, borderWidth: 1, borderColor: BORDER },
-  profileAvatar: { width: 56, height: 56, borderRadius: 28, marginRight: 14 },
+  profileCard: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 22, padding: 17, marginTop: 16, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.12, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
+  profileAvatar: { width: 58, height: 58, borderRadius: 29, marginRight: 14, borderWidth: 3, borderColor: OUTLINE },
   profileAvatarEmpty: { backgroundColor: ACCENT, alignItems: "center", justifyContent: "center" },
-  profileAvatarInitial: { color: "#fff", fontSize: 24, fontWeight: "800" },
-  profileName: { fontSize: 18, fontWeight: "800", color: INK },
-  profileEmail: { fontSize: 14, color: INK, opacity: 0.6, marginTop: 2 },
-  oauthBtn: { backgroundColor: "#fff", borderRadius: 12, paddingVertical: 15, alignItems: "center", marginTop: 14, borderWidth: 1, borderColor: BORDER },
-  oauthBtnText: { color: INK, fontSize: 16, fontWeight: "700" },
+  profileAvatarInitial: { color: "#fff", fontSize: 24, fontWeight: "900" },
+  profileName: { fontSize: 19, fontWeight: "900", color: INK },
+  profileEmail: { fontSize: 14, color: INK, opacity: 0.6, marginTop: 2, fontWeight: "600" },
+  oauthBtn: { backgroundColor: "#fff", borderRadius: 16, paddingVertical: 16, alignItems: "center", marginTop: 14, borderWidth: 3, borderColor: OUTLINE },
+  oauthBtnText: { color: INK, fontSize: 16, fontWeight: "800" },
   // Apple's native button needs an explicit width+height or it renders blank.
   // Full-width + 50pt matches the adjacent Google button's footprint at both sites.
   appleBtn: { width: "100%", height: 50, marginTop: 14 },
 
   // Points-earned badge on the completion recap
-  pointsBadge: { backgroundColor: GREEN, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 20, marginBottom: 14 },
-  pointsBadgeText: { color: "#fff", fontSize: 17, fontWeight: "800" },
+  pointsBadge: { backgroundColor: GREEN, borderRadius: 20, paddingVertical: 11, paddingHorizontal: 22, marginBottom: 14, borderWidth: 3, borderColor: OUTLINE },
+  pointsBadgeText: { color: "#fff", fontSize: 17, fontWeight: "900" },
 
   // My Quests history screen
-  backLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginBottom: 10 },
-  histRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 14, padding: 12, marginTop: 12, borderWidth: 1, borderColor: BORDER },
-  histThumb: { width: 56, height: 56, borderRadius: 10, marginRight: 14 },
+  backLink: { fontSize: 15, color: ACCENT, fontWeight: "800", marginBottom: 10 },
+  histRow: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 20, padding: 13, marginTop: 12, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 7, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  histThumb: { width: 58, height: 58, borderRadius: 14, marginRight: 14 },
   histThumbEmpty: { backgroundColor: BORDER },
   histRowText: { flex: 1 },
-  histTheme: { fontSize: 16, fontWeight: "800", color: INK },
-  histMeta: { fontSize: 13, color: INK, opacity: 0.6, marginTop: 4 },
+  histTheme: { fontSize: 16, fontWeight: "900", color: INK },
+  histMeta: { fontSize: 13, color: INK, opacity: 0.6, marginTop: 4, fontWeight: "600" },
 
   // My Quests as a CARD GALLERY (each completed quest = a collectible card).
   questCard: {
     backgroundColor: CARD,
-    borderRadius: 18,
+    borderRadius: 24,
     marginTop: 16,
-    borderWidth: 1,
-    borderColor: BORDER,
+    borderWidth: 4,
+    borderColor: OUTLINE,
     overflow: "hidden",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
-    elevation: 3,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 5,
   },
   questCardHero: { width: "100%", height: 150, backgroundColor: TINT },
   questCardHeroEmpty: { alignItems: "center", justifyContent: "center" },
-  questCardHeroMark: { fontSize: 34, color: ACCENT_LIGHT, fontWeight: "800" },
+  questCardHeroMark: { fontSize: 36, color: ACCENT_LIGHT, fontWeight: "900" },
   questCardBody: { padding: 16 },
-  questCardTheme: { fontSize: 18, fontWeight: "900", color: INK, letterSpacing: -0.3, lineHeight: 23 },
-  questCardArea: { fontSize: 14, fontWeight: "800", color: ACCENT, marginTop: 6 },
+  questCardTheme: { fontSize: 19, fontWeight: "900", color: INK, letterSpacing: -0.3, lineHeight: 24 },
+  questCardArea: { fontSize: 14, fontWeight: "900", color: ACCENT, marginTop: 6 },
   questCardMetaRow: { flexDirection: "row", alignItems: "center", marginTop: 8, flexWrap: "wrap" },
-  questCardMeta: { fontSize: 13, color: INK, opacity: 0.6, fontWeight: "600" },
+  questCardMeta: { fontSize: 13, color: INK, opacity: 0.6, fontWeight: "700" },
   questCardDot: { fontSize: 13, color: INK, opacity: 0.4, marginHorizontal: 6 },
-  questCardPts: { fontSize: 13, color: GREEN, fontWeight: "800" },
+  questCardPts: { fontSize: 13, color: GREEN, fontWeight: "900" },
   questCardStops: { fontSize: 13, color: INK, opacity: 0.7, marginTop: 8, lineHeight: 19 },
 
-  resumeBox: { backgroundColor: "#fff", borderRadius: 18, padding: 18, marginTop: 24, width: "100%", borderWidth: 1, borderColor: GREEN, alignItems: "center" },
-  resumeLabel: { fontSize: 13, fontWeight: "700", color: GREEN },
-  resumeTheme: { fontSize: 18, fontWeight: "800", color: INK, marginTop: 4, textAlign: "center" },
-  abandonLink: { fontSize: 13, color: ACCENT, textDecorationLine: "underline", marginTop: 12 },
+  resumeBox: { backgroundColor: "#fff", borderRadius: 24, padding: 19, marginTop: 24, width: "100%", borderWidth: 4, borderColor: GREEN, alignItems: "center", shadowColor: OUTLINE, shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 4 },
+  resumeLabel: { fontSize: 13, fontWeight: "900", color: GREEN, letterSpacing: 0.5, textTransform: "uppercase" },
+  resumeTheme: { fontSize: 19, fontWeight: "900", color: INK, marginTop: 5, textAlign: "center" },
+  abandonLink: { fontSize: 13, color: ACCENT, textDecorationLine: "underline", marginTop: 12, fontWeight: "700" },
 
   // Feedback card
-  feedbackCard: { backgroundColor: "#fff", borderRadius: 16, padding: 18, marginBottom: 16 },
-  feedbackQ: { fontSize: 17, fontWeight: "700", color: INK },
+  feedbackCard: { backgroundColor: "#fff", borderRadius: 22, padding: 19, marginBottom: 16, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  feedbackQ: { fontSize: 17, fontWeight: "800", color: INK },
   feedbackThumbs: { flexDirection: "row", marginTop: 10, marginBottom: 4 },
-  thumb: { fontSize: 30, marginRight: 18, opacity: 0.4 },
+  thumb: { fontSize: 32, marginRight: 18, opacity: 0.4 },
   thumbActive: { opacity: 1 },
-  feedbackInput: { borderWidth: 1, borderColor: BORDER, borderRadius: 10, padding: 12, fontSize: 15, color: INK, marginTop: 10, backgroundColor: CREAM },
-  feedbackThanks: { fontSize: 15, color: GREEN, fontWeight: "700" },
+  feedbackInput: { borderWidth: 2, borderColor: BORDER, borderRadius: 14, padding: 13, fontSize: 15, color: INK, marginTop: 10, backgroundColor: CREAM },
+  feedbackThanks: { fontSize: 15, color: GREEN, fontWeight: "800" },
 
   // Per-stop flag
   cardFooter: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 },
@@ -4221,114 +4276,114 @@ const styles = StyleSheet.create({
   // Sign-in entry (soft gate)
   signinScreen: { flex: 1, backgroundColor: CREAM, paddingHorizontal: 28, paddingTop: 120, paddingBottom: 48, justifyContent: "space-between" },
   signinHero: { alignItems: "center" },
-  signinLogo: { fontSize: 52, fontWeight: "800", color: INK, letterSpacing: -1.2 },
-  signinValueProp: { fontSize: 18, color: INK, opacity: 0.72, marginTop: 12, textAlign: "center", lineHeight: 25 },
+  signinLogo: { fontSize: 60, fontWeight: "900", color: INK, letterSpacing: -1.6 },
+  signinValueProp: { fontSize: 18, color: INK, opacity: 0.72, marginTop: 12, textAlign: "center", lineHeight: 25, fontWeight: "600" },
   signinActions: { width: "100%" },
-  signinBtn: { paddingVertical: 17, borderRadius: 28 },
+  signinBtn: { paddingVertical: 18, borderRadius: 28, borderWidth: 3, borderColor: OUTLINE },
   signinUnavailable: { fontSize: 15, color: INK, opacity: 0.7, textAlign: "center", lineHeight: 22, marginBottom: 4 },
   guestBtn: { marginTop: 22, paddingVertical: 14, alignItems: "center" },
-  guestBtnText: { fontSize: 17, color: ACCENT, fontWeight: "800", textDecorationLine: "underline" },
+  guestBtnText: { fontSize: 17, color: ACCENT, fontWeight: "900", textDecorationLine: "underline" },
   signinFootnote: { fontSize: 13, color: INK, opacity: 0.5, textAlign: "center", marginTop: 8, lineHeight: 18 },
 
-  logo: { fontSize: 44, fontWeight: "800", color: INK, letterSpacing: -1 },
-  tagline: { fontSize: 17, color: INK, opacity: 0.7, marginTop: 8, textAlign: "center" },
-  error: { color: ACCENT, marginTop: 20, textAlign: "center", lineHeight: 20 },
-  button: { backgroundColor: ACCENT, paddingVertical: 16, paddingHorizontal: 36, borderRadius: 30, marginTop: 28, alignSelf: "center" },
-  buttonText: { color: "#fff", fontSize: 18, fontWeight: "700" },
+  logo: { fontSize: 52, fontWeight: "900", color: INK, letterSpacing: -1.4 },
+  tagline: { fontSize: 17, color: INK, opacity: 0.7, marginTop: 8, textAlign: "center", fontWeight: "600" },
+  error: { color: CORAL, marginTop: 20, textAlign: "center", lineHeight: 20, fontWeight: "700" },
+  button: { backgroundColor: ACCENT, paddingVertical: 17, paddingHorizontal: 38, borderRadius: 30, marginTop: 28, alignSelf: "center", minHeight: 52, justifyContent: "center", borderWidth: 4, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.28, shadowRadius: 10, shadowOffset: { width: 0, height: 6 }, elevation: 7 },
+  buttonText: { color: "#fff", fontSize: 19, fontWeight: "900", letterSpacing: 0.3 },
   buttonDisabled: { opacity: 0.4 },
 
   // --- Multiplayer (friends + shared hunts + leaderboard) ---------------------
-  secondaryBtn: { backgroundColor: "#fff", borderWidth: 2, borderColor: ACCENT, paddingVertical: 14, paddingHorizontal: 30, borderRadius: 30, marginTop: 14, alignSelf: "center" },
-  secondaryBtnText: { color: ACCENT, fontSize: 16, fontWeight: "800" },
-  joinBanner: { fontSize: 13, color: INK, opacity: 0.8, textAlign: "center", marginTop: 14, marginBottom: 2, lineHeight: 18, backgroundColor: TINT, paddingVertical: 10, paddingHorizontal: 12, borderRadius: 12 },
-  friendsNote: { fontSize: 14, color: GREEN, fontWeight: "700", textAlign: "center", marginTop: 14 },
-  friendRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, marginTop: 10 },
-  friendName: { flex: 1, fontSize: 16, fontWeight: "700", color: INK, marginRight: 10 },
+  secondaryBtn: { backgroundColor: "#fff", borderWidth: 4, borderColor: ACCENT, paddingVertical: 15, paddingHorizontal: 30, borderRadius: 30, marginTop: 14, alignSelf: "center", minHeight: 52, justifyContent: "center" },
+  secondaryBtnText: { color: ACCENT, fontSize: 16, fontWeight: "900" },
+  joinBanner: { fontSize: 13, color: INK, opacity: 0.85, textAlign: "center", marginTop: 14, marginBottom: 2, lineHeight: 18, backgroundColor: TINT, paddingVertical: 11, paddingHorizontal: 13, borderRadius: 16, fontWeight: "600", borderWidth: 2, borderColor: BORDER },
+  friendsNote: { fontSize: 14, color: GREEN, fontWeight: "800", textAlign: "center", marginTop: 14 },
+  friendRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", backgroundColor: CARD, borderWidth: 3, borderColor: OUTLINE, borderRadius: 20, paddingVertical: 13, paddingHorizontal: 15, marginTop: 10, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 7, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  friendName: { flex: 1, fontSize: 16, fontWeight: "800", color: INK, marginRight: 10 },
   friendActions: { flexDirection: "row", gap: 8 },
-  friendAccept: { backgroundColor: ACCENT, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 18 },
-  friendAcceptText: { color: "#fff", fontWeight: "800", fontSize: 14 },
-  friendDecline: { backgroundColor: "#fff", borderWidth: 1.5, borderColor: BORDER, paddingVertical: 8, paddingHorizontal: 14, borderRadius: 18 },
-  friendDeclineText: { color: MUTE, fontWeight: "800", fontSize: 14 },
-  friendPending: { fontSize: 13, color: MUTE, fontWeight: "700" },
-  sharedRecapCard: { backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 16, padding: 16, marginTop: 18, alignItems: "center" },
-  sharedRecapTitle: { fontSize: 17, fontWeight: "800", color: INK },
-  leaderRow: { flexDirection: "row", alignItems: "center", backgroundColor: CARD, borderWidth: 1, borderColor: BORDER, borderRadius: 14, paddingVertical: 12, paddingHorizontal: 14, marginTop: 10 },
-  leaderRowMe: { borderColor: ACCENT, borderWidth: 2, backgroundColor: TINT },
-  leaderRank: { fontSize: 18, fontWeight: "900", color: ACCENT, width: 30 },
-  leaderName: { flex: 1, fontSize: 16, fontWeight: "700", color: INK, marginRight: 8 },
+  friendAccept: { backgroundColor: ACCENT, paddingVertical: 9, paddingHorizontal: 15, borderRadius: 20, borderWidth: 2.5, borderColor: OUTLINE },
+  friendAcceptText: { color: "#fff", fontWeight: "900", fontSize: 14 },
+  friendDecline: { backgroundColor: "#fff", borderWidth: 2.5, borderColor: BORDER, paddingVertical: 9, paddingHorizontal: 15, borderRadius: 20 },
+  friendDeclineText: { color: MUTE, fontWeight: "900", fontSize: 14 },
+  friendPending: { fontSize: 13, color: MUTE, fontWeight: "800" },
+  sharedRecapCard: { backgroundColor: CARD, borderWidth: 3, borderColor: OUTLINE, borderRadius: 22, padding: 17, marginTop: 18, alignItems: "center", shadowColor: OUTLINE, shadowOpacity: 0.12, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
+  sharedRecapTitle: { fontSize: 17, fontWeight: "900", color: INK },
+  leaderRow: { flexDirection: "row", alignItems: "center", backgroundColor: CARD, borderWidth: 3, borderColor: OUTLINE, borderRadius: 20, paddingVertical: 13, paddingHorizontal: 15, marginTop: 10, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 7, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  leaderRowMe: { borderColor: AMBER, borderWidth: 4, backgroundColor: "#FFF7E0" },
+  leaderRank: { fontSize: 19, fontWeight: "900", color: ACCENT, width: 30 },
+  leaderName: { flex: 1, fontSize: 16, fontWeight: "800", color: INK, marginRight: 8 },
   leaderStats: { alignItems: "flex-end" },
-  leaderTime: { fontSize: 16, fontWeight: "800", color: INK },
-  leaderMeta: { fontSize: 12, color: MUTE, fontWeight: "600", marginTop: 2 },
+  leaderTime: { fontSize: 16, fontWeight: "900", color: INK },
+  leaderMeta: { fontSize: 12, color: MUTE, fontWeight: "700", marginTop: 2 },
 
   // --- Quest Setup sheet ------------------------------------------------------
-  setupLink: { fontSize: 14, color: ACCENT, fontWeight: "700", textAlign: "center", marginTop: 16 },
-  setupIntro: { fontSize: 15, color: INK, opacity: 0.7, marginTop: 6, lineHeight: 21 },
-  setupSectionLabel: { fontSize: 13, fontWeight: "800", color: INK, opacity: 0.6, letterSpacing: 1, textTransform: "uppercase", marginTop: 26, marginBottom: 10 },
+  setupLink: { fontSize: 14, color: ACCENT, fontWeight: "800", textAlign: "center", marginTop: 16 },
+  setupIntro: { fontSize: 15, color: INK, opacity: 0.7, marginTop: 6, lineHeight: 21, fontWeight: "600" },
+  setupSectionLabel: { fontSize: 13, fontWeight: "900", color: INK, opacity: 0.6, letterSpacing: 1, textTransform: "uppercase", marginTop: 26, marginBottom: 10 },
   segmentRow: { flexDirection: "row", gap: 10 },
-  segment: { flex: 1, paddingVertical: 14, borderRadius: 14, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff", alignItems: "center" },
+  segment: { flex: 1, paddingVertical: 15, borderRadius: 18, borderWidth: 3, borderColor: BORDER, backgroundColor: "#fff", alignItems: "center", minHeight: 52, justifyContent: "center" },
   segmentActive: { borderColor: ACCENT, backgroundColor: TINT },
-  segmentText: { fontSize: 15, fontWeight: "700", color: INK, opacity: 0.7 },
+  segmentText: { fontSize: 15, fontWeight: "800", color: INK, opacity: 0.7 },
   segmentTextActive: { color: ACCENT, opacity: 1 },
   placeBlock: { marginTop: 14 },
   placeInputRow: { flexDirection: "row", gap: 10, alignItems: "center" },
-  placeInput: { flex: 1, backgroundColor: "#fff", borderWidth: 1.5, borderColor: BORDER, borderRadius: 12, paddingHorizontal: 14, paddingVertical: 12, fontSize: 16, color: INK },
-  placeFindBtn: { backgroundColor: ACCENT, borderRadius: 12, paddingHorizontal: 20, paddingVertical: 12, minWidth: 64, alignItems: "center", justifyContent: "center" },
-  placeFindText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  placeResolved: { fontSize: 15, color: GREEN, fontWeight: "700", marginTop: 12 },
-  setupErr: { fontSize: 14, color: ACCENT, marginTop: 12, lineHeight: 20 },
+  placeInput: { flex: 1, backgroundColor: "#fff", borderWidth: 3, borderColor: BORDER, borderRadius: 16, paddingHorizontal: 15, paddingVertical: 13, fontSize: 16, color: INK },
+  placeFindBtn: { backgroundColor: ACCENT, borderRadius: 16, paddingHorizontal: 20, paddingVertical: 13, minWidth: 64, minHeight: 48, alignItems: "center", justifyContent: "center", borderWidth: 3, borderColor: OUTLINE },
+  placeFindText: { color: "#fff", fontSize: 15, fontWeight: "900" },
+  placeResolved: { fontSize: 15, color: GREEN, fontWeight: "800", marginTop: 12 },
+  setupErr: { fontSize: 14, color: CORAL, marginTop: 12, lineHeight: 20, fontWeight: "700" },
   sizeRow: { flexDirection: "row", gap: 12 },
-  sizeCard: { flex: 1, padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff" },
-  sizeCardWide: { padding: 16, borderRadius: 16, borderWidth: 1.5, borderColor: BORDER, backgroundColor: "#fff", marginTop: 12 },
+  sizeCard: { flex: 1, padding: 16, borderRadius: 20, borderWidth: 3, borderColor: BORDER, backgroundColor: "#fff" },
+  sizeCardWide: { padding: 16, borderRadius: 20, borderWidth: 3, borderColor: BORDER, backgroundColor: "#fff", marginTop: 12 },
   sizeCardActive: { borderColor: ACCENT, backgroundColor: TINT },
-  sizeName: { fontSize: 17, fontWeight: "800", color: INK },
-  sizeDetail: { fontSize: 13, color: INK, opacity: 0.65, marginTop: 4 },
-  theme: { fontSize: 30, fontWeight: "800", color: INK, letterSpacing: -0.5 },
-  intro: { fontSize: 16, color: INK, opacity: 0.75, marginTop: 6, lineHeight: 22 },
-  progress: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 12, marginBottom: 16 },
-  card: { backgroundColor: "#fff", borderRadius: 16, padding: 18, marginBottom: 16 },
-  cardDone: { opacity: 0.7, borderWidth: 1, borderColor: GREEN },
-  stopTitle: { fontSize: 20, fontWeight: "700", color: INK, paddingRight: 36 },
-  distance: { fontSize: 13, color: ACCENT, fontWeight: "600", marginTop: 2, marginBottom: 8 },
+  sizeName: { fontSize: 18, fontWeight: "900", color: INK },
+  sizeDetail: { fontSize: 13, color: INK, opacity: 0.65, marginTop: 4, fontWeight: "600" },
+  theme: { fontSize: 32, fontWeight: "900", color: INK, letterSpacing: -0.5 },
+  intro: { fontSize: 16, color: INK, opacity: 0.75, marginTop: 6, lineHeight: 22, fontWeight: "600" },
+  progress: { fontSize: 15, color: ACCENT, fontWeight: "800", marginTop: 12, marginBottom: 16 },
+  card: { backgroundColor: "#fff", borderRadius: 22, padding: 19, marginBottom: 16, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  cardDone: { opacity: 0.7, borderWidth: 3, borderColor: GREEN },
+  stopTitle: { fontSize: 21, fontWeight: "900", color: INK, paddingRight: 36 },
+  distance: { fontSize: 13, color: ACCENT, fontWeight: "800", marginTop: 2, marginBottom: 8 },
   body: { fontSize: 15, color: INK, lineHeight: 21 },
   why: { fontSize: 14, color: INK, opacity: 0.7, marginTop: 6, fontStyle: "italic" },
   lore: { fontSize: 14, color: INK, opacity: 0.8, marginTop: 8, lineHeight: 20 },
-  questBox: { backgroundColor: CREAM, borderRadius: 12, padding: 12, marginTop: 12 },
-  questText: { fontSize: 15, color: INK, fontWeight: "600" },
-  actionBtn: { backgroundColor: ACCENT, borderRadius: 12, paddingVertical: 13, alignItems: "center", marginTop: 12 },
-  actionBtnDisabled: { backgroundColor: "#A9C3D6" },
-  actionText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  override: { fontSize: 13, color: ACCENT, textAlign: "center", marginTop: 10, textDecorationLine: "underline" },
-  photo: { width: "100%", height: 180, borderRadius: 12, marginTop: 12 },
-  source: { fontSize: 12, color: ACCENT },
+  questBox: { backgroundColor: CREAM, borderRadius: 16, padding: 13, marginTop: 12, borderWidth: 2, borderColor: BORDER },
+  questText: { fontSize: 15, color: INK, fontWeight: "700" },
+  actionBtn: { backgroundColor: ACCENT, borderRadius: 16, paddingVertical: 14, alignItems: "center", marginTop: 12, minHeight: 48, justifyContent: "center", borderWidth: 3, borderColor: OUTLINE },
+  actionBtnDisabled: { backgroundColor: "#A9C3D6", borderColor: "#7E97AA" },
+  actionText: { color: "#fff", fontSize: 16, fontWeight: "900" },
+  override: { fontSize: 13, color: ACCENT, textAlign: "center", marginTop: 10, textDecorationLine: "underline", fontWeight: "700" },
+  photo: { width: "100%", height: 180, borderRadius: 16, marginTop: 12, borderWidth: 3, borderColor: OUTLINE },
+  source: { fontSize: 12, color: ACCENT, fontWeight: "600" },
 
   // --- Map-first active screen --------------------------------------------------
   mapScreen: { flex: 1, backgroundColor: CREAM },
 
-  // Numbered stop dots (terracotta), with completed/selected variants.
+  // Numbered stop dots, with completed/selected variants. Bold cartoon outline.
   pin: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 34,
+    height: 34,
+    borderRadius: 17,
     backgroundColor: ACCENT,
-    borderWidth: 2.5,
+    borderWidth: 3,
     borderColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 1 },
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.35,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
   },
   pinDone: { backgroundColor: GREEN },
   pinSelected: {
     backgroundColor: AMBER, // brighter gold for the active stop
     borderColor: "#fff",
-    borderWidth: 3,
-    shadowOpacity: 0.4,
-    shadowRadius: 6,
+    borderWidth: 3.5,
+    shadowOpacity: 0.45,
+    shadowRadius: 7,
     shadowOffset: { width: 0, height: 3 },
   },
-  pinText: { color: "#fff", fontSize: 14, fontWeight: "800" },
+  pinText: { color: "#fff", fontSize: 15, fontWeight: "900" },
 
   // --- Floating HUD (Pokémon-GO style) ----------------------------------------
   // Top-left identity chip (theme + area).
@@ -4336,56 +4391,56 @@ const styles = StyleSheet.create({
   identityChip: {
     alignSelf: "flex-start",
     maxWidth: "100%",
-    backgroundColor: "rgba(255,255,255,0.95)",
-    borderRadius: 20,
-    paddingVertical: 9,
+    backgroundColor: "rgba(255,255,255,0.97)",
+    borderRadius: 24,
+    paddingVertical: 10,
     paddingHorizontal: 16,
-    borderWidth: 1,
-    borderColor: BORDER,
-    shadowColor: "#000",
-    shadowOpacity: 0.16,
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.2,
     shadowRadius: 8,
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 4 },
     elevation: 5,
   },
-  identityTheme: { fontSize: 15, fontWeight: "800", color: INK, letterSpacing: -0.2 },
-  identityArea: { fontSize: 12, color: GREEN, fontWeight: "700", marginTop: 2 },
+  identityTheme: { fontSize: 15, fontWeight: "900", color: INK, letterSpacing: -0.2 },
+  identityArea: { fontSize: 12, color: GREEN, fontWeight: "800", marginTop: 2 },
 
   // Top-right stacked side rail of round buttons.
   hudSideRail: { position: "absolute", top: 54, right: 14, alignItems: "center", gap: 12 },
   railBtn: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "rgba(255,255,255,0.96)",
+    width: 58,
+    height: 58,
+    borderRadius: 29,
+    backgroundColor: "rgba(255,255,255,0.97)",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.22,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 3 },
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.26,
+    shadowRadius: 7,
+    shadowOffset: { width: 0, height: 4 },
     elevation: 6,
   },
-  railBtnAbandon: { backgroundColor: "rgba(255,235,235,0.97)" },
-  railIcon: { fontSize: 20 },
-  railLabel: { fontSize: 9, fontWeight: "800", color: INK, marginTop: 1, letterSpacing: 0.2 },
-  railLabelAbandon: { fontSize: 9, fontWeight: "800", color: "#D2483B", marginTop: 1 },
+  railBtnAbandon: { backgroundColor: "rgba(255,235,236,0.98)", borderColor: CORAL },
+  railIcon: { fontSize: 22 },
+  railLabel: { fontSize: 9, fontWeight: "900", color: INK, marginTop: 1, letterSpacing: 0.2 },
+  railLabelAbandon: { fontSize: 9, fontWeight: "900", color: CORAL, marginTop: 1 },
 
   // Top-center progress chip.
   hudProgress: { position: "absolute", top: 60, left: 0, right: 0, alignItems: "center" },
   progressChip: {
     backgroundColor: ACCENT,
-    borderRadius: 16,
-    paddingVertical: 7,
-    paddingHorizontal: 16,
-    borderWidth: 2,
-    borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
+    borderRadius: 20,
+    paddingVertical: 8,
+    paddingHorizontal: 17,
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
     elevation: 6,
   },
   progressChipDone: { backgroundColor: GREEN },
@@ -4396,45 +4451,46 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 38,
     left: 22,
-    width: 72,
-    height: 72,
-    borderRadius: 36,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
     backgroundColor: AMBER,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 3,
-    borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    borderWidth: 4,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.34,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 8,
   },
-  scoreFabPts: { color: "#fff", fontSize: 22, fontWeight: "900", letterSpacing: -0.5 },
-  scoreFabLabel: { color: "#fff", fontSize: 11, fontWeight: "800", marginTop: -2, opacity: 0.9 },
+  // INK (not white) on AMBER keeps the points reading high-contrast as AMBER brightens.
+  scoreFabPts: { color: INK, fontSize: 23, fontWeight: "900", letterSpacing: -0.5 },
+  scoreFabLabel: { color: INK, fontSize: 11, fontWeight: "900", marginTop: -2, opacity: 0.8 },
 
   // Bottom-right primary action FAB (New Quest / Recap).
   primaryFab: {
     position: "absolute",
     bottom: 38,
     right: 22,
-    minWidth: 88,
-    height: 72,
-    borderRadius: 36,
+    minWidth: 92,
+    height: 76,
+    borderRadius: 38,
     paddingHorizontal: 18,
     backgroundColor: ACCENT,
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 3,
-    borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    borderWidth: 4,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.34,
+    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
     elevation: 8,
   },
   primaryFabRecap: { backgroundColor: GREEN },
-  primaryFabIcon: { color: "#fff", fontSize: 22, fontWeight: "900", marginBottom: -1 },
+  primaryFabIcon: { color: "#fff", fontSize: 23, fontWeight: "900", marginBottom: -1 },
   primaryFabText: { color: "#fff", fontSize: 13, fontWeight: "900", letterSpacing: 0.2 },
 
   // --- Pop-out stop card -------------------------------------------------------
@@ -4445,16 +4501,16 @@ const styles = StyleSheet.create({
     maxWidth: 460,
     maxHeight: SCREEN_H * 0.78,
     backgroundColor: CREAM,
-    borderRadius: 24,
+    borderRadius: 30,
     paddingHorizontal: 20,
     paddingTop: 18,
     paddingBottom: 8,
-    borderWidth: 2,
-    borderColor: "#fff",
-    shadowColor: "#000",
-    shadowOpacity: 0.32,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
+    borderWidth: 5,
+    borderColor: OUTLINE,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.4,
+    shadowRadius: 22,
+    shadowOffset: { width: 0, height: 12 },
     elevation: 16,
   },
   cardClose: {
@@ -4462,16 +4518,16 @@ const styles = StyleSheet.create({
     top: 10,
     right: 10,
     zIndex: 2,
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 1,
-    borderColor: BORDER,
+    borderWidth: 3,
+    borderColor: OUTLINE,
   },
-  cardCloseText: { fontSize: 16, fontWeight: "800", color: INK },
+  cardCloseText: { fontSize: 17, fontWeight: "900", color: INK },
   // flexShrink (NOT flex:1) so the ScrollView shrinks to the card's maxHeight-only
   // bound and actually scrolls — keeping the bottom-of-card manual override /
   // source / flag reachable even on a tall stop (long description + captured photo).
