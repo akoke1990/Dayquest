@@ -62,6 +62,39 @@ The app upserts on `id` (conflict target = `id`), so the `insert` + `update`
 policies together cover the upsert path. No `delete` policy is granted — profiles
 are never deleted from the client.
 
+### 1b. Public profile view (cross-user names/avatars — NO email/points)
+
+Friends lists and leaderboards need to show OTHER users' **display name + avatar**
+— but they must NEVER see another user's **email** or **total_points**. So
+instead of a broad cross-user SELECT policy on `profiles` (which would expose the
+whole row), expose a narrow **view** with only the three public columns. A plain
+(non-`security_invoker`) view runs with its owner's rights, so it returns all
+users' rows while the `profiles` table itself stays own-row-only.
+
+Run this once (and DROP the old broad policy if you ever added one):
+
+```sql
+-- Public, non-PII projection of profiles for friends list + leaderboard.
+-- Only id/display_name/avatar_url — email + points stay private to the owner.
+create or replace view public.public_profiles as
+  select id, display_name, avatar_url
+  from public.profiles;
+
+-- Any signed-in user may read the public view; anon too (harmless — the app
+-- only queries it while signed in). The view is a definer view, so it does NOT
+-- need SELECT on the base table to be granted to these roles.
+grant select on public.public_profiles to authenticated, anon;
+
+-- Remove the broad cross-user read on the base table if it was ever added, so
+-- `profiles` reverts to own-row-only (email/points private). Safe if absent.
+drop policy if exists "profiles_select_others" on public.profiles;
+```
+
+The app's `fetchProfiles()` (in `app/lib/social.js`) reads `public_profiles`;
+the user's OWN profile (auth + score sync, in `app/lib/auth.js`) still reads
+`profiles`. If the view isn't applied yet, `fetchProfiles` degrades to blank
+names ("Player") — it never crashes.
+
 ---
 
 ## 2. Dashboard configuration checklist

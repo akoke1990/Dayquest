@@ -33,10 +33,13 @@ function isUuid(v) {
   return typeof v === "string" && UUID_RE.test(v);
 }
 
-// Fetch display fields for a set of user ids → Map(id → {display_name, avatar_url}).
-// Empty map on any failure (so the UI degrades to "Player" labels, never crashes).
-// Requires the cross-user profiles SELECT policy (see SQL delta in the build
-// notes / SUPABASE_SETUP.md). Without it this returns only the caller's own row.
+// Fetch display fields for OTHER users (friends list / leaderboard) →
+// Map(id → {display_name, avatar_url}). Reads the `public_profiles` VIEW, which
+// exposes ONLY id/display_name/avatar_url — never email or points. The view is
+// SELECTable by any authenticated user; the underlying `profiles` table stays
+// own-row-only (email/points private). See the SQL block in SUPABASE_SETUP.md.
+// Empty map on any failure — incl. the view not being applied yet — so the UI
+// degrades to "Player" labels, never crashes.
 export async function fetchProfiles(ids) {
   const map = new Map();
   if (!authConfigured || !supabase) return map;
@@ -44,7 +47,7 @@ export async function fetchProfiles(ids) {
   if (unique.length === 0) return map;
   try {
     const { data, error } = await supabase
-      .from("profiles")
+      .from("public_profiles")
       .select("id,display_name,avatar_url")
       .in("id", unique);
     if (error || !data) return map;
