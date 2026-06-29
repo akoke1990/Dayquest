@@ -977,6 +977,10 @@ export default function App() {
   // clue can be tucked against the left edge to keep the map + warmer/colder clear.
   const [cluePanelOpen, setCluePanelOpen] = useState(true);
   const [travelMode, setTravelMode] = useState("walk"); // "walk" | "bike" — sent as mode= (bike = bigger loop, server-handled)
+  // Quest difficulty — sent as difficulty= to /quest (server accepts easy|tricky|
+  // hard|impossible; "Nearly Impossible" is the label, value is "impossible").
+  // Defaults to "tricky" to match the one-tap quick-quest default.
+  const [setupDifficulty, setSetupDifficulty] = useState("tricky"); // "easy" | "tricky" | "hard" | "impossible"
 
   // Pop the stop card in/out whenever a stop is selected/deselected.
   useEffect(() => {
@@ -1558,6 +1562,11 @@ export default function App() {
       // distance — we just send the mode. Omitted for the default walk so the
       // simple one-tap URL stays minimal.
       if (opts.mode && opts.mode !== "walk") params.set("mode", opts.mode);
+      // Difficulty (easy|tricky|hard|impossible). Sent only when the caller
+      // passes it (Setup + shared hunt). The one-tap quick-quest path omits it,
+      // so the server applies its default ("tricky") and the simple URL stays
+      // byte-identical to before.
+      if (opts.difficulty) params.set("difficulty", opts.difficulty);
       // SHARED HUNT (multiplayer). `shared=1` asks the server to mint a durable
       // hunt_id (the host starting a friend hunt). `huntId` (a joiner) fetches
       // the SAME existing hunt by id so everyone gets identical clues/places.
@@ -2080,7 +2089,7 @@ export default function App() {
   function startSharedHunt() {
     if (!setupReady) return;
     track("shared_hunt_started");
-    const base = { shared: true, size: setupSize, mode: travelMode };
+    const base = { shared: true, size: setupSize, mode: travelMode, difficulty: setupDifficulty };
     if (setupMode === "place" && setupPlace) {
       startQuest({ ...base, lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name });
     } else {
@@ -2173,9 +2182,9 @@ export default function App() {
   function startSetupQuest() {
     if (!setupReady) return;
     if (setupMode === "place" && setupPlace) {
-      startQuest({ lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name, size: setupSize, mode: travelMode });
+      startQuest({ lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name, size: setupSize, mode: travelMode, difficulty: setupDifficulty });
     } else {
-      startQuest({ size: setupSize, mode: travelMode });
+      startQuest({ size: setupSize, mode: travelMode, difficulty: setupDifficulty });
     }
   }
 
@@ -3203,6 +3212,51 @@ export default function App() {
         >
           <Text style={styles.sizeName}>Epic 🏆</Text>
           <Text style={styles.sizeDetail}>A longer hunt · 7–8 finds</Text>
+        </TouchableOpacity>
+
+        {/* DIFFICULTY ----------------------------------------------------- */}
+        {/* How cryptic the clues are. Sends difficulty= to /quest. Default
+            "tricky". The three short levels go two-up (Easy + Tricky in one
+            row, Hard alone keeps the row balanced is avoided — use a 2-up row
+            for Easy/Tricky, then Hard + Nearly Impossible each full-width so
+            the long "Nearly Impossible" label has room, mirroring the Epic
+            card precedent above). Value "impossible" maps the long label. */}
+        <Text style={styles.setupSectionLabel}>Difficulty</Text>
+        <View style={styles.sizeRow}>
+          <TouchableOpacity
+            style={[styles.sizeCard, setupDifficulty === "easy" && styles.sizeCardActive]}
+            onPress={() => setSetupDifficulty("easy")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.sizeName}>Easy 🙂</Text>
+            <Text style={styles.sizeDetail}>Clear clues</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.sizeCard, setupDifficulty === "tricky" && styles.sizeCardActive]}
+            onPress={() => setSetupDifficulty("tricky")}
+            activeOpacity={0.85}
+          >
+            <Text style={styles.sizeName}>Tricky 🤔</Text>
+            <Text style={styles.sizeDetail}>A fun puzzle</Text>
+          </TouchableOpacity>
+        </View>
+        <TouchableOpacity
+          style={[styles.sizeCardWide, setupDifficulty === "hard" && styles.sizeCardActive]}
+          onPress={() => setSetupDifficulty("hard")}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.sizeName}>Hard 🧐</Text>
+          <Text style={styles.sizeDetail}>Cryptic · think hard</Text>
+        </TouchableOpacity>
+        {/* Long label gets its own full-width row so it never wraps/truncates,
+            same pattern as the Epic size card. Value sent is "impossible". */}
+        <TouchableOpacity
+          style={[styles.sizeCardWide, setupDifficulty === "impossible" && styles.sizeCardActive]}
+          onPress={() => setSetupDifficulty("impossible")}
+          activeOpacity={0.85}
+        >
+          <Text style={styles.sizeName}>Nearly Impossible 😈</Text>
+          <Text style={styles.sizeDetail}>For the obsessed</Text>
         </TouchableOpacity>
 
         <PressBounce
