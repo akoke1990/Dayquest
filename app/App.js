@@ -88,6 +88,12 @@ const CHECKIN_RADIUS_M = 100; // how close you must be to check in (legacy stop 
 // --- Scavenger-hunt tuning ---------------------------------------------------
 const SEARCH_ZONE_RADIUS_M = 200; // the <Circle> "it's somewhere in here" hunt zone
 const FIND_RADIUS_M = 50; // within this of the target → FOUND IT (reveal + collect)
+// Movement gate for the warmer/colder HEAT signal (band + edge-glow + haptic).
+// We only RECOMPUTE the heat after the user has physically moved ≥ this far from
+// the last heat-update position. This hides dense-urban GPS multipath jitter and
+// makes the warmer/colder signal feel deliberate (the geocaching trick). The
+// ≤FIND_RADIUS_M find-trigger is NOT gated — it always reads raw live distance.
+const HEAT_MOVE_M = 12;
 // After this long on one clue we surface the manual "reveal anyway" escape, so a
 // GPS/accessibility issue can never trap the user on a clue.
 const ESCAPE_AFTER_MS = 45000;
@@ -935,6 +941,13 @@ export default function App() {
   // Warmer/colder: last proximity band we buzzed for (so haptics fire on band
   // CHANGE, not every GPS tick — the metal-detector throttle).
   const lastBandRef = useRef(null);
+  // Movement-gated HEAT position. The warmer/colder band, edge-glow and band
+  // haptic all derive from `heatCoords` (NOT raw `coords`), and `heatCoords`
+  // only advances once the user has moved ≥ HEAT_MOVE_M from `lastHeatPosRef` —
+  // so the signal ignores GPS jitter and updates deliberately. State (not just a
+  // ref) so the render-time band/label/glow re-render when it advances.
+  const lastHeatPosRef = useRef(null);
+  const [heatCoords, setHeatCoords] = useState(null);
   // Find guard: order indices whose find has already been triggered this quest,
   // so GPS jitter around the find radius can't re-fire the reveal. Reset per quest.
   const foundFiredRef = useRef(new Set());
@@ -1244,26 +1257,49 @@ export default function App() {
     return () => sub && sub.remove();
   }, [screen]);
 
-  // --- Warmer/colder + auto-find (the metal-detector loop) --------------------
-  // Runs on every live position update for the CURRENT target (first not-found
-  // stop). Computes the proximity band, buzzes ONLY on a band CHANGE (throttle —
-  // not every GPS tick), pulsing stronger the hotter we get, and AUTO-TRIGGERS
-  // the find when we reach the find radius. Lives here (not in the watcher
-  // callback, which closes over a stale [screen]) so it always sees the live
-  // coords + the freshest progress/target.
+  // --- AUTO-FIND (raw, ungated) ----------------------------------------------
+  // Runs on EVERY live position update for the CURRENT target (first not-found
+  // stop) and auto-triggers the find the instant we reach FIND_RADIUS_M. This
+  // reads RAW `coords` — the find must NOT be movement-gated, so reaching the
+  // target always registers even if the user is barely moving. Lives here (not
+  // the watcher callback, which closes over a stale [screen]) so it always sees
+  // the freshest progress/target. Find is idempotent (guarded inside findStop).
   useEffect(() => {
     if (screen !== "ready" || !quest || !coords || findReveal != null) return;
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     if (!target?.place) return;
     const dist = distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng);
+    if (dist <= FIND_RADIUS_M) findStop(target.order_index, false);
+  }, [coords, screen, quest, progress, findReveal]);
 
-    // Reached the find radius → reveal + collect (guarded inside findStop).
-    if (dist <= FIND_RADIUS_M) {
-      findStop(target.order_index, false);
-      return;
+  // --- HEAT MOVEMENT GATE -----------------------------------------------------
+  // Advance the gated heat position only once the user has physically moved
+  // ≥ HEAT_MOVE_M from where the heat was last sampled (or on the first fix).
+  // Every warmer/colder consumer (band, edge-glow, band haptic) reads
+  // `heatCoords` instead of raw `coords`, so GPS multipath jitter under tall
+  // buildings can't flicker the signal.
+  useEffect(() => {
+    if (!coords) return;
+    const last = lastHeatPosRef.current;
+    if (
+      !last ||
+      distanceM(last.latitude, last.longitude, coords.latitude, coords.longitude) >= HEAT_MOVE_M
+    ) {
+      lastHeatPosRef.current = coords;
+      setHeatCoords(coords);
     }
+  }, [coords]);
 
-    // Band change → haptic pulse, stronger the hotter. Throttles by band id.
+  // --- Warmer/colder band haptic (GATED) -------------------------------------
+  // Buzzes ONLY on a band CHANGE (throttle — not every tick), stronger the
+  // hotter. Driven by the movement-gated `heatCoords` so the band — and thus the
+  // buzz — only moves when the user has genuinely moved ≥ HEAT_MOVE_M.
+  useEffect(() => {
+    if (screen !== "ready" || !quest || !heatCoords || findReveal != null) return;
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    if (!target?.place) return;
+    const dist = distanceM(heatCoords.latitude, heatCoords.longitude, target.place.lat, target.place.lng);
+    if (dist <= FIND_RADIUS_M) return; // find handled by the raw effect above
     const band = proximityBand(dist);
     if (band && band.id !== lastBandRef.current) {
       const prev = lastBandRef.current;
@@ -1281,7 +1317,7 @@ export default function App() {
         Haptics.impactAsync(style).catch(() => {});
       }
     }
-  }, [coords, screen, quest, progress, findReveal]);
+  }, [heatCoords, screen, quest, progress, findReveal]);
 
   // Pulse the warmer/colder indicator continuously, FASTER the hotter. Re-armed
   // whenever the current target's band changes. A looping scale breath via the
@@ -1290,8 +1326,8 @@ export default function App() {
     if (screen !== "ready" || !quest) return;
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     const dist =
-      coords && target?.place
-        ? distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng)
+      heatCoords && target?.place
+        ? distanceM(heatCoords.latitude, heatCoords.longitude, target.place.lat, target.place.lng)
         : null;
     const band = proximityBand(dist);
     // Pulse period shrinks as we heat up (metal-detector quickening).
@@ -1313,29 +1349,31 @@ export default function App() {
     quest,
     findReveal,
     proximityBand(
-      coords && quest
+      heatCoords && quest
         ? (() => {
             const t = quest.stops.find((s) => !progress[s.order_index]?.found);
             return t?.place
-              ? distanceM(coords.latitude, coords.longitude, t.place.lat, t.place.lng)
+              ? distanceM(heatCoords.latitude, heatCoords.longitude, t.place.lat, t.place.lng)
               : null;
           })()
         : null
     )?.id,
   ]);
 
-  // MAP TINT: ease a 0→1 "heat" value toward the live proximity so the colored
-  // wash over the map shifts blue (cold/far) → red (hot/near). Continuous, not
-  // banded, so the map visibly warms/cools as you move. Non-native driver
-  // (backgroundColor interpolation) — kept on its OWN value (tintAnim) so it
-  // never collides with warmthAnim's native scale/opacity loop. Heat maps the
-  // cold→hot distance window (~400m → find radius) onto 0→1.
+  // EDGE-GLOW HEAT: ease a 0→1 "heat" value toward the (movement-gated) proximity
+  // so the peripheral edge-glow frame shifts blue (cold/far) → red (hot/near).
+  // Continuous, not banded, so the frame visibly warms/cools as you move — while
+  // the map CENTER stays clear (the glow is a thick translucent border, see the
+  // render). Non-native driver (borderColor interpolation) — kept on its OWN
+  // value (tintAnim) so it never collides with warmthAnim's native scale/opacity
+  // loop. Reads `heatCoords` (gated), so it doesn't flicker on GPS jitter. Heat
+  // maps the cold→hot distance window (~400m → find radius) onto 0→1.
   useEffect(() => {
     if (screen !== "ready" || !quest) return;
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     const dist =
-      coords && target?.place
-        ? distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng)
+      heatCoords && target?.place
+        ? distanceM(heatCoords.latitude, heatCoords.longitude, target.place.lat, target.place.lng)
         : null;
     // No fix yet → stay cold. Otherwise clamp distance into [find radius, 400m]
     // and invert: close = hot (1), far = cold (0).
@@ -1355,8 +1393,9 @@ export default function App() {
     screen,
     quest,
     findReveal,
-    coords?.latitude,
-    coords?.longitude,
+    heatCoords?.latitude,
+    heatCoords?.longitude,
+    progress,
   ]);
 
   // Arm the manual "reveal anyway" escape after a while on the SAME clue, so a
@@ -1560,7 +1599,9 @@ export default function App() {
     setHintShown(false);
     setEscapeArmed(false);
     lastBandRef.current = null;
-    tintAnim.setValue(0); // fresh quest → map starts cold (blue)
+    lastHeatPosRef.current = null; // re-arm the heat movement gate
+    setHeatCoords(null); // fresh quest → no gated fix → glow starts cold
+    tintAnim.setValue(0); // fresh quest → edge-glow starts cold (blue)
     foundFiredRef.current = new Set();
     try {
       let latitude, longitude;
@@ -1775,6 +1816,9 @@ export default function App() {
     setHintShown(false);
     setEscapeArmed(false);
     lastBandRef.current = null;
+    lastHeatPosRef.current = null; // re-arm the heat movement gate
+    setHeatCoords(null); // resumed quest → re-acquire a gated fix before glowing
+    tintAnim.setValue(0); // resumed quest → edge-glow starts cold until re-acquired
     setSaved(null);
     setScreen("ready");
     track("quest_resumed", { stops: saved.quest.stops?.length });
@@ -3186,10 +3230,13 @@ export default function App() {
   // The CURRENT target = first not-found stop in walking order. null once all
   // found (the hunt is complete). Its name/pin stay HIDDEN until found.
   const currentTarget = quest.stops.find((s) => !progress[s.order_index]?.found) || null;
-  // Live distance to the current target + its proximity band (warmer/colder).
+  // Movement-gated distance to the current target + its proximity band
+  // (warmer/colder). Reads `heatCoords` (advances only after ≥ HEAT_MOVE_M of
+  // travel) rather than raw `coords`, so the band/label/edge-glow don't flicker
+  // on GPS jitter. The ≤FIND_RADIUS_M find still fires off raw coords elsewhere.
   const targetDist =
-    coords && currentTarget?.place
-      ? distanceM(coords.latitude, coords.longitude, currentTarget.place.lat, currentTarget.place.lng)
+    heatCoords && currentTarget?.place
+      ? distanceM(heatCoords.latitude, heatCoords.longitude, currentTarget.place.lat, currentTarget.place.lng)
       : null;
   const band = proximityBand(targetDist);
   // The stop being REVEALED right now (the "You found it!" moment), if any.
@@ -3522,22 +3569,36 @@ export default function App() {
           })}
       </MapView>
 
-      {/* ===== MAP PROXIMITY TINT: a low-opacity colored wash OVER the map that
-              shifts blue (cold/far) → red (hot/near) with live proximity to the
-              current target — the PRIMARY warmer/colder signal ("the map gets
-              redder/bluer"). Sits above the map but under the HUD, and
-              pointerEvents="none" keeps the map fully interactive. Only while a
-              target is live + located. Driven by tintAnim (non-native). ===== */}
-      {currentTarget && !allDone && coords ? (
+      {/* ===== PERIPHERAL EDGE-GLOW: the warmer/colder signal as a soft colored
+              FRAME around the screen edges that shifts blue (cold/far) → red
+              (hot/near) with (movement-gated) proximity to the current target.
+              Per UX research R3 we DON'T wash the whole map (hurts outdoor
+              legibility + flickers on GPS jitter) — instead a thick translucent
+              border leaves the MAP CENTER fully clear and legible. Dep-free: a
+              single absoluteFill Animated.View whose only fill is a fat
+              `borderColor` (borderWidth 36 + borderRadius 48 reads as a soft
+              vignette frame; the interior is transparent so nothing tints the
+              center). pointerEvents="none" keeps the map fully interactive.
+              Driven purely by tintAnim (non-native borderColor/opacity) — kept
+              off warmthAnim's native loop so there's no cross-driver collision.
+              Only while a target is live + a (gated) fix exists. ===== */}
+      {currentTarget && !allDone && heatCoords ? (
         <Animated.View
           pointerEvents="none"
           style={[
             StyleSheet.absoluteFill,
+            styles.edgeGlow,
             {
-              backgroundColor: tintAnim.interpolate({
+              borderColor: tintAnim.interpolate({
                 inputRange: [0, 1],
-                // Cold blue → hot red, at low opacity so the map reads through.
-                outputRange: ["rgba(59,130,196,0.22)", "rgba(232,89,12,0.30)"],
+                // Cold blue → hot red. Higher alpha than the old wash is fine —
+                // it only paints the edges, never the legible center.
+                outputRange: ["rgba(59,130,196,0.45)", "rgba(232,89,12,0.60)"],
+              }),
+              // Glow gets a touch more present as it heats up, but always subtle.
+              opacity: tintAnim.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.7, 1],
               }),
             },
           ]}
@@ -3616,10 +3677,10 @@ export default function App() {
             ]}
           >
             <Text style={[styles.warmthLabel, { color: band?.color || ACCENT }]}>
-              {coords ? band?.label : "📡 Finding your location…"}
+              {band ? band.label : "📡 Finding your location…"}
             </Text>
             <Text style={styles.warmthHint}>
-              {coords ? band?.hint : "Make sure location is on to play the hunt."}
+              {band ? band.hint : "Make sure location is on to play the hunt."}
             </Text>
           </Animated.View>
         </View>
@@ -3919,6 +3980,13 @@ const styles = StyleSheet.create({
   celebrateChip: { color: GREEN, backgroundColor: "#fff", borderRadius: 16, paddingVertical: 6, paddingHorizontal: 13, fontSize: 13, fontWeight: "900", overflow: "hidden" },
   celebrateBest: { color: "#FFE08A", fontSize: 16, fontWeight: "900", marginTop: 12 },
   discoverLine: { fontSize: 16, color: GREEN, fontWeight: "900", textAlign: "center", marginBottom: 14 },
+
+  // Peripheral warmer/colder edge-glow: a thick translucent border that frames
+  // the screen so the colored heat signal lives on the EDGES and the map center
+  // stays clear/legible. borderColor + opacity are set inline (animated); the
+  // transparent body + large radius give the soft vignette shape. backgroundColor
+  // stays transparent so nothing ever tints the center.
+  edgeGlow: { borderWidth: 36, borderRadius: 48, backgroundColor: "transparent" },
 
   // --- Scavenger-hunt HUD (clue card + warmer/colder meter) -------------------
   huntHud: { position: "absolute", left: 14, right: 14, bottom: 96, alignItems: "stretch" },
