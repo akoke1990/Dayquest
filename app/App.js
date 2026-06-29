@@ -1269,7 +1269,7 @@ export default function App() {
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     if (!target?.place) return;
     const dist = distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng);
-    if (dist <= FIND_RADIUS_M) findStop(target.order_index, false);
+    if (dist <= FIND_RADIUS_M) findStop(target.order_index, { awardItem: true });
   }, [coords, screen, quest, progress, findReveal]);
 
   // --- HEAT MOVEMENT GATE -----------------------------------------------------
@@ -1435,9 +1435,14 @@ export default function App() {
       // live (see checkIn). To avoid double-counting, completion only banks the
       // +100 completion BONUS. The recap badge still SHOWS the full quest value
       // (check-ins + bonus) so the celebration reflects everything earned.
-      const foundCount = quest.stops.filter((s) => progress[s.order_index]?.found).length;
+      // Only GENUINE in-geofence finds banked find-points in checkIn — give-up
+      // reveals are `found` but `itemless` and earned NO find-points. Count those
+      // (not raw foundCount) so the recap badge matches what was actually banked.
+      const earnedFindCount = quest.stops.filter(
+        (s) => progress[s.order_index]?.found && !progress[s.order_index]?.itemless
+      ).length;
       const bonusToBank = POINTS_PER_QUEST; // the not-yet-awarded portion
-      const earned = foundCount * POINTS_PER_CHECKIN + POINTS_PER_QUEST; // display total
+      const earned = earnedFindCount * POINTS_PER_CHECKIN + POINTS_PER_QUEST; // display total
       setPointsEarned(earned);
 
       // Completion time: elapsed since the quest went live. null if we never
@@ -1937,28 +1942,61 @@ export default function App() {
     }
   }
 
-  // Trigger a FIND: the animated reveal-and-collect moment. Called when the user
-  // reaches the find radius (GPS), taps "I found it!", or uses the manual reveal
-  // escape. Guarded by foundFiredRef so GPS jitter can't double-fire the reveal.
-  // `viaEscape` distinguishes the safety fallback (no-trap) for analytics; it
-  // still grants the item + points (a small reward is fine — keeps it un-trappy).
-  function findStop(orderIndex, viaEscape = false) {
+  // Trigger a FIND: the animated reveal moment. Called when the user reaches the
+  // find radius (GPS auto), taps "I found it!" (in-zone), or uses the manual
+  // reveal escape. Guarded by foundFiredRef so GPS jitter can't double-fire.
+  //
+  // ITEM-INTEGRITY GATE (`awardItem`): the virtual ITEM + its find-points are
+  // granted ONLY when the user was physically inside the geofence (auto-find, or
+  // "I found it!" while in-zone). The give-up escape (`viaEscape`, `awardItem`
+  // false) reveals the place NAME and ADVANCES the hunt — the no-trap safety —
+  // but grants NO item and NO points, because they didn't actually go there.
+  //
+  // Either way the stop becomes `found:true` so it's resolved (no longer the
+  // current target, counts toward completion, and the auto-find effect can never
+  // re-grant it if they later wander near). A give-up stop additionally carries
+  // `itemless:true` so the reveal renders without the catch/collect step and its
+  // dot never falsely shows the collected item.
+  function findStop(orderIndex, { viaEscape = false, awardItem = true } = {}) {
     if (foundFiredRef.current.has(orderIndex)) return;
     foundFiredRef.current.add(orderIndex);
     setSelectedStop(null); // close any open card so the reveal owns the screen
     setEscapeArmed(false);
     setFindReveal(orderIndex); // show the reveal overlay for this target
-    track("stop_revealed", { order_index: orderIndex, via: viaEscape ? "escape" : "found" });
-    // Bank points + visited + collect the item (idempotent chokepoint). NOTE:
-    // collection is durable HERE, at find — so every catch path (catch, skip,
-    // permission-denied, no-camera) results in a collected item with no extra
-    // work. The camera-catch is a presentation/celebration layer on top.
-    checkIn(orderIndex);
+    track("stop_revealed", {
+      order_index: orderIndex,
+      via: viaEscape ? "escape" : "found",
+      awarded: awardItem,
+    });
+    if (awardItem) {
+      // GENUINE in-geofence find. Bank points + visited + collect the item
+      // (idempotent chokepoint). Collection is durable HERE, at find — so every
+      // catch path (catch, skip, permission-denied, no-camera) results in a
+      // collected item with no extra work. The camera-catch is a presentation
+      // layer on top.
+      checkIn(orderIndex);
+    } else {
+      // GIVE-UP reveal. Resolve the stop WITHOUT routing through checkIn: no
+      // points, no Visited record (they weren't there), no collected item. Mark
+      // it found+itemless and persist synchronously so a crash can't lose the
+      // resolution. Seed awardedRef as cheap insurance so nothing re-awards it.
+      awardedRef.current.add(orderIndex);
+      const next = {
+        ...progress,
+        [orderIndex]: { ...progress[orderIndex], found: true, itemless: true },
+      };
+      setProgress(next);
+      AsyncStorage.setItem(
+        STORE_KEY,
+        JSON.stringify({ quest, progress: next, startedAt: startedAtRef.current, routePath: routePathRef.current })
+      ).catch(() => {});
+      track("stop_given_up", { order_index: orderIndex });
+    }
     // Play the reveal card pop. Reset to 0 first so a second find in the same
     // session re-plays the animation. The item "collect-fly" (collectAnim) is NOT
-    // played here anymore — it's deferred until the user CATCHES the item (camera
-    // catch / skip / fallback) via completeCatch(), so the collectible visibly
-    // stays "in the place" until caught.
+    // played here — it's deferred until the user CATCHES the item (camera catch /
+    // skip / fallback) via completeCatch(), so the collectible visibly stays "in
+    // the place" until caught. (Unused on the give-up path — no item shows.)
     revealCardAnim.setValue(0);
     collectAnim.setValue(0);
     Animated.spring(revealCardAnim, { toValue: 1, friction: 6, tension: 60, useNativeDriver: true }).start();
@@ -3239,6 +3277,16 @@ export default function App() {
       ? distanceM(heatCoords.latitude, heatCoords.longitude, currentTarget.place.lat, currentTarget.place.lng)
       : null;
   const band = proximityBand(targetDist);
+  // ITEM-INTEGRITY GATE: are we physically inside the current target's geofence
+  // RIGHT NOW? Uses RAW live `coords` (not the movement-gated `heatCoords`) so it
+  // matches the auto-find trigger exactly, with the same GENEROUS FIND_RADIUS_M
+  // (~50m) kept deliberately loose for noisy Manhattan GPS. The virtual item +
+  // find-points are awarded only when this is true. null coords ⇒ not in zone.
+  const inGeofence =
+    !!coords &&
+    !!currentTarget?.place &&
+    distanceM(coords.latitude, coords.longitude, currentTarget.place.lat, currentTarget.place.lng) <=
+      FIND_RADIUS_M;
   // The stop being REVEALED right now (the "You found it!" moment), if any.
   const revealStop =
     findReveal != null ? quest.stops.find((s) => s.order_index === findReveal) : null;
@@ -3262,7 +3310,11 @@ export default function App() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.foundBanner}>
-          <Text style={styles.foundBannerText}>✓ Found it!  {item}</Text>
+          {/* A give-up-revealed stop is `found` but item-less — show it honestly
+              (no collected item) so the dot never implies you collected it. */}
+          <Text style={styles.foundBannerText}>
+            {state.itemless ? "👁 Revealed — visit to collect the item" : `✓ Found it!  ${item}`}
+          </Text>
         </View>
         <Text style={styles.stopTitle} numberOfLines={2}>
           {s.place.name}
@@ -3315,6 +3367,12 @@ export default function App() {
     const item = s.virtual_item || FALLBACK_ITEM;
     const remaining = quest.stops.filter((st) => !progress[st.order_index]?.found).length;
     const isLast = remaining === 0;
+    // Did this find grant the item? A give-up reveal marks the stop `itemless`
+    // (setProgress + setFindReveal batch, so this render already sees it). When
+    // itemless we render a NAME-only reveal: no collectible, no camera-catch, no
+    // collect-step — and "Next clue" advances via nextClue() (NOT completeCatch,
+    // which would collect the item). This is the no-trap, item-less safety path.
+    const awardItem = !progress[s.order_index]?.itemless;
     const cardScaleR = revealCardAnim.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1] });
     // The item "collects": pops up then flies toward the top-right collection rail.
     // Only animates once completeCatch() drives collectAnim 0→1 after a catch.
@@ -3328,7 +3386,7 @@ export default function App() {
       <View style={styles.revealOverlay}>
         <Confetti width={SCREEN_W} />
         <Animated.View style={[styles.findCard, { opacity: revealCardAnim, transform: [{ scale: cardScaleR }] }]}>
-          <Text style={styles.findKicker}>YOU FOUND IT!</Text>
+          <Text style={styles.findKicker}>{awardItem ? "YOU FOUND IT!" : "REVEALED"}</Text>
           <Text style={styles.findName} numberOfLines={3}>
             {s.place.name}
           </Text>
@@ -3338,48 +3396,66 @@ export default function App() {
             </Text>
           ) : null}
 
-          {/* The collectible — flies toward the collection rail once caught. */}
-          <View style={styles.collectWrap}>
-            <Animated.Text
-              style={[
-                styles.collectItem,
-                { opacity: itemOpacity, transform: [{ translateY: itemTranslateY }, { translateX: itemTranslateX }, { scale: itemScale }] },
-              ]}
-            >
-              {item}
-            </Animated.Text>
-            <Animated.Text style={[styles.collectCaption, { opacity: captionOpacity }]}>
-              {item} added to your collection
-            </Animated.Text>
-          </View>
+          {awardItem ? (
+            <>
+              {/* The collectible — flies toward the collection rail once caught. */}
+              <View style={styles.collectWrap}>
+                <Animated.Text
+                  style={[
+                    styles.collectItem,
+                    { opacity: itemOpacity, transform: [{ translateY: itemTranslateY }, { translateX: itemTranslateX }, { scale: itemScale }] },
+                  ]}
+                >
+                  {item}
+                </Animated.Text>
+                <Animated.Text style={[styles.collectCaption, { opacity: captionOpacity }]}>
+                  {item} added to your collection
+                </Animated.Text>
+              </View>
 
-          <View style={styles.findActions}>
-            {!s.quest_prompt ? null : (
-              // Opens the camera OVER the reveal (no findReveal/selectedStop
-              // churn): the photo attaches in place, the reveal stays up, and the
-              // user advances only via "Next clue" → full nextClue() cleanup. This
-              // avoids un-gating completion early on the last find and avoids
-              // leaking the next clue's hint via a missed lastBandRef/hintShown reset.
-              <Text style={styles.findPhotoLink} onPress={() => takePhoto(s.order_index)}>
-                📷 Add a photo
+              <View style={styles.findActions}>
+                {!s.quest_prompt ? null : (
+                  // Opens the camera OVER the reveal (no findReveal/selectedStop
+                  // churn): the photo attaches in place, the reveal stays up, and the
+                  // user advances only via "Next clue" → full nextClue() cleanup. This
+                  // avoids un-gating completion early on the last find and avoids
+                  // leaking the next clue's hint via a missed lastBandRef/hintShown reset.
+                  <Text style={styles.findPhotoLink} onPress={() => takePhoto(s.order_index)}>
+                    📷 Add a photo
+                  </Text>
+                )}
+                {/* COLLECT step = catch the collectible with the camera (geo-gated to
+                    here). The skip is the never-trap escape — it collects + advances
+                    without the camera. */}
+                <PressBounce style={styles.findCatchBtn} onPress={openCatch}>
+                  <Text style={styles.findCatchText}>📸 Catch your {item}!</Text>
+                </PressBounce>
+                <Text style={styles.findPhotoLink} onPress={() => completeCatch(s.order_index)}>
+                  {isLast ? "Skip camera, just collect & finish 🎉" : "Skip camera, just collect →"}
+                </Text>
+              </View>
+            </>
+          ) : (
+            // GIVE-UP (itemless) reveal: name + lore only, NO collectible and NO
+            // camera-catch step. Advancing goes through nextClue() directly —
+            // NOT completeCatch (which would collect the item). The stop is
+            // already resolved (found+itemless) so this just clears the overlay.
+            <View style={styles.findActions}>
+              <Text style={styles.findGiveUpNote}>
+                Revealed — but you'll need to visit to collect the item.
               </Text>
-            )}
-            {/* COLLECT step = catch the collectible with the camera (geo-gated to
-                here). The skip is the never-trap escape — it collects + advances
-                without the camera. */}
-            <PressBounce style={styles.findCatchBtn} onPress={openCatch}>
-              <Text style={styles.findCatchText}>📸 Catch your {item}!</Text>
-            </PressBounce>
-            <Text style={styles.findPhotoLink} onPress={() => completeCatch(s.order_index)}>
-              {isLast ? "Skip camera, just collect & finish 🎉" : "Skip camera, just collect →"}
-            </Text>
-          </View>
+              <PressBounce style={styles.findCatchBtn} onPress={() => nextClue()}>
+                <Text style={styles.findCatchText}>{isLast ? "Finish 🎉" : "Next clue →"}</Text>
+              </PressBounce>
+            </View>
+          )}
         </Animated.View>
 
         {/* Full-screen camera-catch overlay (the COLLECT step). Mounted only
             while `catching`, only from inside this reveal → structurally
-            geo-gated. Both outcomes route through completeCatch. */}
-        {catching ? (
+            geo-gated. Both outcomes route through completeCatch. Never mounts on
+            the itemless give-up path (no catch step there). */}
+        {catching && awardItem ? (
           <View style={StyleSheet.absoluteFill}>
             <CameraCatch
               item={item}
@@ -3421,11 +3497,20 @@ export default function App() {
           );
         })()}
 
-        {/* Hunt framing: N places found, N items collected. */}
-        <Text style={styles.discoverLine}>
-          Hunt complete — {doneCount} place{doneCount === 1 ? "" : "s"} found,{" "}
-          {doneCount} item{doneCount === 1 ? "" : "s"} collected.
-        </Text>
+        {/* Hunt framing: N places found, N items collected. Items collected can
+            be FEWER than places found — give-up reveals resolve a place without
+            granting its item (you weren't physically there). */}
+        {(() => {
+          const itemCount = quest.stops.filter(
+            (s) => progress[s.order_index]?.found && !progress[s.order_index]?.itemless
+          ).length;
+          return (
+            <Text style={styles.discoverLine}>
+              Hunt complete — {doneCount} place{doneCount === 1 ? "" : "s"} found,{" "}
+              {itemCount} item{itemCount === 1 ? "" : "s"} collected.
+            </Text>
+          );
+        })()}
 
         {/* Honest, count-led collections line for this Area. */}
         {newSpots > 0 ? (
@@ -3730,16 +3815,35 @@ export default function App() {
                   ) : (
                     <Text style={styles.hintBtnUsed}>💡 Hint shown</Text>
                   )}
-                  <Text style={styles.foundItBtn} onPress={() => findStop(currentTarget.order_index, false)}>
+                  {/* "I found it!" grants the item ONLY when physically in the
+                      geofence. Out of zone it's a friendly nudge (not a grant) so
+                      the item always requires real presence — the give-up link
+                      below is the no-trap path. */}
+                  <Text
+                    style={[styles.foundItBtn, !inGeofence && styles.foundItBtnDim]}
+                    onPress={() =>
+                      inGeofence
+                        ? findStop(currentTarget.order_index, { awardItem: true })
+                        : Alert.alert(
+                            "Get closer to catch it",
+                            "You're not there yet — head into the spot to collect the item."
+                          )
+                    }
+                  >
                     I found it! →
                   </Text>
                 </View>
                 {/* No-trap fallback: a manual "reveal anyway" surfaces after a
-                    while, or immediately once the hint is shown. Reveals + counts
-                    as found so GPS/accessibility issues never trap the user. */}
+                    while, or immediately once the hint is shown. It reveals the
+                    place NAME and ADVANCES — but grants NO item and NO points
+                    (they didn't actually go there). Keeps GPS/accessibility
+                    issues from ever trapping the user. */}
                 {escapeArmed || hintShown ? (
-                  <Text style={styles.escapeLink} onPress={() => findStop(currentTarget.order_index, true)}>
-                    Can't find it? Reveal this place →
+                  <Text
+                    style={styles.escapeLink}
+                    onPress={() => findStop(currentTarget.order_index, { viaEscape: true, awardItem: false })}
+                  >
+                    Can't find it? Reveal this place (no item) →
                   </Text>
                 ) : null}
               </ScrollView>
@@ -4087,6 +4191,9 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: OUTLINE,
   },
+  // Out-of-geofence "I found it!" — dimmed to signal it won't grant the item yet
+  // (tapping nudges "get closer"). Still tappable so it can deliver the nudge.
+  foundItBtnDim: { opacity: 0.45 },
   escapeLink: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 12, textAlign: "center", textDecorationLine: "underline" },
 
   // --- Find REVEAL overlay (you found it! + collect) --------------------------
@@ -4119,6 +4226,8 @@ const styles = StyleSheet.create({
   // Prominent primary CTA for the camera-catch (the COLLECT step).
   findCatchBtn: { backgroundColor: AMBER, borderRadius: 28, paddingVertical: 16, paddingHorizontal: 32, minHeight: 52, alignItems: "center", justifyContent: "center", borderWidth: 4, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.28, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 6 },
   findCatchText: { fontSize: 19, fontWeight: "900", color: INK, letterSpacing: 0.2 },
+  // Give-up (itemless) reveal note — makes the "no item, visit to collect" rule clear.
+  findGiveUpNote: { fontSize: 14, fontWeight: "800", color: MUTE, textAlign: "center", lineHeight: 20, paddingHorizontal: 6 },
 
   // Energetic check-in / found states
   actionBtnGo: { backgroundColor: AMBER },
