@@ -32,7 +32,7 @@ import * as Sharing from "expo-sharing";
 // ImagePicker cache — which iOS evicts — into the persistent document dir.
 import { File, Directory, Paths } from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE, TEASER, APP_SCHEME } from "./config";
+import { API_BASE, APP_SCHEME } from "./config";
 // Optional, anonymous-first auth layer. `authConfigured` is false by default
 // (empty Supabase keys), in which case every auth helper is a safe no-op and the
 // sign-in UI is hidden — the app runs exactly as it does today.
@@ -952,6 +952,11 @@ export default function App() {
   const revealCardAnim = useRef(new Animated.Value(0)).current;
   const collectAnim = useRef(new Animated.Value(0)).current;
   const warmthAnim = useRef(new Animated.Value(0)).current; // pulsing warmer/colder indicator
+  // Map proximity TINT (0 = cold/blue, 1 = hot/red). A SEPARATE value from
+  // warmthAnim because it interpolates backgroundColor, which CANNOT use the
+  // native driver — mixing drivers on one value throws. Driven non-natively by
+  // an effect that eases toward the current band's heat as you move.
+  const tintAnim = useRef(new Animated.Value(0)).current;
   // The pop-out stop card and the completion overlay are each driven by a plain
   // Animated.Value (0→1) via Animated.timing/spring — no gesture-handler /
   // reanimated, so it's rock-solid in Expo Go SDK 54.
@@ -964,23 +969,9 @@ export default function App() {
   const [recapOpen, setRecapOpen] = useState(false);
   const recapAutoPresentedRef = useRef(false); // guard: auto-present completion once
 
-  // --- Quest Setup sheet (choose WHERE + SIZE) --------------------------------
-  // setupReturn is where Cancel goes back to ("welcome" or "ready").
-  const [setupReturn, setSetupReturn] = useState("welcome");
-  const [setupMode, setSetupMode] = useState("current"); // "current" | "place"
-  const [setupQuery, setSetupQuery] = useState(""); // typed place text
-  const [setupPlace, setSetupPlace] = useState(null); // resolved { name, lat, lng }
-  const [setupResolving, setSetupResolving] = useState(false);
-  const [setupError, setSetupError] = useState("");
-  const [setupSize, setSetupSize] = useState("quick"); // "quick" | "explore" | "epic"
-  // Clue side-panel collapse state. Starts open; the handle/tab toggles it so the
-  // clue can be tucked against the left edge to keep the map + warmer/colder clear.
+  // Clue card collapse state. Starts open; the handle/tab toggles it so the
+  // clue can be tucked against the left edge to keep the map clear.
   const [cluePanelOpen, setCluePanelOpen] = useState(true);
-  const [travelMode, setTravelMode] = useState("walk"); // "walk" | "bike" — sent as mode= (bike = bigger loop, server-handled)
-  // Quest difficulty — sent as difficulty= to /quest (server accepts easy|tricky|
-  // hard|impossible; "Nearly Impossible" is the label, value is "impossible").
-  // Defaults to "tricky" to match the one-tap quick-quest default.
-  const [setupDifficulty, setSetupDifficulty] = useState("tricky"); // "easy" | "tricky" | "hard" | "impossible"
 
   // Pop the stop card in/out whenever a stop is selected/deselected.
   useEffect(() => {
@@ -1333,6 +1324,41 @@ export default function App() {
     )?.id,
   ]);
 
+  // MAP TINT: ease a 0→1 "heat" value toward the live proximity so the colored
+  // wash over the map shifts blue (cold/far) → red (hot/near). Continuous, not
+  // banded, so the map visibly warms/cools as you move. Non-native driver
+  // (backgroundColor interpolation) — kept on its OWN value (tintAnim) so it
+  // never collides with warmthAnim's native scale/opacity loop. Heat maps the
+  // cold→hot distance window (~400m → find radius) onto 0→1.
+  useEffect(() => {
+    if (screen !== "ready" || !quest) return;
+    const target = quest.stops.find((s) => !progress[s.order_index]?.found);
+    const dist =
+      coords && target?.place
+        ? distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng)
+        : null;
+    // No fix yet → stay cold. Otherwise clamp distance into [find radius, 400m]
+    // and invert: close = hot (1), far = cold (0).
+    const FAR = 400;
+    const NEAR = SEARCH_ZONE_RADIUS_M * 0.25; // basically "on top of it"
+    let heat = 0;
+    if (dist != null) {
+      const clamped = Math.max(NEAR, Math.min(FAR, dist));
+      heat = 1 - (clamped - NEAR) / (FAR - NEAR);
+    }
+    Animated.timing(tintAnim, {
+      toValue: heat,
+      duration: 600,
+      useNativeDriver: false, // backgroundColor cannot use the native driver
+    }).start();
+  }, [
+    screen,
+    quest,
+    findReveal,
+    coords?.latitude,
+    coords?.longitude,
+  ]);
+
   // Arm the manual "reveal anyway" escape after a while on the SAME clue, so a
   // GPS/accessibility issue can never trap the user. Resets per target (keyed on
   // the current target's order_index + findReveal).
@@ -1534,6 +1560,7 @@ export default function App() {
     setHintShown(false);
     setEscapeArmed(false);
     lastBandRef.current = null;
+    tintAnim.setValue(0); // fresh quest → map starts cold (blue)
     foundFiredRef.current = new Set();
     try {
       let latitude, longitude;
@@ -1603,10 +1630,10 @@ export default function App() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not build a quest here.");
 
-      // Stamp the chosen travel mode onto the quest object so it's available to
-      // the reveal card AND durable into the saved-history snapshot (the gallery
-      // card reads it back; `travelMode` state would have reset on a cold-start
-      // resume). Defaults to "walk" for the simple one-tap path.
+      // Stamp the travel mode (from opts, default "walk") onto the quest object
+      // so it's available to the reveal card AND durable into the saved-history
+      // snapshot (the gallery card reads it back). Quests are always walk now
+      // (no setup step); the field is kept for the reveal/history display.
       // Snapshot the Area's already-discovered places BEFORE any find collects
       // into the set, so the completion "+N new spots" delta is accurate (finds
       // now write into `discovered` live).
@@ -2083,18 +2110,21 @@ export default function App() {
   }
 
   // --- Shared hunts (multiplayer) ---------------------------------------------
-  // Host a shared hunt: start via /quest?shared=1 (server mints a hunt_id). The
-  // Invite action below shares the join link once the quest is live. Reuses the
-  // current Setup choices (place/size/mode) exactly like startSetupQuest.
+  // Solo quest from the welcome screen: no setup step. Requests location (handled
+  // in startQuest) and builds a hard quest at the CURRENT GPS with the internal
+  // defaults — mode walk, a tight "quick" size (omitted → server default), and
+  // difficulty hard. Straight into loading → reveal → hunt.
+  function startSoloQuest() {
+    track("solo_quest_started");
+    startQuest({ difficulty: "hard" });
+  }
+
+  // Start a shared (multiplayer) hunt at the CURRENT GPS. Same internal defaults
+  // as solo (mode walk, quick size, difficulty hard) — `shared` asks the server
+  // to mint a hunt_id; the reveal card then surfaces the invite/leaderboard.
   function startSharedHunt() {
-    if (!setupReady) return;
     track("shared_hunt_started");
-    const base = { shared: true, size: setupSize, mode: travelMode, difficulty: setupDifficulty };
-    if (setupMode === "place" && setupPlace) {
-      startQuest({ ...base, lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name });
-    } else {
-      startQuest(base);
-    }
+    startQuest({ shared: true, difficulty: "hard" });
   }
 
   // Share the CURRENT shared hunt's join link. Friends opening it join the same
@@ -2136,55 +2166,6 @@ export default function App() {
       setLeaderRows(rows);
     } finally {
       setLeaderBusy(false);
-    }
-  }
-
-  // --- Quest Setup sheet ------------------------------------------------------
-  // Open the setup sheet, remembering where Cancel should return to.
-  function openSetup() {
-    setSetupReturn(screen === "ready" ? "ready" : "welcome");
-    setSetupError("");
-    setScreen("setup");
-    track("setup_opened");
-  }
-
-  // Close the setup sheet without starting — back to wherever we came from.
-  function closeSetup() {
-    setScreen(setupReturn);
-  }
-
-  // Forward-geocode the typed place via the server. No device permission needed
-  // (you may be planning a quest somewhere else entirely).
-  async function resolveSetupPlace() {
-    const q = setupQuery.trim();
-    if (!q || setupResolving) return;
-    setSetupResolving(true);
-    setSetupError("");
-    setSetupPlace(null);
-    try {
-      const res = await fetch(`${API_BASE}/resolve-place?q=${encodeURIComponent(q)}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Couldn't find that place.");
-      setSetupPlace({ name: data.name, lat: data.lat, lng: data.lng });
-      track("place_resolved", { q });
-    } catch (e) {
-      setSetupError(e.message || "Couldn't find that place. Try a different name.");
-    } finally {
-      setSetupResolving(false);
-    }
-  }
-
-  // Whether the sheet has everything it needs to start a quest.
-  const setupReady =
-    setupMode === "current" || (setupMode === "place" && setupPlace != null);
-
-  // Generate a quest from the chosen location + size.
-  function startSetupQuest() {
-    if (!setupReady) return;
-    if (setupMode === "place" && setupPlace) {
-      startQuest({ lat: setupPlace.lat, lng: setupPlace.lng, label: setupPlace.name, size: setupSize, mode: travelMode, difficulty: setupDifficulty });
-    } else {
-      startQuest({ size: setupSize, mode: travelMode, difficulty: setupDifficulty });
     }
   }
 
@@ -2487,33 +2468,34 @@ export default function App() {
           </View>
         ) : null}
 
-        {/* Delight before any ask: a permission-free "surprising place near you"
-            teaser (UX-SPEC §2). Static — does NOT call /quest. */}
-        <View style={styles.teaserCard}>
-          <Text style={styles.teaserKicker}>A surprising place near you</Text>
-          <Text style={styles.teaserPlace}>{TEASER.place}</Text>
-          <Text style={styles.teaserFact}>{TEASER.fact}</Text>
-          <Text style={styles.teaserArea}>{TEASER.area}</Text>
-        </View>
-
         {screen === "error" ? <Text style={styles.error}>{error}</Text> : null}
 
-        {/* FRONT DOOR: the prominent path is picking area + walk/bike + size in
-            Quest Setup (UX-SPEC core loop). On the error screen we keep the
-            primary as a direct "Try again" one-tap retry. */}
+        {/* FRONT DOOR: two primary actions. Solo "Start a Quest" goes straight
+            to a current-GPS hard quest (no setup step). "Start a Quest with
+            Friends" mints a shared hunt — sign-in gated, mirroring the friends
+            entry below. On the error screen the solo primary becomes a one-tap
+            "Try again" retry. */}
         {screen === "error" ? (
-          <PressBounce style={styles.button} onPress={() => startQuest()}>
+          <PressBounce style={styles.button} onPress={() => startQuest({ difficulty: "hard" })}>
             <Text style={styles.buttonText}>Try again</Text>
           </PressBounce>
         ) : (
-          <PressBounce style={styles.button} onPress={openSetup}>
+          <PressBounce style={styles.button} onPress={startSoloQuest}>
             <Text style={styles.buttonText}>Start a Quest</Text>
           </PressBounce>
         )}
-        {/* Fast path retained: a one-tap quest at your current location. */}
-        <Text style={styles.setupLink} onPress={() => startQuest()}>
-          ⚡ Quick quest right here
-        </Text>
+        {/* Start with friends — same sign-in gate as the Friends entry. Signed
+            in: mint a shared hunt at your current location. Configured-but-out:
+            route to sign-in. Unconfigured: hidden. */}
+        {user ? (
+          <PressBounce style={[styles.button, styles.buttonFriends]} onPress={startSharedHunt}>
+            <Text style={styles.buttonText}>👥 Start a Quest with Friends</Text>
+          </PressBounce>
+        ) : authConfigured ? (
+          <PressBounce style={[styles.button, styles.buttonFriends]} onPress={() => setScreen("signin")}>
+            <Text style={styles.buttonText}>👥 Start a Quest with Friends</Text>
+          </PressBounce>
+        ) : null}
         {/* Plain-language permission framing, shown before the OS dialog. */}
         <Text style={styles.permNote}>
           We'll use your location to find places to explore — only while you're on a quest.
@@ -3088,211 +3070,6 @@ export default function App() {
     );
   }
 
-  if (screen === "setup") {
-    return (
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        keyboardShouldPersistTaps="handled"
-      >
-        <StatusBar style="dark" />
-        <Text style={styles.backLink} onPress={closeSetup}>
-          ← Back
-        </Text>
-        <Text style={styles.theme}>Quest Setup</Text>
-        <Text style={styles.setupIntro}>
-          Choose where to explore and how far you want to roam.
-        </Text>
-
-        {/* WHERE ---------------------------------------------------------- */}
-        <Text style={styles.setupSectionLabel}>Where</Text>
-        <View style={styles.segmentRow}>
-          <TouchableOpacity
-            style={[styles.segment, setupMode === "current" && styles.segmentActive]}
-            onPress={() => { setSetupMode("current"); setSetupError(""); }}
-            activeOpacity={0.85}
-          >
-            <Text style={[styles.segmentText, setupMode === "current" && styles.segmentTextActive]}>
-              📍 My location
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.segment, setupMode === "place" && styles.segmentActive]}
-            onPress={() => { setSetupMode("place"); setSetupError(""); }}
-            activeOpacity={0.85}
-          >
-            <Text style={[styles.segmentText, setupMode === "place" && styles.segmentTextActive]}>
-              🔎 A place
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {setupMode === "place" ? (
-          <View style={styles.placeBlock}>
-            <View style={styles.placeInputRow}>
-              <TextInput
-                style={styles.placeInput}
-                value={setupQuery}
-                onChangeText={(t) => { setSetupQuery(t); setSetupPlace(null); setSetupError(""); }}
-                placeholder="e.g. East Village, Stony Brook NY"
-                placeholderTextColor={MUTE}
-                autoCapitalize="words"
-                returnKeyType="search"
-                onSubmitEditing={resolveSetupPlace}
-              />
-              <TouchableOpacity
-                style={styles.placeFindBtn}
-                onPress={resolveSetupPlace}
-                disabled={setupResolving || !setupQuery.trim()}
-                activeOpacity={0.85}
-              >
-                {setupResolving ? (
-                  <ActivityIndicator color="#fff" />
-                ) : (
-                  <Text style={styles.placeFindText}>Find</Text>
-                )}
-              </TouchableOpacity>
-            </View>
-            {setupPlace ? (
-              <Text style={styles.placeResolved}>✓ {setupPlace.name}</Text>
-            ) : null}
-            {setupError ? <Text style={styles.setupErr}>{setupError}</Text> : null}
-          </View>
-        ) : null}
-
-        {/* HOW (travel mode) ---------------------------------------------- */}
-        <Text style={styles.setupSectionLabel}>How</Text>
-        <View style={styles.segmentRow}>
-          <TouchableOpacity
-            style={[styles.segment, travelMode === "walk" && styles.segmentActive]}
-            onPress={() => setTravelMode("walk")}
-            activeOpacity={0.85}
-          >
-            <Text style={[styles.segmentText, travelMode === "walk" && styles.segmentTextActive]}>
-              🚶 Walk
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.segment, travelMode === "bike" && styles.segmentActive]}
-            onPress={() => setTravelMode("bike")}
-            activeOpacity={0.85}
-          >
-            <Text style={[styles.segmentText, travelMode === "bike" && styles.segmentTextActive]}>
-              🚲 Bike
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* SIZE ----------------------------------------------------------- */}
-        <Text style={styles.setupSectionLabel}>Size</Text>
-        <View style={styles.sizeRow}>
-          <TouchableOpacity
-            style={[styles.sizeCard, setupSize === "quick" && styles.sizeCardActive]}
-            onPress={() => setSetupSize("quick")}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.sizeName}>Quick</Text>
-            <Text style={styles.sizeDetail}>~1km · 3 stops</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.sizeCard, setupSize === "explore" && styles.sizeCardActive]}
-            onPress={() => setSetupSize("explore")}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.sizeName}>Explore</Text>
-            <Text style={styles.sizeDetail}>~2km · up to 5 stops</Text>
-          </TouchableOpacity>
-        </View>
-        {/* Epic gets its own full-width row so the longer label has room and the
-            two-up Quick/Explore cards above stay uncramped. Sends size=epic. */}
-        <TouchableOpacity
-          style={[styles.sizeCardWide, setupSize === "epic" && styles.sizeCardActive]}
-          onPress={() => setSetupSize("epic")}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.sizeName}>Epic 🏆</Text>
-          <Text style={styles.sizeDetail}>A longer hunt · 7–8 finds</Text>
-        </TouchableOpacity>
-
-        {/* DIFFICULTY ----------------------------------------------------- */}
-        {/* How cryptic the clues are. Sends difficulty= to /quest. Default
-            "tricky". The three short levels go two-up (Easy + Tricky in one
-            row, Hard alone keeps the row balanced is avoided — use a 2-up row
-            for Easy/Tricky, then Hard + Nearly Impossible each full-width so
-            the long "Nearly Impossible" label has room, mirroring the Epic
-            card precedent above). Value "impossible" maps the long label. */}
-        <Text style={styles.setupSectionLabel}>Difficulty</Text>
-        <View style={styles.sizeRow}>
-          <TouchableOpacity
-            style={[styles.sizeCard, setupDifficulty === "easy" && styles.sizeCardActive]}
-            onPress={() => setSetupDifficulty("easy")}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.sizeName}>Easy 🙂</Text>
-            <Text style={styles.sizeDetail}>Clear clues</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.sizeCard, setupDifficulty === "tricky" && styles.sizeCardActive]}
-            onPress={() => setSetupDifficulty("tricky")}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.sizeName}>Tricky 🤔</Text>
-            <Text style={styles.sizeDetail}>A fun puzzle</Text>
-          </TouchableOpacity>
-        </View>
-        <TouchableOpacity
-          style={[styles.sizeCardWide, setupDifficulty === "hard" && styles.sizeCardActive]}
-          onPress={() => setSetupDifficulty("hard")}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.sizeName}>Hard 🧐</Text>
-          <Text style={styles.sizeDetail}>Cryptic · think hard</Text>
-        </TouchableOpacity>
-        {/* Long label gets its own full-width row so it never wraps/truncates,
-            same pattern as the Epic size card. Value sent is "impossible". */}
-        <TouchableOpacity
-          style={[styles.sizeCardWide, setupDifficulty === "impossible" && styles.sizeCardActive]}
-          onPress={() => setSetupDifficulty("impossible")}
-          activeOpacity={0.85}
-        >
-          <Text style={styles.sizeName}>Nearly Impossible 😈</Text>
-          <Text style={styles.sizeDetail}>For the obsessed</Text>
-        </TouchableOpacity>
-
-        <PressBounce
-          style={[styles.button, !setupReady && styles.buttonDisabled]}
-          onPress={startSetupQuest}
-          disabled={!setupReady}
-        >
-          <Text style={styles.buttonText}>Start Quest</Text>
-        </PressBounce>
-
-        {/* HUNT WITH FRIENDS — a shared hunt everyone races on identical clues.
-            Gated behind sign-in: signed-in users get the button; otherwise a
-            gentle prompt. The solo "Start Quest" above is unchanged. */}
-        {user ? (
-          <TouchableOpacity
-            style={[styles.secondaryBtn, !setupReady && styles.buttonDisabled]}
-            onPress={startSharedHunt}
-            disabled={!setupReady}
-            activeOpacity={0.85}
-          >
-            <Text style={styles.secondaryBtnText}>👥 Hunt with friends</Text>
-          </TouchableOpacity>
-        ) : authConfigured ? (
-          <Text style={styles.setupLink} onPress={() => setScreen("signin")}>
-            👥 Sign in to hunt with friends
-          </Text>
-        ) : null}
-
-        {setupMode === "place" && !setupPlace ? (
-          <Text style={styles.permNote}>Find a place above to start questing there.</Text>
-        ) : null}
-        <View style={{ height: 40 }} />
-      </ScrollView>
-    );
-  }
-
   if (screen === "loading") {
     return (
       <>
@@ -3671,7 +3448,7 @@ export default function App() {
           )}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => startQuest()}>
+        <TouchableOpacity style={styles.button} onPress={() => startQuest({ difficulty: "hard" })}>
           <Text style={styles.buttonText}>New Quest</Text>
         </TouchableOpacity>
         <View style={{ height: 16 }} />
@@ -3745,6 +3522,28 @@ export default function App() {
           })}
       </MapView>
 
+      {/* ===== MAP PROXIMITY TINT: a low-opacity colored wash OVER the map that
+              shifts blue (cold/far) → red (hot/near) with live proximity to the
+              current target — the PRIMARY warmer/colder signal ("the map gets
+              redder/bluer"). Sits above the map but under the HUD, and
+              pointerEvents="none" keeps the map fully interactive. Only while a
+              target is live + located. Driven by tintAnim (non-native). ===== */}
+      {currentTarget && !allDone && coords ? (
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            StyleSheet.absoluteFill,
+            {
+              backgroundColor: tintAnim.interpolate({
+                inputRange: [0, 1],
+                // Cold blue → hot red, at low opacity so the map reads through.
+                outputRange: ["rgba(59,130,196,0.22)", "rgba(232,89,12,0.30)"],
+              }),
+            },
+          ]}
+        />
+      ) : null}
+
       {/* ===== Floating HUD (Pokémon-GO style). pointerEvents box-none so the
               gaps between controls pass touches through to the live map. ===== */}
 
@@ -3761,10 +3560,6 @@ export default function App() {
       {/* Top-right: a stacked side rail of round buttons — the things reachable
           from Welcome (Collections, Scorecard, Sign in) + Abandon. */}
       <View style={styles.hudSideRail} pointerEvents="box-none">
-        <TouchableOpacity style={styles.railBtn} onPress={openSetup} activeOpacity={0.8}>
-          <Text style={styles.railIcon}>📍</Text>
-          <Text style={styles.railLabel}>Setup</Text>
-        </TouchableOpacity>
         <TouchableOpacity style={styles.railBtn} onPress={openCollections} activeOpacity={0.8}>
           <Text style={styles.railIcon}>🗺️</Text>
           <Text style={styles.railLabel}>Spots</Text>
@@ -3830,11 +3625,14 @@ export default function App() {
         </View>
       ) : null}
 
-      {/* ===== CLUE SIDE-PANEL: the riddle, docked to the LEFT edge and
-              collapsible via a handle/tab so it never covers the whole map. When
+      {/* ===== CLUE CARD: the riddle as its own prominent, TAPPABLE card. The
+              card body is a TouchableOpacity — tapping it reveals the hint (tap
+              to expand the clue). Docked to the LEFT edge and collapsible via a
+              handle/tab so it never covers the whole map; the map stays
+              interactive (box-none lets touches pass through the gaps). When
               collapsed only the slim tab shows (📜 + clue number); tapping it
-              expands the card. box-none lets the map pan around it. Same render
-              guard as the warmth meter so they appear/disappear together. ===== */}
+              re-expands. Same render guard as the map tint so they appear/
+              disappear together. ===== */}
       {currentTarget && !allDone && findReveal == null && !recapOpen ? (
         <View style={styles.cluePanelWrap} pointerEvents="box-none">
           {cluePanelOpen ? (
@@ -3847,13 +3645,22 @@ export default function App() {
                 <Text style={styles.clueKicker}>
                   CLUE {doneCount + 1} OF {quest.stops.length}
                 </Text>
-                <Text style={styles.clueText}>
-                  {currentTarget.clue ||
-                    "Somewhere in this circle hides your next discovery. Explore to find it!"}
-                </Text>
-                {hintShown && (currentTarget.hint || currentTarget.description) ? (
-                  <Text style={styles.clueHint}>💡 {currentTarget.hint || currentTarget.description}</Text>
-                ) : null}
+                {/* TAPPABLE clue body: tap to reveal the hint. Once the hint is
+                    already shown, tapping is a no-op affordance (still readable). */}
+                <TouchableOpacity
+                  activeOpacity={hintShown ? 1 : 0.7}
+                  onPress={() => !hintShown && setHintShown(true)}
+                >
+                  <Text style={styles.clueText}>
+                    {currentTarget.clue ||
+                      "Somewhere in this circle hides your next discovery. Explore to find it!"}
+                  </Text>
+                  {hintShown && (currentTarget.hint || currentTarget.description) ? (
+                    <Text style={styles.clueHint}>💡 {currentTarget.hint || currentTarget.description}</Text>
+                  ) : (
+                    <Text style={styles.clueTapHint}>👆 Tap the clue for a hint</Text>
+                  )}
+                </TouchableOpacity>
                 <View style={styles.clueActions}>
                   {!hintShown ? (
                     <Text style={styles.hintBtn} onPress={() => setHintShown(true)}>
@@ -3920,7 +3727,7 @@ export default function App() {
           <Text style={styles.primaryFabText}>Recap</Text>
         </PressBounce>
       ) : (
-        <PressBounce style={styles.primaryFab} onPress={() => startQuest()}>
+        <PressBounce style={styles.primaryFab} onPress={() => startQuest({ difficulty: "hard" })}>
           <Text style={styles.primaryFabIcon}>＋</Text>
           <Text style={styles.primaryFabText}>New Quest</Text>
         </PressBounce>
@@ -4061,12 +3868,7 @@ const styles = StyleSheet.create({
   revealBeginText: { color: INK, fontSize: 21, fontWeight: "900", letterSpacing: 0.3 },
   revealHint: { fontSize: 13, fontWeight: "800", color: MUTE, marginTop: 14 },
 
-  // Welcome teaser + resume
-  teaserCard: { backgroundColor: "#fff", borderRadius: 24, padding: 20, marginTop: 28, width: "100%", borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.16, shadowRadius: 12, shadowOffset: { width: 0, height: 6 }, elevation: 4 },
-  teaserKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
-  teaserPlace: { fontSize: 23, fontWeight: "900", color: INK, marginTop: 6, letterSpacing: -0.3 },
-  teaserFact: { fontSize: 15, color: INK, opacity: 0.82, marginTop: 8, lineHeight: 22 },
-  teaserArea: { fontSize: 13, color: GREEN, fontWeight: "800", marginTop: 10 },
+  // Welcome resume
   permNote: { fontSize: 12, color: INK, opacity: 0.55, textAlign: "center", marginTop: 14, lineHeight: 17 },
   // Lifetime score + weekly streak strip on Welcome
   scoreRow: { flexDirection: "row", marginTop: 20, width: "100%", justifyContent: "space-around", backgroundColor: "#fff", borderRadius: 22, paddingVertical: 16, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.14, shadowRadius: 10, shadowOffset: { width: 0, height: 5 }, elevation: 4 },
@@ -4201,6 +4003,7 @@ const styles = StyleSheet.create({
   clueKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
   clueText: { fontSize: 19, fontWeight: "900", color: INK, marginTop: 8, lineHeight: 26 },
   clueHint: { fontSize: 15, fontWeight: "800", color: GREEN, marginTop: 10, lineHeight: 21 },
+  clueTapHint: { fontSize: 12, fontWeight: "800", color: MUTE, marginTop: 8, fontStyle: "italic" },
   clueActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14 },
   hintBtn: { fontSize: 16, fontWeight: "900", color: ACCENT, paddingVertical: 6, paddingHorizontal: 4 },
   hintBtnUsed: { fontSize: 15, fontWeight: "800", color: MUTE, paddingVertical: 6 },
@@ -4344,6 +4147,9 @@ const styles = StyleSheet.create({
   error: { color: CORAL, marginTop: 20, textAlign: "center", lineHeight: 20, fontWeight: "700" },
   button: { backgroundColor: ACCENT, paddingVertical: 17, paddingHorizontal: 38, borderRadius: 30, marginTop: 28, alignSelf: "center", minHeight: 52, justifyContent: "center", borderWidth: 4, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.28, shadowRadius: 10, shadowOffset: { width: 0, height: 6 }, elevation: 7 },
   buttonText: { color: "#fff", fontSize: 19, fontWeight: "900", letterSpacing: 0.3 },
+  // Second primary CTA (Start with Friends): tighter top gap + green fill so the
+  // two primary buttons read as a pair without one looking secondary.
+  buttonFriends: { backgroundColor: GREEN, marginTop: 14 },
   buttonDisabled: { opacity: 0.4 },
 
   // --- Multiplayer (friends + shared hunts + leaderboard) ---------------------
@@ -4369,28 +4175,8 @@ const styles = StyleSheet.create({
   leaderTime: { fontSize: 16, fontWeight: "900", color: INK },
   leaderMeta: { fontSize: 12, color: MUTE, fontWeight: "700", marginTop: 2 },
 
-  // --- Quest Setup sheet ------------------------------------------------------
+  // setupLink: shared affordance still used by the reveal card (leaderboard link).
   setupLink: { fontSize: 14, color: ACCENT, fontWeight: "800", textAlign: "center", marginTop: 16 },
-  setupIntro: { fontSize: 15, color: INK, opacity: 0.7, marginTop: 6, lineHeight: 21, fontWeight: "600" },
-  setupSectionLabel: { fontSize: 13, fontWeight: "900", color: INK, opacity: 0.6, letterSpacing: 1, textTransform: "uppercase", marginTop: 26, marginBottom: 10 },
-  segmentRow: { flexDirection: "row", gap: 10 },
-  segment: { flex: 1, paddingVertical: 15, borderRadius: 18, borderWidth: 3, borderColor: BORDER, backgroundColor: "#fff", alignItems: "center", minHeight: 52, justifyContent: "center" },
-  segmentActive: { borderColor: ACCENT, backgroundColor: TINT },
-  segmentText: { fontSize: 15, fontWeight: "800", color: INK, opacity: 0.7 },
-  segmentTextActive: { color: ACCENT, opacity: 1 },
-  placeBlock: { marginTop: 14 },
-  placeInputRow: { flexDirection: "row", gap: 10, alignItems: "center" },
-  placeInput: { flex: 1, backgroundColor: "#fff", borderWidth: 3, borderColor: BORDER, borderRadius: 16, paddingHorizontal: 15, paddingVertical: 13, fontSize: 16, color: INK },
-  placeFindBtn: { backgroundColor: ACCENT, borderRadius: 16, paddingHorizontal: 20, paddingVertical: 13, minWidth: 64, minHeight: 48, alignItems: "center", justifyContent: "center", borderWidth: 3, borderColor: OUTLINE },
-  placeFindText: { color: "#fff", fontSize: 15, fontWeight: "900" },
-  placeResolved: { fontSize: 15, color: GREEN, fontWeight: "800", marginTop: 12 },
-  setupErr: { fontSize: 14, color: CORAL, marginTop: 12, lineHeight: 20, fontWeight: "700" },
-  sizeRow: { flexDirection: "row", gap: 12 },
-  sizeCard: { flex: 1, padding: 16, borderRadius: 20, borderWidth: 3, borderColor: BORDER, backgroundColor: "#fff" },
-  sizeCardWide: { padding: 16, borderRadius: 20, borderWidth: 3, borderColor: BORDER, backgroundColor: "#fff", marginTop: 12 },
-  sizeCardActive: { borderColor: ACCENT, backgroundColor: TINT },
-  sizeName: { fontSize: 18, fontWeight: "900", color: INK },
-  sizeDetail: { fontSize: 13, color: INK, opacity: 0.65, marginTop: 4, fontWeight: "600" },
   theme: { fontSize: 32, fontWeight: "900", color: INK, letterSpacing: -0.5 },
   intro: { fontSize: 16, color: INK, opacity: 0.75, marginTop: 6, lineHeight: 22, fontWeight: "600" },
   progress: { fontSize: 15, color: ACCENT, fontWeight: "800", marginTop: 12, marginBottom: 16 },
