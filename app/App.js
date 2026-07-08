@@ -135,6 +135,9 @@ function proximityBand(distM) {
 }
 const SCREEN_H = Dimensions.get("window").height; // for sheet peek/expanded sizing
 const SCREEN_W = Dimensions.get("window").width; // confetti spread on the find reveal
+// Front-door secondary-nav drawer width — capped so it reads as a panel, not a
+// full-screen takeover, on both phones and wider devices.
+const DRAWER_W = Math.min(320, Math.round(SCREEN_W * 0.82));
 // Approx height of the bottom clue sheet in its PEEK rest state — used to lift
 // the score/primary/recenter FABs above it so the peek sheet never occludes them
 // (per the wireframe: FABs sit above the sheet). The expanded sheet rises over
@@ -153,6 +156,41 @@ const COLLECTIONS_KEY = "dayquest.collections.v1";
 // Per-Area personal bests for the async scorecard.
 // { [areaLabel]: { best_points, fastest_time_s, quests, last_at } }
 const BESTS_KEY = "dayquest.bests.v1";
+// User quest preferences set on the Settings screen. Fed into every quest start.
+// distance_m = how far to gather; length = stop count preset; type = theme filter.
+const SETTINGS_KEY = "dayquest.settings.v1";
+// Distance presets (meters) offered as chips — labels derived (km). Default 1500
+// matches the old walk/quick gather radius, so a user who never opens Settings
+// gets byte-identical quests to before.
+const DISTANCE_CHOICES = [500, 1000, 1500, 2500, 4000];
+// Length preset → server `size` (which sets maxStops: 3 / 5 / 8) and its stop count.
+const LENGTH_CHOICES = [
+  { key: "short", size: "quick", stops: 3, label: "Short" },
+  { key: "medium", size: "explore", stops: 5, label: "Medium" },
+  { key: "long", size: "epic", stops: 8, label: "Long" },
+];
+// Quest type → theme filter sent to the server. "surprise" sends nothing (today's
+// behaviour). Historic + bar-crawl map to live OSM tags. Ghosts is locked until a
+// curated haunted dataset exists — live sources have almost nothing tagged creepy.
+const TYPE_CHOICES = [
+  { key: "surprise", icon: "🎲", label: "Surprise Me", blurb: "A mix of whatever's nearby" },
+  { key: "historic", icon: "🏛️", label: "Historic", blurb: "Landmarks, monuments & old NYC" },
+  { key: "barcrawl", icon: "🍻", label: "Bar Crawl", blurb: "Bars, pubs & nightlife stops" },
+  { key: "ghosts", icon: "👻", label: "Ghosts & Creepy", blurb: "Coming soon", locked: true },
+];
+const DEFAULT_SETTINGS = { distance_m: 1500, length: "medium", type: "surprise" };
+// Feasibility floor: N stops each ≥250m apart need room to spread. Clamp the
+// gather radius UP to this floor for the chosen length so a tiny-radius +
+// long-quest combo can't ask for 8 stops that physically can't fit. Roughly
+// (stops-1)×min-sep, so 3→500m, 5→1000m, 8→1750m.
+function minRadiusForStops(stops) {
+  return Math.max(500, (stops - 1) * 250);
+}
+// Meters → friendly km label for the distance chips ("0.5 km", "1 km", "2.5 km").
+function formatKm(m) {
+  const km = m / 1000;
+  return `${Number.isInteger(km) ? km : km.toFixed(1)} km`;
+}
 // Soft-gate choice: "1" once the user has tapped "Continue as guest". When set
 // (or when a signed-in session exists), the sign-in entry screen is skipped on
 // launch so we never re-prompt someone who already chose anonymous-first.
@@ -409,6 +447,25 @@ async function appendHistory(record) {
 }
 
 // --- Collections (per-Area discovery sets) ----------------------------------
+// Read quest settings, tolerating missing/corrupt keys; unknown fields fall back
+// to defaults so an old/partial blob never breaks quest start.
+async function readSettings() {
+  try {
+    const raw = await AsyncStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      const obj = JSON.parse(raw);
+      if (obj && typeof obj === "object") return { ...DEFAULT_SETTINGS, ...obj };
+    }
+  } catch {
+    /* corrupt — use defaults */
+  }
+  return { ...DEFAULT_SETTINGS };
+}
+// Persist settings (best-effort — a write failure just means it won't stick).
+async function writeSettings(next) {
+  await AsyncStorage.setItem(SETTINGS_KEY, JSON.stringify(next)).catch(() => {});
+}
+
 // Read the collections map, tolerating missing/corrupt.
 async function readCollections() {
   try {
@@ -937,6 +994,17 @@ export default function App() {
   const [visited, setVisited] = useState([]); // every checked-in place, newest-first
   const [bests, setBests] = useState({}); // { [area]: { best_points, fastest_time_s, quests } }
   const [expandedArea, setExpandedArea] = useState(null); // which Area's place list is open in Collections
+  // Front-door secondary nav lives in a slide-in drawer (☰) so the landing page
+  // stays clean: logo, score, two primary buttons. `menuOpen` toggles it; the
+  // slide + backdrop fade are driven off a single 0→1 Animated value.
+  const [menuOpen, setMenuOpen] = useState(false);
+  // Stays true through the slide-OUT so the exit animation can play before the
+  // drawer unmounts (menuOpen flips first; this trails it by the animation).
+  const [menuMounted, setMenuMounted] = useState(false);
+  const menuAnim = useRef(new Animated.Value(0)).current;
+  // Quest preferences (distance / length / type), loaded from disk on launch and
+  // fed into every startQuest. Defaults reproduce today's quick walk quest.
+  const [settings, setSettings] = useState(DEFAULT_SETTINGS);
   // Per-completion celebration facts, surfaced in the recap.
   const [newSpots, setNewSpots] = useState(0); // new places discovered this quest
   const [elapsedS, setElapsedS] = useState(null); // seconds to complete this quest
@@ -1107,6 +1175,21 @@ export default function App() {
   const [linkTick, setLinkTick] = useState(0);
 
   // On launch: ensure an install id exists, then check for an in-progress quest
+  // Drive the drawer slide + backdrop fade off `menuOpen`. Native driver: it's a
+  // pure transform/opacity animation, so it runs off the JS thread. On open we
+  // mount first, then slide in; on close we slide out, then unmount in the
+  // animation callback so the exit animation isn't cut short.
+  useEffect(() => {
+    if (menuOpen) setMenuMounted(true);
+    Animated.timing(menuAnim, {
+      toValue: menuOpen ? 1 : 0,
+      duration: 240,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished && !menuOpen) setMenuMounted(false);
+    });
+  }, [menuOpen, menuAnim]);
+
   // to offer a Resume. We do this BEFORE showing Welcome to avoid a flash of the
   // no-resume state. "In progress" = saved quest exists and not all stops done.
   useEffect(() => {
@@ -1114,6 +1197,8 @@ export default function App() {
       getInstallId();
       // Load lifetime score so Welcome can show the running total + streak.
       readScore().then(setScore).catch(() => {});
+      // Load saved quest preferences (distance / length / type).
+      readSettings().then(setSettings).catch(() => {});
       // Load the single-player game-layer state (collections + visited + bests).
       readCollections().then(setCollections).catch(() => {});
       readVisited().then(setVisited).catch(() => {});
@@ -1779,6 +1864,11 @@ export default function App() {
       // so the server applies its default ("tricky") and the simple URL stays
       // byte-identical to before.
       if (opts.difficulty) params.set("difficulty", opts.difficulty);
+      // Gather radius (meters) from the Settings distance chip. Omitted on the
+      // default so the simple path stays byte-identical; the server clamps it.
+      if (opts.radius) params.set("radius", String(opts.radius));
+      // Quest theme filter ("historic" | "barcrawl"). "surprise" never sets this.
+      if (opts.type) params.set("type", opts.type);
       // SHARED HUNT (multiplayer). `shared=1` asks the server to mint a durable
       // hunt_id (the host starting a friend hunt). `huntId` (a joiner) fetches
       // the SAME existing hunt by id so everyone gets identical clues/places.
@@ -2301,6 +2391,29 @@ export default function App() {
     track("profile_opened");
   }
 
+  // Open the static "How it works" help screen (nothing to load).
+  function openHelp() {
+    setScreen("help");
+    track("help_opened");
+  }
+
+  // Settings screen: quest preferences. Reload from disk first so it reflects any
+  // write from a prior session, then show it.
+  async function openSettings() {
+    const s = await readSettings();
+    setSettings(s);
+    setScreen("settings");
+    track("settings_opened");
+  }
+  // Patch one or more settings fields, persist, and keep local state in sync.
+  function updateSettings(patch) {
+    setSettings((prev) => {
+      const next = { ...prev, ...patch };
+      writeSettings(next);
+      return next;
+    });
+  }
+
   // --- Friends (Supabase-direct, RLS) -----------------------------------------
   // Load the friend graph and show the Friends screen. Gated behind sign-in by
   // the caller; if somehow reached signed-out, the screen renders the prompt.
@@ -2357,17 +2470,31 @@ export default function App() {
   // in startQuest) and builds a hard quest at the CURRENT GPS with the internal
   // defaults — mode walk, a tight "quick" size (omitted → server default), and
   // difficulty hard. Straight into loading → reveal → hunt.
+  // Translate the saved Settings into startQuest opts: length → server `size`,
+  // distance → gather `radius` (clamped UP to the length's feasibility floor so
+  // generation can always place the stops), type → theme filter ("surprise"
+  // sends nothing, preserving today's behaviour).
+  function questOptsFromSettings() {
+    const lengthChoice =
+      LENGTH_CHOICES.find((l) => l.key === settings.length) || LENGTH_CHOICES[1];
+    const radius = Math.max(settings.distance_m, minRadiusForStops(lengthChoice.stops));
+    const opts = { size: lengthChoice.size, radius };
+    if (settings.type && settings.type !== "surprise") opts.type = settings.type;
+    return opts;
+  }
+
   function startSoloQuest() {
     track("solo_quest_started");
-    startQuest({ difficulty: "hard" });
+    startQuest({ difficulty: "hard", ...questOptsFromSettings() });
   }
 
   // Start a shared (multiplayer) hunt at the CURRENT GPS. Same internal defaults
-  // as solo (mode walk, quick size, difficulty hard) — `shared` asks the server
-  // to mint a hunt_id; the reveal card then surfaces the invite/leaderboard.
+  // as solo (mode walk, difficulty hard) plus the user's saved quest prefs —
+  // `shared` asks the server to mint a hunt_id; the reveal card then surfaces the
+  // invite/leaderboard.
   function startSharedHunt() {
     track("shared_hunt_started");
-    startQuest({ shared: true, difficulty: "hard" });
+    startQuest({ shared: true, difficulty: "hard", ...questOptsFromSettings() });
   }
 
   // Share the CURRENT shared hunt's join link. Friends opening it join the same
@@ -2599,6 +2726,80 @@ export default function App() {
     );
   }
 
+  // Secondary-nav drawer for the front door. Rendered as an absolute overlay on
+  // top of the Welcome screen; slides in from the right with a dimmed backdrop.
+  // Every item closes the drawer first, then runs its existing handler — so the
+  // per-screen loads (readCollections, etc.) are untouched. Friends/Profile keep
+  // the same sign-in-aware labels the inline links had.
+  function renderMenuDrawer() {
+    if (!menuMounted) return null;
+    const go = (fn) => () => {
+      setMenuOpen(false);
+      fn();
+    };
+    const items = [
+      { key: "collections", icon: "🗺️", label: "Collections", onPress: go(openCollections) },
+      { key: "scorecard", icon: "🏅", label: "Scorecard", onPress: go(openScorecard) },
+      { key: "visited", icon: "📍", label: "Places Visited", onPress: go(openVisited) },
+      { key: "history", icon: "📜", label: "My Quests", onPress: go(openHistory) },
+      { key: "settings", icon: "⚙️", label: "Settings", onPress: go(openSettings) },
+      { key: "help", icon: "❓", label: "How it works", onPress: go(openHelp) },
+      user
+        ? { key: "friends", icon: "👥", label: "Friends", onPress: go(openFriends) }
+        : {
+            key: "friends",
+            icon: "👥",
+            label: "Sign in to play with friends",
+            onPress: authConfigured ? go(() => setScreen("signin")) : () => setMenuOpen(false),
+          },
+      authConfigured
+        ? user
+          ? {
+              key: "profile",
+              icon: "👤",
+              label: profile?.display_name || profileFromUser(user)?.display_name || "Your profile",
+              onPress: go(openProfile),
+            }
+          : { key: "profile", icon: "✨", label: "Sign in to save your profile", onPress: go(openProfile) }
+        : { key: "profile", icon: "👤", label: "Profiles coming soon", disabled: true },
+    ];
+    const slideX = menuAnim.interpolate({ inputRange: [0, 1], outputRange: [DRAWER_W, 0] });
+    return (
+      <View style={styles.drawerOverlay} pointerEvents="box-none">
+        <Animated.View style={[styles.drawerBackdrop, { opacity: menuAnim }]}>
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setMenuOpen(false)} />
+        </Animated.View>
+        <Animated.View style={[styles.drawerPanel, { transform: [{ translateX: slideX }] }]}>
+          <View style={styles.drawerHeader}>
+            <Text style={styles.drawerTitle}>Menu</Text>
+            <TouchableOpacity
+              onPress={() => setMenuOpen(false)}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              accessibilityRole="button"
+              accessibilityLabel="Close menu"
+            >
+              <Text style={styles.drawerClose}>✕</Text>
+            </TouchableOpacity>
+          </View>
+          {items.map((it) => (
+            <TouchableOpacity
+              key={it.key}
+              style={styles.drawerItem}
+              onPress={it.onPress}
+              disabled={it.disabled}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.drawerItemIcon}>{it.icon}</Text>
+              <Text style={[styles.drawerItemLabel, it.disabled && styles.drawerItemDisabled]} numberOfLines={1}>
+                {it.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </Animated.View>
+      </View>
+    );
+  }
+
   if (screen === "hydrating") {
     return (
       <View style={styles.center}>
@@ -2674,6 +2875,7 @@ export default function App() {
       quest && quest.stops.some((s) => !progress[s.order_index]?.found);
     const savedQuest = liveInProgress ? quest : saved?.quest;
     return (
+      <View style={styles.welcomeRoot}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.welcomeContent}>
         <StatusBar style="dark" />
         <Text style={styles.logo}>DayQuest</Text>
@@ -2743,57 +2945,22 @@ export default function App() {
         <Text style={styles.permNote}>
           We'll use your location to find places to explore — only while you're on a quest.
         </Text>
-
-        {/* Entry points to the single-player game layer + saved history. */}
-        <View style={styles.navRow}>
-          <Text style={styles.navLink} onPress={openCollections}>
-            🗺️ Collections
-          </Text>
-          <Text style={styles.navLink} onPress={openScorecard}>
-            🏅 Scorecard
-          </Text>
-        </View>
-        <Text style={styles.historyLink} onPress={openVisited}>
-          📍 Places Visited
-        </Text>
-        <Text style={styles.historyLink} onPress={openHistory}>
-          📜 My Quests
-        </Text>
-
-        {/* MULTIPLAYER entry — gated behind sign-in. Signed in: go to Friends.
-            Configured-but-signed-out OR unconfigured: a gentle "sign in to play
-            with friends" prompt that routes to the sign-in screen. The solo flow
-            above is untouched either way. */}
-        {user ? (
-          <Text style={styles.historyLink} onPress={openFriends}>
-            👥 Friends
-          </Text>
-        ) : (
-          <Text
-            style={styles.historyLink}
-            onPress={() => (authConfigured ? setScreen("signin") : null)}
-          >
-            👥 Sign in to play with friends
-          </Text>
-        )}
-
-        {/* OPTIONAL sign-in entry — NOT a gate. Hidden entirely unless Supabase
-            is configured. Shows the signed-in name once signed in, otherwise a
-            gentle "save your profile" invite. The whole app works without it. */}
-        {authConfigured ? (
-          user ? (
-            <Text style={styles.profileLink} onPress={openProfile}>
-              👤 {profile?.display_name || profileFromUser(user)?.display_name || "Your profile"}
-            </Text>
-          ) : (
-            <Text style={styles.profileLink} onPress={openProfile}>
-              ✨ Sign in to save your profile
-            </Text>
-          )
-        ) : (
-          <Text style={styles.profileLinkDisabled}>Profiles coming soon</Text>
-        )}
       </ScrollView>
+
+      {/* ☰ MENU — opens the secondary-nav drawer. Kept out of the centered
+          scroll flow (absolute, top-left) so the landing page stays clean. */}
+      <TouchableOpacity
+        style={styles.menuButton}
+        onPress={() => setMenuOpen(true)}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        accessibilityRole="button"
+        accessibilityLabel="Open menu"
+      >
+        <Text style={styles.menuIcon}>☰</Text>
+      </TouchableOpacity>
+
+      {renderMenuDrawer()}
+      </View>
     );
   }
 
@@ -3308,6 +3475,134 @@ export default function App() {
             );
           })
         )}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  if (screen === "settings") {
+    const lengthChoice =
+      LENGTH_CHOICES.find((l) => l.key === settings.length) || LENGTH_CHOICES[1];
+    const floor = minRadiusForStops(lengthChoice.stops);
+    const effectiveRadius = Math.max(settings.distance_m, floor);
+    // True when the chosen length needs more room than the chosen distance — we
+    // quietly search the wider radius so generation can place all the stops.
+    const clamped = effectiveRadius > settings.distance_m;
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>Settings</Text>
+        <Text style={styles.intro}>Tune your next quest — changes save as you go.</Text>
+
+        {/* DISTANCE — how far to gather candidate places. Chips, not a slider, so
+            there's no gesture dep and every pick is a known-good value. */}
+        <Text style={styles.settingLabel}>How far to roam</Text>
+        <View style={styles.chipRow}>
+          {DISTANCE_CHOICES.map((m) => {
+            const on = settings.distance_m === m;
+            return (
+              <TouchableOpacity
+                key={m}
+                style={[styles.chip, on && styles.chipOn]}
+                onPress={() => updateSettings({ distance_m: m })}
+                activeOpacity={0.8}
+              >
+                <Text style={[styles.chipText, on && styles.chipTextOn]}>{formatKm(m)}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+        {clamped ? (
+          <Text style={styles.settingNote}>
+            A {lengthChoice.label.toLowerCase()} quest needs a little more room — we'll
+            search out to {formatKm(effectiveRadius)} so every stop fits.
+          </Text>
+        ) : null}
+
+        {/* LENGTH — maps to the server `size` preset (stop count). */}
+        <Text style={styles.settingLabel}>Quest length</Text>
+        {LENGTH_CHOICES.map((l) => {
+          const on = settings.length === l.key;
+          return (
+            <TouchableOpacity
+              key={l.key}
+              style={[styles.optRow, on && styles.optRowOn]}
+              onPress={() => updateSettings({ length: l.key })}
+              activeOpacity={0.8}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={styles.optTitle}>{l.label}</Text>
+                <Text style={styles.optSub}>{l.stops} stops</Text>
+              </View>
+              <Text style={styles.optRadio}>{on ? "●" : "○"}</Text>
+            </TouchableOpacity>
+          );
+        })}
+
+        {/* TYPE — theme filter. "surprise" sends no filter (today's behaviour).
+            Ghosts is locked until a curated haunted dataset exists. */}
+        <Text style={styles.settingLabel}>Type of quest</Text>
+        {TYPE_CHOICES.map((t) => {
+          const on = settings.type === t.key;
+          const locked = !!t.locked;
+          return (
+            <TouchableOpacity
+              key={t.key}
+              style={[styles.optRow, on && styles.optRowOn, locked && styles.optRowLocked]}
+              onPress={() => (locked ? null : updateSettings({ type: t.key }))}
+              activeOpacity={locked ? 1 : 0.8}
+              disabled={locked}
+            >
+              <Text style={[styles.optIcon, locked && styles.optDim]}>{t.icon}</Text>
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.optTitle, locked && styles.optDim]}>{t.label}</Text>
+                <Text style={[styles.optSub, locked && styles.optDim]}>{t.blurb}</Text>
+              </View>
+              <Text style={styles.optRadio}>{locked ? "🔒" : on ? "●" : "○"}</Text>
+            </TouchableOpacity>
+          );
+        })}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  if (screen === "help") {
+    // Static "How it works" screen, reached from the front-door drawer (openHelp).
+    // Same content-on-cream idiom as Profile/Collections: back link, title, intro,
+    // then a stack of step cards. Voice = playful, second-person, punchy.
+    const steps = [
+      { icon: "🧭", title: "Start a quest", body: "Tap Start a Quest and we build a fresh hunt around you — a loop of hidden spots you've never been sent to before. Bring someone along with Start a Quest with Friends to race the same clues." },
+      { icon: "🔍", title: "Crack the clue", body: "Every stop is a secret. You get one short, punchy riddle — no name, no pin, just a search zone on the map. Work out where it's sending you." },
+      { icon: "🔥", title: "Warmer, colder", body: "As you walk, the map edges glow red when you're closing in and blue when you're way off. Follow the heat — and the buzz — toward the hidden spot." },
+      { icon: "💡", title: "Stuck? Climb the hint ladder", body: "Tap for a nudge, then a hint, then a full reveal of where it is. Hints help you solve it, but they won't walk you there — you still have to show up." },
+      { icon: "📸", title: "Prove you found it", body: "Reach the spot to catch its area-exclusive item through the camera, or snap a photo we verify. That's the only way the next clue unlocks — no fake skips." },
+      { icon: "📖", title: "Collect the story", body: "The second you find a place, its history unlocks as your reward. Every find banks points and drops the spot into your Collections and Places Visited." },
+      { icon: "🏅", title: "Finish, then beat yourself", body: "Complete the hunt for a shareable recap card saved to My Quests. Chase personal bests on your Scorecard, keep your weekly streak alive, and never get the same quest twice." },
+    ];
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <Text style={styles.theme}>How it works</Text>
+        <Text style={styles.intro}>
+          DayQuest turns wherever you are into a scavenger hunt. Here's the whole game, start to finish.
+        </Text>
+        <View style={{ height: 8 }} />
+        {steps.map((s) => (
+          <View key={s.title} style={styles.helpStep}>
+            <Text style={styles.helpIcon}>{s.icon}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.helpStepTitle}>{s.title}</Text>
+              <Text style={styles.helpStepBody}>{s.body}</Text>
+            </View>
+          </View>
+        ))}
         <View style={{ height: 40 }} />
       </ScrollView>
     );
@@ -4326,10 +4621,114 @@ const styles = StyleSheet.create({
   scoreStat: { alignItems: "center" },
   scoreNum: { fontSize: 24, fontWeight: "900", color: INK },
   scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2, fontWeight: "700" },
-  historyLink: { fontSize: 15, color: ACCENT, fontWeight: "800", marginTop: 16, textDecorationLine: "underline" },
-  // Welcome nav row to the game-layer views
-  navRow: { flexDirection: "row", marginTop: 24, gap: 14 },
-  navLink: { fontSize: 15, color: ACCENT, fontWeight: "800", textDecorationLine: "underline" },
+  // --- Front-door menu drawer (secondary nav) --------------------------------
+  welcomeRoot: { flex: 1, backgroundColor: CREAM },
+  menuButton: {
+    position: "absolute",
+    top: 52,
+    left: 20,
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: "#fff",
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.14,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 4,
+  },
+  menuIcon: { fontSize: 22, fontWeight: "900", color: INK, lineHeight: 26 },
+  drawerOverlay: { ...StyleSheet.absoluteFillObject },
+  drawerBackdrop: { ...StyleSheet.absoluteFillObject, backgroundColor: "rgba(14,34,54,0.45)" },
+  drawerPanel: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: DRAWER_W,
+    backgroundColor: CREAM,
+    borderLeftWidth: 3,
+    borderLeftColor: OUTLINE,
+    paddingTop: 56,
+    paddingHorizontal: 16,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.2,
+    shadowRadius: 16,
+    shadowOffset: { width: -6, height: 0 },
+    elevation: 12,
+  },
+  drawerHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginBottom: 12,
+    paddingHorizontal: 4,
+  },
+  drawerTitle: { fontSize: 22, fontWeight: "900", color: INK, letterSpacing: -0.4 },
+  drawerClose: { fontSize: 20, fontWeight: "900", color: INK },
+  drawerItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    paddingVertical: 14,
+    paddingHorizontal: 14,
+    marginTop: 12,
+    shadowColor: OUTLINE,
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 3 },
+    elevation: 2,
+  },
+  drawerItemIcon: { fontSize: 20, marginRight: 12 },
+  drawerItemLabel: { flex: 1, fontSize: 16, fontWeight: "800", color: INK },
+  drawerItemDisabled: { opacity: 0.4 },
+
+  // --- Settings screen -------------------------------------------------------
+  settingLabel: { fontSize: 18, fontWeight: "900", color: INK, marginTop: 26, letterSpacing: -0.3 },
+  settingNote: { fontSize: 13, color: ACCENT, fontWeight: "700", marginTop: 10, lineHeight: 18 },
+  chipRow: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 12 },
+  chip: {
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 999,
+    backgroundColor: "#fff",
+    borderWidth: 3,
+    borderColor: OUTLINE,
+  },
+  chipOn: { backgroundColor: ACCENT },
+  chipText: { fontSize: 15, fontWeight: "900", color: INK },
+  chipTextOn: { color: "#fff" },
+  optRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    borderRadius: 18,
+    borderWidth: 3,
+    borderColor: OUTLINE,
+    paddingVertical: 14,
+    paddingHorizontal: 16,
+    marginTop: 12,
+  },
+  optRowOn: { borderColor: ACCENT, backgroundColor: "#F0F7FF" },
+  optRowLocked: { opacity: 0.65 },
+  optIcon: { fontSize: 22, marginRight: 12 },
+  optTitle: { fontSize: 16, fontWeight: "900", color: INK },
+  optSub: { fontSize: 13, color: INK, opacity: 0.6, fontWeight: "700", marginTop: 2 },
+  optRadio: { fontSize: 20, fontWeight: "900", color: ACCENT, marginLeft: 10 },
+  optDim: { opacity: 0.55 },
+
+  // --- Help / How it works screen --------------------------------------------
+  helpStep: { flexDirection: "row", backgroundColor: "#fff", borderRadius: 22, padding: 18, marginBottom: 14, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  helpIcon: { fontSize: 26, marginRight: 14, marginTop: 1 },
+  helpStepTitle: { fontSize: 17, fontWeight: "900", color: INK, marginBottom: 3 },
+  helpStepBody: { fontSize: 15, color: INK, opacity: 0.75, lineHeight: 21, fontWeight: "600" },
 
   // Collections screen
   collCard: { backgroundColor: "#fff", borderRadius: 22, marginTop: 14, borderWidth: 3, borderColor: OUTLINE, overflow: "hidden", shadowColor: OUTLINE, shadowOpacity: 0.13, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
@@ -4572,10 +4971,6 @@ const styles = StyleSheet.create({
   actionBtnGo: { backgroundColor: AMBER },
   foundBanner: { backgroundColor: GREEN, borderRadius: 18, paddingVertical: 11, alignItems: "center", marginTop: 12, borderWidth: 3, borderColor: OUTLINE },
   foundBannerText: { color: "#fff", fontSize: 16, fontWeight: "900" },
-
-  // Optional sign-in / profile entry on Welcome
-  profileLink: { fontSize: 15, color: ACCENT, fontWeight: "700", marginTop: 16, textDecorationLine: "underline" },
-  profileLinkDisabled: { fontSize: 13, color: INK, opacity: 0.4, marginTop: 16 },
 
   // Profile screen
   profileCard: { flexDirection: "row", alignItems: "center", backgroundColor: "#fff", borderRadius: 22, padding: 17, marginTop: 16, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.12, shadowRadius: 9, shadowOffset: { width: 0, height: 5 }, elevation: 3 },
