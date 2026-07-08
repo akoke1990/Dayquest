@@ -9,10 +9,11 @@
     "serve": "node server.js",
     "ingest:gv": "node scripts/ingest-gv.js",
     "ingest:pois": "node scripts/ingest-pois.js",
-    "pull:nyc": "node scripts/pull-nyc.js"
+    "pull:nyc": "node scripts/pull-nyc.js",
+    "label:pois": "node scripts/label-pois.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",
-    "@supabase/supabase-js": "^2.108.2"
+    "@supabase/supabase-js": "^2.110.1"
   }
 }
