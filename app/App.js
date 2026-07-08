@@ -197,6 +197,10 @@ function formatKm(m) {
 // (or when a signed-in session exists), the sign-in entry screen is skipped on
 // launch so we never re-prompt someone who already chose anonymous-first.
 const GUEST_KEY = "dayquest.guest.v1";
+// "1" once the first-run "How it works" walkthrough has been shown. New players
+// land on the walkthrough the FIRST time they reach the front door (after
+// sign-in/guest choice); returning players skip straight to Welcome.
+const HELP_SEEN_KEY = "dayquest.helpSeen.v1";
 
 // Persistent log of every individual place the user has CHECKED INTO (across all
 // quests, even partial ones). De-duped by placeKey. Newest-first array of
@@ -1007,6 +1011,32 @@ export default function App() {
   // Quest preferences (distance / length / type), loaded from disk on launch and
   // fed into every startQuest. Defaults reproduce today's quick walk quest.
   const [settings, setSettings] = useState(DEFAULT_SETTINGS);
+  // First-run walkthrough: `helpSeenRef` starts true (never trap a returning
+  // player if the flag read hasn't landed) and is resolved from disk during
+  // hydration. `firstRunHelp` switches the Help screen from a drawer page
+  // (← Back) into an onboarding page (big "Let's play!" CTA).
+  const helpSeenRef = useRef(true);
+  const [firstRunHelp, setFirstRunHelp] = useState(false);
+
+  // Redirect the FIRST-ever arrival at the front door to the "How it works"
+  // walkthrough. One chokepoint catches every path in (guest, sign-in, cold
+  // start); the ref flips immediately so it can only ever fire once per install.
+  useEffect(() => {
+    if (screen === "welcome" && !helpSeenRef.current) {
+      helpSeenRef.current = true;
+      setFirstRunHelp(true);
+      setScreen("help");
+      track("first_run_help_shown");
+    }
+  }, [screen]);
+
+  // Complete the walkthrough: persist the flag and enter the game.
+  function finishFirstRunHelp() {
+    setFirstRunHelp(false);
+    AsyncStorage.setItem(HELP_SEEN_KEY, "1").catch(() => {});
+    setScreen("welcome");
+    track("first_run_help_done");
+  }
   // Per-completion celebration facts, surfaced in the recap.
   const [newSpots, setNewSpots] = useState(0); // new places discovered this quest
   const [elapsedS, setElapsedS] = useState(null); // seconds to complete this quest
@@ -1228,6 +1258,13 @@ export default function App() {
         guestChosen = (await AsyncStorage.getItem(GUEST_KEY)) === "1";
       } catch {
         /* missing — treat as not-yet-chosen */
+      }
+      // First-run walkthrough flag: resolved BEFORE leaving "hydrating" so the
+      // welcome-screen redirect below never mis-fires for returning players.
+      try {
+        helpSeenRef.current = (await AsyncStorage.getItem(HELP_SEEN_KEY)) === "1";
+      } catch {
+        helpSeenRef.current = true; // read failed — never trap a returning player
       }
       let sessionUser = null;
       if (authConfigured) {
@@ -2824,6 +2861,8 @@ export default function App() {
       <View style={styles.signinScreen}>
         <StatusBar style="dark" />
         <View style={styles.signinHero}>
+          {/* Brand mark — swap assets/icon.png to rebrand; code stays put. */}
+          <Image source={require("./assets/icon.png")} style={styles.brandMark} />
           <Text style={styles.signinLogo}>DayQuest</Text>
           <Text style={styles.signinValueProp}>
             Turn your neighborhood into an adventure.
@@ -2880,6 +2919,8 @@ export default function App() {
       <View style={styles.welcomeRoot}>
       <ScrollView style={styles.scroll} contentContainerStyle={styles.welcomeContent}>
         <StatusBar style="dark" />
+        {/* Brand mark — same asset as the sign-in hero and the app icon. */}
+        <Image source={require("./assets/icon.png")} style={styles.brandMarkSmall} />
         <Text style={styles.logo}>DayQuest</Text>
         <Text style={styles.tagline}>Find a little adventure near you.</Text>
 
@@ -3588,12 +3629,18 @@ export default function App() {
     return (
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         <StatusBar style="dark" />
-        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
-          ← Back
-        </Text>
-        <Text style={styles.theme}>How it works</Text>
+        {/* First run: this IS the front door (no Back — the CTA below finishes
+            onboarding). Drawer visits keep the normal ← Back. */}
+        {firstRunHelp ? null : (
+          <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+            ← Back
+          </Text>
+        )}
+        <Text style={styles.theme}>{firstRunHelp ? "Welcome to DayQuest!" : "How it works"}</Text>
         <Text style={styles.intro}>
-          DayQuest turns wherever you are into a scavenger hunt. Here's the whole game, start to finish.
+          {firstRunHelp
+            ? "Before your first adventure — here's the whole game in 7 quick steps."
+            : "DayQuest turns wherever you are into a scavenger hunt. Here's the whole game, start to finish."}
         </Text>
         <View style={{ height: 8 }} />
         {steps.map((s) => (
@@ -3605,6 +3652,11 @@ export default function App() {
             </View>
           </View>
         ))}
+        {firstRunHelp ? (
+          <PressBounce style={styles.button} onPress={finishFirstRunHelp}>
+            <Text style={styles.buttonText}>Got it — let's play! 🎉</Text>
+          </PressBounce>
+        ) : null}
         <View style={{ height: 40 }} />
       </ScrollView>
     );
@@ -4623,6 +4675,10 @@ const styles = StyleSheet.create({
   scoreStat: { alignItems: "center" },
   scoreNum: { fontSize: 24, fontWeight: "900", color: INK },
   scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2, fontWeight: "700" },
+  // Brand mark (the app icon, shown in-app). Rounded corners echo the iOS icon.
+  brandMark: { width: 120, height: 120, borderRadius: 28, marginBottom: 18 },
+  brandMarkSmall: { width: 84, height: 84, borderRadius: 20, marginBottom: 12 },
+
   // --- Front-door menu drawer (secondary nav) --------------------------------
   welcomeRoot: { flex: 1, backgroundColor: CREAM },
   menuButton: {
