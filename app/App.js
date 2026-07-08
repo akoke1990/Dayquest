@@ -170,13 +170,15 @@ const LENGTH_CHOICES = [
   { key: "long", size: "epic", stops: 8, label: "Long" },
 ];
 // Quest type → theme filter sent to the server. "surprise" sends nothing (today's
-// behaviour). Historic + bar-crawl map to live OSM tags. Ghosts is locked until a
-// curated haunted dataset exists — live sources have almost nothing tagged creepy.
+// behaviour). Historic + bar-crawl steer the live sources. Ghosts is built ONLY
+// from the curated haunted dataset (db/haunted-pois.json — NYC + LI North Shore
+// today); elsewhere the server returns a friendly "no spooky places mapped near
+// you yet" instead of a bait-and-switch hunt.
 const TYPE_CHOICES = [
   { key: "surprise", icon: "🎲", label: "Surprise Me", blurb: "A mix of whatever's nearby" },
   { key: "historic", icon: "🏛️", label: "Historic", blurb: "Landmarks, monuments & old NYC" },
   { key: "barcrawl", icon: "🍻", label: "Bar Crawl", blurb: "Bars, pubs & nightlife stops" },
-  { key: "ghosts", icon: "👻", label: "Ghosts & Creepy", blurb: "Coming soon", locked: true },
+  { key: "ghosts", icon: "👻", label: "Ghosts & Creepy", blurb: "Legends, lore & chills — select areas" },
 ];
 const DEFAULT_SETTINGS = { distance_m: 1500, length: "medium", type: "surprise" };
 // Feasibility floor: N stops each ≥250m apart need room to spread. Clamp the
