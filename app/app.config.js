@@ -16,7 +16,14 @@
 const appJson = require("./app.json");
 
 const expo = appJson.expo;
-const googleMapsApiKey = (expo.extra && expo.extra.GOOGLE_MAPS_API_KEY) || "";
+// Key resolution order: EAS env var first (set as a project env variable on
+// expo.dev — injected on EAS build servers, so cloud builds get the real key
+// without it ever living in git), then the app.json extra slot (the original
+// laptop-local flow), then "".
+const googleMapsApiKey =
+  process.env.GOOGLE_MAPS_API_KEY ||
+  (expo.extra && expo.extra.GOOGLE_MAPS_API_KEY) ||
+  "";
 
 module.exports = {
   ...expo,
