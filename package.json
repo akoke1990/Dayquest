@@ -10,7 +10,8 @@
     "ingest:gv": "node scripts/ingest-gv.js",
     "ingest:pois": "node scripts/ingest-pois.js",
     "pull:nyc": "node scripts/pull-nyc.js",
-    "label:pois": "node scripts/label-pois.js"
+    "label:pois": "node scripts/label-pois.js",
+    "compile:haunted": "node scripts/compile-haunted.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",
