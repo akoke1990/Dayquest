@@ -2800,9 +2800,26 @@ export default function App() {
   // the same sign-in-aware labels the inline links had.
   function renderMenuDrawer() {
     if (!menuMounted) return null;
+    // Navigating away: HARD-close (no exit animation). The screen change
+    // unmounts the drawer mid-animation, so the timing callback that normally
+    // flips menuMounted never fires — leaving a stuck ghost drawer on return
+    // to Welcome (field-tester report). The screen swap hides it anyway.
     const go = (fn) => () => {
       setMenuOpen(false);
+      setMenuMounted(false);
+      menuAnim.setValue(0);
       fn();
+    };
+    // ✕ / backdrop: animated close, PLUS self-heal — if state ever desyncs
+    // (drawer visible while menuOpen is already false, the stuck case), the
+    // second tap force-unmounts instead of being a state no-op.
+    const dismissMenu = () => {
+      if (menuOpen) {
+        setMenuOpen(false);
+      } else {
+        menuAnim.setValue(0);
+        setMenuMounted(false);
+      }
     };
     const items = [
       { key: "collections", icon: "🗺️", label: "Collections", onPress: go(openCollections) },
@@ -2834,13 +2851,13 @@ export default function App() {
     return (
       <View style={styles.drawerOverlay} pointerEvents="box-none">
         <Animated.View style={[styles.drawerBackdrop, { opacity: menuAnim }]}>
-          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={() => setMenuOpen(false)} />
+          <TouchableOpacity style={{ flex: 1 }} activeOpacity={1} onPress={dismissMenu} />
         </Animated.View>
         <Animated.View style={[styles.drawerPanel, { transform: [{ translateX: slideX }] }]}>
           <View style={styles.drawerHeader}>
             <Text style={styles.drawerTitle}>Menu</Text>
             <TouchableOpacity
-              onPress={() => setMenuOpen(false)}
+              onPress={dismissMenu}
               hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               accessibilityRole="button"
               accessibilityLabel="Close menu"
