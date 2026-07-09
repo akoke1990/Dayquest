@@ -140,8 +140,9 @@ const SCREEN_W = Dimensions.get("window").width; // confetti spread on the find 
 const DRAWER_W = Math.min(320, Math.round(SCREEN_W * 0.82));
 // Approx height of the bottom clue sheet in its PEEK rest state — used to lift
 // the score/primary/recenter FABs above it so the peek sheet never occludes them
-// (per the wireframe: FABs sit above the sheet). The expanded sheet rises over
-// the FABs, which is fine (the user is reading the clue then, not tapping a FAB).
+// (per the wireframe: FABs sit above the sheet). While the sheet is EXPANDED the
+// score/primary FABs fade+slide OUT (fabAnim) — field testing showed they sat on
+// top of the hint ladder; they return the moment the sheet collapses to peek.
 const SHEET_PEEK_H = 196;
 const SHEET_CLEARANCE = SHEET_PEEK_H + 26; // FAB bottom offset
 
@@ -1124,6 +1125,25 @@ export default function App() {
   // enhancement on top. A "collapse to slim tab" power-user state is kept too.
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [sheetCollapsed, setSheetCollapsed] = useState(false); // tucked to a slim tab
+  // Hide the bottom FABs while the clue sheet is EXPANDED (they occluded the
+  // hint ladder — field-tester report). Computed from top-level state only:
+  // "hunt in progress, no reveal/recap overlay, sheet visible and expanded".
+  // On completion (allDone) the sheet isn't rendered, so the Recap FAB stays.
+  const fabAnim = useRef(new Animated.Value(1)).current; // 1 = FABs shown
+  const fabsHidden =
+    !!quest &&
+    !quest.stops.every((s) => progress[s.order_index]?.found) &&
+    findReveal == null &&
+    !recapOpen &&
+    !sheetCollapsed &&
+    sheetExpanded;
+  useEffect(() => {
+    Animated.timing(fabAnim, {
+      toValue: fabsHidden ? 0 : 1,
+      duration: 160,
+      useNativeDriver: true,
+    }).start();
+  }, [fabsHidden, fabAnim]);
 
   // --- Map recenter / auto-follow (the worst current bug: map never recenters) -
   // A ref to the live MapView so we can animateToRegion (the file previously set
@@ -3888,6 +3908,15 @@ export default function App() {
         <Text style={styles.body}>{s.description}</Text>
         <Text style={styles.why}>Why: {s.reason}</Text>
         {s.lore_hook ? <Text style={styles.lore}>{s.lore_hook}</Text> : null}
+        {/* THE FULL STORY — the sourced history snippet, in full. This is the
+            post-find reward (D-070); it was never rendered before, so testers
+            only ever saw the short LLM teaser and a "source ↗" link. */}
+        {s.place.lore ? (
+          <>
+            <Text style={styles.storyTitle}>📖 The story</Text>
+            <Text style={styles.storyBody}>{s.place.lore}</Text>
+          </>
+        ) : null}
         {s.quest_prompt ? (
           <View style={styles.questBox}>
             <Text style={styles.questText}>
@@ -3956,10 +3985,13 @@ export default function App() {
           <Text style={styles.findName} numberOfLines={3}>
             {s.place.name}
           </Text>
+          {/* Post-find story teaser. Scrolls (bounded) instead of hard-cutting
+              at 6 lines — field testers hit mid-sentence cutoffs. The FULL
+              sourced history lives in the stop card (place.lore). */}
           {s.lore_hook || s.reason ? (
-            <Text style={styles.findLore} numberOfLines={6}>
-              {s.lore_hook || s.reason}
-            </Text>
+            <ScrollView style={styles.findLoreScroll} showsVerticalScrollIndicator={true}>
+              <Text style={styles.findLore}>{s.lore_hook || s.reason}</Text>
+            </ScrollView>
           ) : null}
 
           {awardItem ? (
@@ -4369,7 +4401,9 @@ export default function App() {
                   <Text style={styles.clueKicker}>
                     CLUE {doneCount + 1} OF {quest.stops.length}
                   </Text>
-                  <Text style={styles.diffPip}>{diffPip}</Text>
+                  {/* ▾ while expanded: collapsing is now also how the bottom
+                      FABs come back, so the shrink gesture gets a visible cue. */}
+                  <Text style={styles.diffPip}>{sheetExpanded ? `▾ ${diffPip}` : diffPip}</Text>
                 </View>
               </TouchableOpacity>
 
@@ -4506,32 +4540,47 @@ export default function App() {
         </View>
       ) : null}
 
-      {/* Bottom-left: profile/score button — chunky, shows lifetime points,
-          opens the Profile/Scorecard. */}
-      <PressBounce style={styles.scoreFab} onPress={openScorecard}>
-        <Text style={styles.scoreFabPts}>{profilePoints}</Text>
-        <Text style={styles.scoreFabLabel}>pts</Text>
-      </PressBounce>
+      {/* Bottom FAB layer: score (left) + primary action (right). Fades/slides
+          out while the clue sheet is expanded (fabAnim) so it never covers the
+          hint ladder; touches are disabled the instant hiding starts. */}
+      <Animated.View
+        style={[
+          styles.fabLayer,
+          {
+            opacity: fabAnim,
+            transform: [{ translateY: fabAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+          },
+        ]}
+        pointerEvents={fabsHidden ? "none" : "box-none"}
+      >
+        {/* Bottom-left: profile/score button — chunky, shows lifetime points,
+            opens the Profile/Scorecard. */}
+        <PressBounce style={styles.scoreFab} onPress={openScorecard}>
+          <Text style={styles.scoreFabPts}>{profilePoints}</Text>
+          <Text style={styles.scoreFabLabel}>pts</Text>
+        </PressBounce>
 
-      {/* Bottom-right: the prominent PRIMARY action. "Recap" once complete
-          (re-opens the completion overlay), otherwise "New Quest". */}
-      {allDone ? (
-        <PressBounce
-          style={[styles.primaryFab, styles.primaryFabRecap]}
-          onPress={() => {
-            setSelectedStop(null);
-            setRecapOpen(true);
-          }}
-        >
-          <Text style={styles.primaryFabIcon}>🎉</Text>
-          <Text style={styles.primaryFabText}>Recap</Text>
-        </PressBounce>
-      ) : (
-        <PressBounce style={styles.primaryFab} onPress={() => startQuest({ difficulty: "hard" })}>
-          <Text style={styles.primaryFabIcon}>＋</Text>
-          <Text style={styles.primaryFabText}>New Quest</Text>
-        </PressBounce>
-      )}
+        {/* Bottom-right: the prominent PRIMARY action. "Recap" once complete
+            (re-opens the completion overlay), otherwise "New Quest" —
+            startSoloQuest (not bare startQuest) so it honours saved Settings. */}
+        {allDone ? (
+          <PressBounce
+            style={[styles.primaryFab, styles.primaryFabRecap]}
+            onPress={() => {
+              setSelectedStop(null);
+              setRecapOpen(true);
+            }}
+          >
+            <Text style={styles.primaryFabIcon}>🎉</Text>
+            <Text style={styles.primaryFabText}>Recap</Text>
+          </PressBounce>
+        ) : (
+          <PressBounce style={styles.primaryFab} onPress={startSoloQuest}>
+            <Text style={styles.primaryFabIcon}>＋</Text>
+            <Text style={styles.primaryFabText}>New Quest</Text>
+          </PressBounce>
+        )}
+      </Animated.View>
 
       {/* ===== Pop-out stop CARD (replaces the old expanded bottom sheet). A
               centered, scale/fade-popped Animated card carrying the FULL
@@ -5011,7 +5060,13 @@ const styles = StyleSheet.create({
   },
   findKicker: { fontSize: 14, fontWeight: "900", color: GREEN, letterSpacing: 2.5, textTransform: "uppercase" },
   findName: { fontSize: 28, fontWeight: "900", color: INK, textAlign: "center", marginTop: 10, lineHeight: 33, letterSpacing: -0.4 },
-  findLore: { fontSize: 15, color: INK, opacity: 0.82, textAlign: "center", marginTop: 12, lineHeight: 22 },
+  findLore: { fontSize: 15, color: INK, opacity: 0.82, textAlign: "center", lineHeight: 22 },
+  // Bounded scroll for the reveal-card lore: long stories scroll, short ones
+  // take only the space they need (maxHeight, not height).
+  findLoreScroll: { maxHeight: Math.round(SCREEN_H * 0.22), marginTop: 12, alignSelf: "stretch" },
+  // "The story" — full sourced history in the stop card (the post-find reward).
+  storyTitle: { fontSize: 16, fontWeight: "900", color: INK, marginTop: 16 },
+  storyBody: { fontSize: 15, color: INK, opacity: 0.85, lineHeight: 23, marginTop: 6 },
   collectWrap: { alignItems: "center", marginTop: 18, height: 64, justifyContent: "center" },
   collectItem: { fontSize: 48 },
   collectCaption: { fontSize: 13, fontWeight: "900", color: GREEN, marginTop: 4 },
@@ -5256,11 +5311,12 @@ const styles = StyleSheet.create({
   progressChipText: { color: "#fff", fontSize: 14, fontWeight: "900", letterSpacing: 0.3 },
 
   // Bottom-left score/profile FAB.
+  // Container for the two bottom FABs — carries the clearance above the peek
+  // sheet AND the hide/show animation, so the FABs inside anchor to bottom: 0.
+  fabLayer: { position: "absolute", left: 0, right: 0, bottom: SHEET_CLEARANCE, height: 76 },
   scoreFab: {
     position: "absolute",
-    // Lifted above the bottom clue sheet (the peek sheet docks at the screen
-    // bottom; FABs sit above it per the wireframe so nothing is occluded).
-    bottom: SHEET_CLEARANCE,
+    bottom: 0, // within fabLayer (which carries SHEET_CLEARANCE)
     left: 22,
     width: 76,
     height: 76,
@@ -5283,7 +5339,7 @@ const styles = StyleSheet.create({
   // Bottom-right primary action FAB (New Quest / Recap).
   primaryFab: {
     position: "absolute",
-    bottom: SHEET_CLEARANCE,
+    bottom: 0, // within fabLayer (which carries SHEET_CLEARANCE)
     right: 22,
     minWidth: 92,
     height: 76,
