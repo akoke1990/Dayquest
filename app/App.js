@@ -23,6 +23,9 @@ import {
 import * as ExpoLinking from "expo-linking";
 import { StatusBar } from "expo-status-bar";
 import * as Location from "expo-location";
+// Local scheduled notifications ONLY (no push service, no server): the Weekend
+// Hunt reminder and the streak-at-risk nudge are both scheduled on-device.
+import * as Notifications from "expo-notifications";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import { captureRef } from "react-native-view-shot";
@@ -210,6 +213,20 @@ const GUEST_KEY = "dayquest.guest.v1";
 // land on the walkthrough the FIRST time they reach the front door (after
 // sign-in/guest choice); returning players skip straight to Welcome.
 const HELP_SEEN_KEY = "dayquest.helpSeen.v1";
+// The one planned Weekend Hunt (D-066b: scheduled co-presence — the top
+// non-daily retention lever). { hunt_id, theme, area, scheduled_for (ISO date),
+// notif_id }. A social appointment: minted now, played on the day.
+const PLANNED_HUNT_KEY = "dayquest.plannedHunt.v1";
+
+// Show scheduled notifications as banners even if the app is foregrounded.
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
 
 // Persistent log of every individual place the user has CHECKED INTO (across all
 // quests, even partial ones). De-duped by placeKey. Newest-first array of
@@ -358,16 +375,31 @@ async function readScore() {
 async function recordScore(pointsEarned) {
   const prev = await readScore();
   const wk = weekIndex();
+  // Streak SHIELD (D-066e: forgiving streaks — "paused, not lost"). One shield
+  // per streak: missing exactly ONE week consumes it and the streak continues;
+  // a longer gap (or no shield left) resets — and a fresh streak comes with a
+  // fresh shield. Old blobs have no `shield` key → treat as 1 (grandfathered).
+  let shield = prev.shield == null ? 1 : prev.shield;
+  let shieldUsed = false;
   let streak = prev.streak_weeks;
   if (prev.last_week_index == null) streak = 1; // first ever completion
   else if (wk === prev.last_week_index) streak = prev.streak_weeks || 1; // same week — no change
   else if (wk === prev.last_week_index + 1) streak = prev.streak_weeks + 1; // next week — extend
-  else streak = 1; // a gap — streak resets
+  else if (wk === prev.last_week_index + 2 && shield > 0) {
+    streak = prev.streak_weeks + 1; // missed ONE week — shield absorbs it
+    shield -= 1;
+    shieldUsed = true;
+  } else {
+    streak = 1; // a real gap — streak resets…
+    shield = 1; // …and the new streak starts with a fresh shield
+  }
   const next = {
     total: prev.total + pointsEarned,
     quests_completed: prev.quests_completed + 1,
     streak_weeks: streak,
     last_week_index: wk,
+    shield,
+    shield_used_week: shieldUsed ? wk : prev.shield_used_week ?? null,
   };
   await AsyncStorage.setItem(SCORE_KEY, JSON.stringify(next)).catch(() => {});
   return next;
@@ -1026,6 +1058,11 @@ export default function App() {
   // (← Back) into an onboarding page (big "Let's play!" CTA).
   const helpSeenRef = useRef(true);
   const [firstRunHelp, setFirstRunHelp] = useState(false);
+  // Weekend Hunt: the one planned social appointment, or null. `planPicker`
+  // toggles the inline day chooser on Welcome; `planBusy` guards double-mints.
+  const [plannedHunt, setPlannedHunt] = useState(null);
+  const [planPicker, setPlanPicker] = useState(false);
+  const [planBusy, setPlanBusy] = useState(false);
 
   // Redirect the FIRST-ever arrival at the front door to the "How it works"
   // walkthrough. One chokepoint catches every path in (guest, sign-in, cold
@@ -1259,6 +1296,19 @@ export default function App() {
       readScore().then(setScore).catch(() => {});
       // Load saved quest preferences (distance / length / type).
       readSettings().then(setSettings).catch(() => {});
+      // Load the planned Weekend Hunt; silently drop it once 2+ days stale.
+      AsyncStorage.getItem(PLANNED_HUNT_KEY)
+        .then((raw) => {
+          if (!raw) return;
+          const p = JSON.parse(raw);
+          const staleMs = Date.now() - new Date(p.scheduled_for + "T23:59:59").getTime();
+          if (staleMs > 2 * 24 * 60 * 60 * 1000) {
+            AsyncStorage.removeItem(PLANNED_HUNT_KEY).catch(() => {});
+          } else {
+            setPlannedHunt(p);
+          }
+        })
+        .catch(() => {});
       // Load the single-player game-layer state (collections + visited + bests).
       readCollections().then(setCollections).catch(() => {});
       readVisited().then(setVisited).catch(() => {});
@@ -2564,6 +2614,123 @@ export default function App() {
     startQuest({ shared: true, difficulty: "hard", ...questOptsFromSettings() });
   }
 
+  // --- Weekend Hunt (D-066b: scheduled co-presence) ---------------------------
+  // Mint a shared hunt NOW (so the invite link exists and friends can join any
+  // time) but don't play it — save it as a plan for the chosen day, schedule a
+  // local reminder for that morning, and open the invite share sheet. Durable:
+  // the server stores shared hunts in Supabase, so a Thursday mint is joinable
+  // Saturday.
+  const DAY_NAMES = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+  function planDayChoices() {
+    const out = [];
+    const seen = new Set();
+    const add = (label, d) => {
+      const iso = d.toISOString().slice(0, 10);
+      if (!seen.has(iso)) {
+        seen.add(iso);
+        out.push({ label, iso, dayName: DAY_NAMES[d.getDay()] });
+      }
+    };
+    const today = new Date();
+    const tomorrow = new Date(today);
+    tomorrow.setDate(today.getDate() + 1);
+    add(`Tomorrow (${DAY_NAMES[tomorrow.getDay()].slice(0, 3)})`, tomorrow);
+    for (const dow of [6, 0]) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + ((dow - today.getDay() + 7) % 7 || 7));
+      add(DAY_NAMES[dow], d);
+    }
+    return out;
+  }
+
+  async function planWeekendHunt(choice) {
+    if (planBusy) return;
+    setPlanBusy(true);
+    track("weekend_hunt_planned", { day: choice.dayName });
+    try {
+      const { status: perm } = await Location.requestForegroundPermissionsAsync();
+      if (perm !== "granted") throw new Error("We need your location to plan a hunt near you.");
+      const loc = await Location.getCurrentPositionAsync({});
+      const params = new URLSearchParams({
+        lat: String(loc.coords.latitude),
+        lng: String(loc.coords.longitude),
+        shared: "1",
+        difficulty: "hard",
+      });
+      const opts = questOptsFromSettings();
+      if (opts.size && opts.size !== "quick") params.set("size", opts.size);
+      if (opts.radius) params.set("radius", String(opts.radius));
+      if (opts.type) params.set("type", opts.type);
+      const res = await fetch(`${API_BASE}/quest?${params.toString()}`);
+      const data = await res.json();
+      if (!res.ok || !data.hunt_id) throw new Error(data.error || "Couldn't plan a hunt here.");
+
+      // Reminder at 9am on the day — best-effort; planning works without it.
+      let notif_id = null;
+      try {
+        const { status } = await Notifications.requestPermissionsAsync();
+        if (status === "granted") {
+          const when = new Date(`${choice.iso}T09:00:00`);
+          if (when.getTime() > Date.now()) {
+            notif_id = await Notifications.scheduleNotificationAsync({
+              content: {
+                title: "Hunt day! 🗺️",
+                body: `Your DayQuest with friends is today — open the app to start the hunt.`,
+              },
+              trigger: { type: "date", date: when },
+            });
+          }
+        }
+      } catch {
+        /* no reminder — the Welcome card still carries the plan */
+      }
+
+      const plan = {
+        hunt_id: data.hunt_id,
+        theme: data.theme,
+        area: data.origin?.label || "your area",
+        scheduled_for: choice.iso,
+        day_name: choice.dayName,
+        notif_id,
+      };
+      await AsyncStorage.setItem(PLANNED_HUNT_KEY, JSON.stringify(plan)).catch(() => {});
+      setPlannedHunt(plan);
+      setPlanPicker(false);
+      await sharePlannedInvite(plan);
+    } catch (e) {
+      Alert.alert("Couldn't plan the hunt", e.message);
+    } finally {
+      setPlanBusy(false);
+    }
+  }
+
+  async function sharePlannedInvite(plan) {
+    const link = `${APP_SCHEME}://join?hunt=${plan.hunt_id}`;
+    try {
+      await Share.share({
+        message: `Hunt's on for ${plan.day_name}! 🗺️ We race the same clues in ${plan.area}. Tap to join my DayQuest:\n${link}`,
+      });
+    } catch {
+      /* dismissed — the Welcome card has a re-share button */
+    }
+  }
+
+  async function startPlannedHunt() {
+    if (!plannedHunt) return;
+    track("weekend_hunt_started", { hunt_id: plannedHunt.hunt_id });
+    await clearPlannedHunt(false);
+    startQuest({ huntId: plannedHunt.hunt_id });
+  }
+
+  async function clearPlannedHunt(tracked = true) {
+    if (tracked) track("weekend_hunt_cancelled");
+    if (plannedHunt?.notif_id) {
+      Notifications.cancelScheduledNotificationAsync(plannedHunt.notif_id).catch(() => {});
+    }
+    await AsyncStorage.removeItem(PLANNED_HUNT_KEY).catch(() => {});
+    setPlannedHunt(null);
+  }
+
   // Share the CURRENT shared hunt's join link. Friends opening it join the same
   // hunt (identical clues/places). No-op if the active quest isn't shared.
   async function shareHuntInvite() {
@@ -2987,6 +3154,48 @@ export default function App() {
           </View>
         ) : null}
 
+        {/* Streak status chip (Leak 2): the streak finally gets a deadline and
+            an at-risk voice — plus the shield state. Derived, no new storage. */}
+        {(() => {
+          if (!score.streak_weeks || score.last_week_index == null) return null;
+          const wkNow = weekIndex();
+          let chip = null;
+          if (score.last_week_index === wkNow) {
+            chip = { style: styles.streakChipOk, text: `✓ Streak extended this week` };
+          } else if (score.last_week_index === wkNow - 1) {
+            chip = { style: styles.streakChipRisk, text: `⏳ Quest by Sunday to keep your ${score.streak_weeks}-week streak` };
+          } else if (score.last_week_index === wkNow - 2 && (score.shield ?? 1) > 0) {
+            chip = { style: styles.streakChipRisk, text: `🛡 Your shield is holding — quest this week to save the streak` };
+          }
+          return chip ? (
+            <View style={[styles.streakChip, chip.style]}>
+              <Text style={styles.streakChipText}>{chip.text}</Text>
+            </View>
+          ) : null;
+        })()}
+
+        {/* PLANNED WEEKEND HUNT — the social appointment (D-066b). Sits where
+            Resume sits: it's the strongest "next session" claim on the screen. */}
+        {plannedHunt ? (
+          <View style={styles.resumeBox}>
+            <Text style={styles.resumeLabel}>📅 {plannedHunt.day_name} hunt planned</Text>
+            <Text style={styles.resumeTheme} numberOfLines={2}>
+              {plannedHunt.theme} · {plannedHunt.area}
+            </Text>
+            <PressBounce style={styles.button} onPress={startPlannedHunt}>
+              <Text style={styles.buttonText}>Start the hunt</Text>
+            </PressBounce>
+            <View style={styles.planActionsRow}>
+              <Text style={styles.abandonLink} onPress={() => sharePlannedInvite(plannedHunt)}>
+                Invite friends
+              </Text>
+              <Text style={styles.abandonLink} onPress={() => clearPlannedHunt()}>
+                Cancel plan
+              </Text>
+            </View>
+          </View>
+        ) : null}
+
         {/* Resume sits above the fold when a quest is in progress (UX-SPEC §1.1). */}
         {savedQuest ? (
           <View style={styles.resumeBox}>
@@ -3028,6 +3237,32 @@ export default function App() {
           <PressBounce style={[styles.button, styles.buttonFriends]} onPress={() => setScreen("signin")}>
             <Text style={styles.buttonText}>👥 Start a Quest with Friends</Text>
           </PressBounce>
+        ) : null}
+        {/* PLAN A WEEKEND HUNT — mint now, play on the day, remind that morning.
+            Same sign-in gate as Start with Friends; hidden while one is planned. */}
+        {user && !plannedHunt ? (
+          planPicker ? (
+            <View style={styles.planPickerRow}>
+              {planDayChoices().map((c) => (
+                <TouchableOpacity
+                  key={c.iso}
+                  style={styles.planChip}
+                  onPress={() => planWeekendHunt(c)}
+                  disabled={planBusy}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.planChipText}>{planBusy ? "…" : c.label}</Text>
+                </TouchableOpacity>
+              ))}
+              <Text style={styles.abandonLink} onPress={() => setPlanPicker(false)}>
+                never mind
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.planLink} onPress={() => setPlanPicker(true)}>
+              📅 Plan a weekend hunt with friends
+            </Text>
+          )
         ) : null}
         {/* Plain-language permission framing, shown before the OS dialog. */}
         <Text style={styles.permNote}>
@@ -4775,6 +5010,17 @@ const styles = StyleSheet.create({
   scoreStat: { alignItems: "center" },
   scoreNum: { fontSize: 24, fontWeight: "900", color: INK },
   scoreLabel: { fontSize: 12, color: INK, opacity: 0.6, marginTop: 2, fontWeight: "700" },
+  // --- Streak chip + Weekend Hunt planner -------------------------------------
+  streakChip: { marginTop: 12, borderRadius: 999, borderWidth: 3, borderColor: OUTLINE, paddingVertical: 8, paddingHorizontal: 16 },
+  streakChipOk: { backgroundColor: "#D9F7E1" },
+  streakChipRisk: { backgroundColor: "#FFF1CC" },
+  streakChipText: { fontSize: 13.5, fontWeight: "800", color: INK, textAlign: "center" },
+  planActionsRow: { flexDirection: "row", gap: 22, justifyContent: "center" },
+  planLink: { fontSize: 15, color: ACCENT, fontWeight: "800", marginTop: 14, textDecorationLine: "underline" },
+  planPickerRow: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14, alignItems: "center", justifyContent: "center" },
+  planChip: { borderWidth: 3, borderColor: OUTLINE, borderRadius: 999, backgroundColor: "#fff", paddingVertical: 9, paddingHorizontal: 15 },
+  planChipText: { fontSize: 14, fontWeight: "900", color: INK },
+
   // Brand mark (the app icon, shown in-app). Rounded corners echo the iOS icon.
   brandMark: { width: 120, height: 120, borderRadius: 28, marginBottom: 18 },
   brandMarkSmall: { width: 84, height: 84, borderRadius: 20, marginBottom: 12 },
