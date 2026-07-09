@@ -181,6 +181,14 @@ const TYPE_CHOICES = [
   { key: "barcrawl", icon: "🍻", label: "Bar Crawl", blurb: "Bars, pubs & nightlife stops" },
   { key: "ghosts", icon: "👻", label: "Ghosts & Creepy", blurb: "Legends, lore & chills — select areas" },
 ];
+// Fuller descriptions for the "How it works" page (the Settings blurbs above
+// stay terse for the option rows). Keyed by TYPE_CHOICES key.
+const TYPE_HELP = {
+  surprise: "The classic DayQuest — a mix of the most storied, quirky, and surprising places near you. Great first pick.",
+  historic: "A history hunt: landmarks, monuments, and buildings with real stories — the older and stranger, the better.",
+  barcrawl: "A social hunt through storied bars, pubs, and taverns. Same riddles, better refreshments.",
+  ghosts: "Documented legends, macabre history, and delicious chills — real places, real lore, presented as the legends they are. Live in select areas (and growing).",
+};
 const DEFAULT_SETTINGS = { distance_m: 1500, length: "medium", type: "surprise" };
 // Feasibility floor: N stops each ≥250m apart need room to spread. Clamp the
 // gather radius UP to this floor for the chosen length so a tiny-radius +
@@ -3672,6 +3680,32 @@ export default function App() {
             </View>
           </View>
         ))}
+
+        {/* CHOOSE YOUR ADVENTURE — quest types + distance/length, rendered from
+            the same TYPE_CHOICES/LENGTH_CHOICES data Settings uses so this page
+            can never drift from what the Settings screen actually offers. */}
+        <Text style={styles.helpSectionTitle}>Choose your adventure</Text>
+        <Text style={styles.helpSectionIntro}>
+          Every hunt is yours to shape — open ☰ → Settings and pick:
+        </Text>
+        {TYPE_CHOICES.map((t) => (
+          <View key={t.key} style={styles.helpStep}>
+            <Text style={styles.helpIcon}>{t.icon}</Text>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.helpStepTitle}>{t.label}</Text>
+              <Text style={styles.helpStepBody}>{TYPE_HELP[t.key] || t.blurb}</Text>
+            </View>
+          </View>
+        ))}
+        <View style={styles.helpStep}>
+          <Text style={styles.helpIcon}>📏</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={styles.helpStepTitle}>How far & how long</Text>
+            <Text style={styles.helpStepBody}>
+              Pick how far you'll roam ({formatKm(DISTANCE_CHOICES[0])} to {formatKm(DISTANCE_CHOICES[DISTANCE_CHOICES.length - 1])}) and how big the hunt is — {LENGTH_CHOICES.map((l) => `${l.label} (${l.stops} stops)`).join(", ")}. We make sure every combo fits on foot.
+            </Text>
+          </View>
+        </View>
         {firstRunHelp ? (
           <PressBounce style={styles.button} onPress={finishFirstRunHelp}>
             <Text style={styles.buttonText}>Got it — let's play! 🎉</Text>
@@ -4833,6 +4867,8 @@ const styles = StyleSheet.create({
 
   // --- Help / How it works screen --------------------------------------------
   helpStep: { flexDirection: "row", backgroundColor: "#fff", borderRadius: 22, padding: 18, marginBottom: 14, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  helpSectionTitle: { fontSize: 22, fontWeight: "900", color: INK, marginTop: 18, marginBottom: 4, letterSpacing: -0.4 },
+  helpSectionIntro: { fontSize: 15, color: INK, opacity: 0.7, fontWeight: "600", marginBottom: 14, lineHeight: 21 },
   helpIcon: { fontSize: 26, marginRight: 14, marginTop: 1 },
   helpStepTitle: { fontSize: 17, fontWeight: "900", color: INK, marginBottom: 3 },
   helpStepBody: { fontSize: 15, color: INK, opacity: 0.75, lineHeight: 21, fontWeight: "600" },
