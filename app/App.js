@@ -72,7 +72,7 @@ import {
 //  - In a real dev/standalone build we use PROVIDER_GOOGLE + the stylized
 //    customMapStyle (the Pokémon-GO look). That build reads the Google Maps key
 //    from app.config.js (ios.config.googleMapsApiKey / android.config.googleMaps.apiKey).
-import MapView, { Marker, Polyline, Circle, PROVIDER_GOOGLE } from "react-native-maps";
+import MapView, { Marker, Polyline, PROVIDER_GOOGLE } from "react-native-maps";
 import Constants from "expo-constants";
 import mapStyle from "./mapStyle";
 import QuestScanner from "./QuestScanner";
@@ -89,7 +89,7 @@ const isExpoGo =
 const QUEST_EMOJI = { photo: "📷", find_detail: "🔍", question: "❓", collect: "✨" };
 const CHECKIN_RADIUS_M = 100; // how close you must be to check in (legacy stop card)
 // --- Scavenger-hunt tuning ---------------------------------------------------
-const SEARCH_ZONE_RADIUS_M = 200; // the <Circle> "it's somewhere in here" hunt zone
+const SEARCH_ZONE_RADIUS_M = 200; // hunt-zone scale: sizes the camera framing + zoneCenterFor offset (no circle is drawn)
 const FIND_RADIUS_M = 50; // within this of the target → FOUND IT (reveal + collect)
 // Movement gate for the warmer/colder HEAT signal (band + edge-glow + haptic).
 // We only RECOMPUTE the heat after the user has physically moved ≥ this far from
@@ -1107,6 +1107,9 @@ export default function App() {
   const [plannedHunt, setPlannedHunt] = useState(null);
   const [planPicker, setPlanPicker] = useState(false);
   const [planBusy, setPlanBusy] = useState(false);
+  // Loading-screen status line ("Still building your adventure…") shown when
+  // the quest fetch auto-retries after a timeout.
+  const [loadingNote, setLoadingNote] = useState("");
 
   // Redirect the FIRST-ever arrival at the front door to the "How it works"
   // walkthrough. One chokepoint catches every path in (guest, sign-in, cold
@@ -1959,6 +1962,7 @@ export default function App() {
     const hasPlace = Number.isFinite(opts.lat) && Number.isFinite(opts.lng);
     setScreen("loading");
     setError("");
+    setLoadingNote("");
     setProgress({});
     awardedRef.current = new Set(); // fresh quest — no stops awarded yet
     setCoords(null);
@@ -2062,7 +2066,19 @@ export default function App() {
         }
       }
 
-      const res = await fetch(`${API_BASE}/quest?${params.toString()}`);
+      // Quest generation can outlast iOS's ~60s fetch ceiling (cold Render
+      // instance + a fresh Claude build). ONE automatic retry after a short
+      // beat: by then the server has almost always finished the first build and
+      // cached it, so the retry returns instantly. A server ERROR RESPONSE
+      // (4xx/5xx) is NOT retried — only transport failures/timeouts are.
+      let res;
+      try {
+        res = await fetch(`${API_BASE}/quest?${params.toString()}`);
+      } catch {
+        setLoadingNote("Still building your adventure — hang tight…");
+        await new Promise((r) => setTimeout(r, 4000));
+        res = await fetch(`${API_BASE}/quest?${params.toString()}`);
+      }
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Could not build a quest here.");
 
@@ -2136,7 +2152,9 @@ export default function App() {
       } catch {
         /* corrupt/missing — just no Resume offered */
       }
-      setError(`${e.message}\n\nIs the server running (npm run serve)?\nTrying: ${API_BASE}`);
+      // Honest, tester-appropriate copy — the old dev-era "npm run serve" text
+      // read as "the app is broken" in the field.
+      setError(`${e.message}\n\nThe quest kitchen may just be waking up — tap Try again in a few seconds.`);
       setScreen("error");
     }
   }
@@ -3943,7 +3961,7 @@ export default function App() {
     // then a stack of step cards. Voice = playful, second-person, punchy.
     const steps = [
       { icon: "🧭", title: "Start a quest", body: "Tap Start a Quest and we build a fresh hunt around you — a loop of hidden spots you've never been sent to before. Bring someone along with Start a Quest with Friends to race the same clues." },
-      { icon: "🔍", title: "Crack the clue", body: "Every stop is a secret. You get one short, punchy riddle — no name, no pin, just a search zone on the map. Work out where it's sending you." },
+      { icon: "🔍", title: "Crack the clue", body: "Every stop is a secret. You get one short, punchy riddle — no name, no pin on the map. A compass arrow points you the right way; the riddle tells you where to stop." },
       { icon: "🔥", title: "Warmer, colder", body: "As you walk, the map edges glow red when you're closing in and blue when you're way off. Follow the heat — and the buzz — toward the hidden spot." },
       { icon: "💡", title: "Stuck? Climb the hint ladder", body: "Tap for a nudge, then a hint, then a full reveal of where it is. Hints help you solve it, but they won't walk you there — you still have to show up." },
       { icon: "📸", title: "Prove you found it", body: "Reach the spot to catch its area-exclusive item through the camera, or snap a photo we verify. That's the only way the next clue unlocks — no fake skips." },
@@ -4017,6 +4035,12 @@ export default function App() {
       <>
         <StatusBar style="dark" />
         <QuestScanner />
+        {/* Retry status ("still building…") floats over the scanner. */}
+        {loadingNote ? (
+          <View style={styles.loadingNoteWrap} pointerEvents="none">
+            <Text style={styles.loadingNoteText}>{loadingNote}</Text>
+          </View>
+        ) : null}
       </>
     );
   }
@@ -4558,18 +4582,11 @@ export default function App() {
         showsUserLocation
         showsMyLocationButton={false}
       >
-        {/* SEARCH ZONE: a ~200m circle the target is somewhere INSIDE — drawn
-            around a deterministic OFFSET centre (zoneCenterFor) so the middle
-            of the circle is meaningless. No exact pin is ever drawn for it. */}
-        {currentTarget?.place ? (
-          <Circle
-            center={zoneCenterFor(currentTarget.place)}
-            radius={SEARCH_ZONE_RADIUS_M}
-            strokeColor={band?.color || ACCENT}
-            strokeWidth={3}
-            fillColor="rgba(31,111,178,0.14)"
-          />
-        ) : null}
+        {/* NO SEARCH-ZONE CIRCLE (field-tester call): any drawn shape gives the
+            hunt away — even offset, players just sweep the circle. Navigation is
+            the way-finder compass chip (far) + warmer/colder edge glow (near).
+            zoneCenterFor still anchors the CAMERA so framing can't leak the
+            true coords. No pin, no circle — the riddle is the map. */}
         {/* WALKED breadcrumb: where you've ACTUALLY been. Kept (it reveals only
             your own trail, not the targets). */}
         {routePath.length >= 2 ? (
@@ -4654,7 +4671,10 @@ export default function App() {
           if (!currentTarget?.place || allDone || !coords) return null;
           const zc = zoneCenterFor(currentTarget.place);
           const dM = distanceM(coords.latitude, coords.longitude, zc.latitude, zc.longitude);
-          if (dM <= 350) return null;
+          // With no zone circle drawn, the arrow guides most of the approach;
+          // inside ~150m it hands off to the warmer/colder glow so the final
+          // stretch stays a genuine hot/cold hunt.
+          if (dM <= 150) return null;
           const arrow = compassArrow(bearingDeg(coords.latitude, coords.longitude, zc.latitude, zc.longitude));
           const distTxt = dM >= 950 ? `${(dM / 1000).toFixed(1)} km` : `${Math.round(dM / 50) * 50} m`;
           return (
@@ -5613,6 +5633,10 @@ const styles = StyleSheet.create({
   // --- Floating HUD (Pokémon-GO style) ----------------------------------------
   // Top-left identity chip (theme + area).
   hudTopLeft: { position: "absolute", top: 56, left: 16, right: 96 },
+  // Loading-screen retry note, floated over the QuestScanner.
+  loadingNoteWrap: { position: "absolute", bottom: 90, left: 24, right: 24, alignItems: "center" },
+  loadingNoteText: { fontSize: 15, fontWeight: "800", color: INK, backgroundColor: "#FFFFFFEE", borderWidth: 3, borderColor: OUTLINE, borderRadius: 999, paddingVertical: 9, paddingHorizontal: 18, overflow: "hidden", textAlign: "center" },
+
   // Way-finder chip: coarse compass direction while far from the search zone.
   wayfinderChip: { alignSelf: "flex-start", marginTop: 8, backgroundColor: "#fff", borderWidth: 3, borderColor: OUTLINE, borderRadius: 999, paddingVertical: 6, paddingHorizontal: 13, shadowColor: OUTLINE, shadowOpacity: 0.15, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 3 },
   wayfinderText: { fontSize: 14, fontWeight: "900", color: INK },
