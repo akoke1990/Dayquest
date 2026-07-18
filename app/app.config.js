@@ -27,6 +27,10 @@ const googleMapsApiKey =
 
 module.exports = {
   ...expo,
+  // LAST in the chain so it runs after expo-notifications' autolinked plugin:
+  // strips the remote-push entitlement our provisioning profile doesn't carry
+  // (we only schedule LOCAL notifications — see the plugin header).
+  plugins: [...(expo.plugins || []), "./plugins/with-local-notifications-only"],
   ios: {
     ...expo.ios,
     config: {
