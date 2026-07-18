@@ -652,6 +652,47 @@ function distanceM(lat1, lng1, lat2, lng2) {
   return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
+// --- Search-zone anti-leak (field-tester report) -----------------------------
+// The zone circle used to be CENTRED on the target, so "walk to the middle of
+// the circle" trivially beat every riddle. The zone is now drawn around a
+// DETERMINISTICALLY OFFSET centre: a hash of the place key picks an angle and a
+// distance (30–58% of the zone radius), so the target sits somewhere random
+// INSIDE the circle — possibly near its edge — but never reliably at the
+// centre. Deterministic on purpose: the circle must not wander between renders
+// or app restarts, and every player in a shared hunt must see the SAME circle.
+// Find/heat mechanics stay keyed to the TRUE target coords — only what's DRAWN
+// (and framed) shifts.
+function zoneCenterFor(place) {
+  const key = placeKey(place) || "";
+  let h = 2166136261; // FNV-1a
+  for (let i = 0; i < key.length; i++) {
+    h ^= key.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  const angle = ((h >>> 0) % 360) * (Math.PI / 180);
+  const frac = 0.3 + (((h >>> 9) % 1000) / 1000) * 0.28; // 30–58% of the radius
+  const offM = SEARCH_ZONE_RADIUS_M * frac;
+  const dLat = (offM * Math.cos(angle)) / 111000;
+  const dLng = (offM * Math.sin(angle)) / (111000 * Math.cos((place.lat * Math.PI) / 180));
+  return { latitude: place.lat + dLat, longitude: place.lng + dLng };
+}
+
+// Compass bearing (0°=N, clockwise) from → to, for the far-away way-finder.
+function bearingDeg(lat1, lng1, lat2, lng2) {
+  const toRad = (d) => (d * Math.PI) / 180;
+  const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
+  const x =
+    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+    Math.sin(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.cos(toRad(lng2 - lng1));
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+// Quantize a bearing to 8 compass arrows — coarse ON PURPOSE: the way-finder
+// orients ("head roughly northeast") without turning into a beeline tracker.
+const COMPASS_ARROWS = ["↑", "↗", "→", "↘", "↓", "↙", "←", "↖"];
+function compassArrow(bearing) {
+  return COMPASS_ARROWS[Math.round(bearing / 45) % 8];
+}
+
 // A map region that frames all the stops (and the user, if known) with padding.
 // We compute deltas from the lat/lng bounds rather than leaning on fitToCoordinates,
 // which is flaky on a static / non-interactive map.
@@ -690,8 +731,11 @@ function regionForHunt(target, coords) {
     }
     return { latitude: 0, longitude: 0, latitudeDelta: 0.05, longitudeDelta: 0.05 };
   }
-  const lats = [target.place.lat];
-  const lngs = [target.place.lng];
+  // Frame the OFFSET zone centre (what's drawn), not the raw target — centring
+  // the camera on the true coords would leak the location the circle now hides.
+  const zc = zoneCenterFor(target.place);
+  const lats = [zc.latitude];
+  const lngs = [zc.longitude];
   if (coords) {
     lats.push(coords.latitude);
     lngs.push(coords.longitude);
@@ -4514,11 +4558,12 @@ export default function App() {
         showsUserLocation
         showsMyLocationButton={false}
       >
-        {/* SEARCH ZONE: a ~200m circle around the current target. The user knows
-            the place is in here but must hunt — no exact pin is drawn for it. */}
+        {/* SEARCH ZONE: a ~200m circle the target is somewhere INSIDE — drawn
+            around a deterministic OFFSET centre (zoneCenterFor) so the middle
+            of the circle is meaningless. No exact pin is ever drawn for it. */}
         {currentTarget?.place ? (
           <Circle
-            center={{ latitude: currentTarget.place.lat, longitude: currentTarget.place.lng }}
+            center={zoneCenterFor(currentTarget.place)}
             radius={SEARCH_ZONE_RADIUS_M}
             strokeColor={band?.color || ACCENT}
             strokeWidth={3}
@@ -4601,6 +4646,23 @@ export default function App() {
             <Text style={styles.identityArea} numberOfLines={1}>📍 {quest.origin.label}</Text>
           ) : null}
         </View>
+        {/* WAY-FINDER: far from the zone (>350m), an 8-way compass arrow toward
+            the zone's (offset) centre — orients "head roughly that way" without
+            beelining to the target. Vanishes near the zone; warmer/colder takes
+            over there. Points at the DRAWN centre, so it leaks nothing extra. */}
+        {(() => {
+          if (!currentTarget?.place || allDone || !coords) return null;
+          const zc = zoneCenterFor(currentTarget.place);
+          const dM = distanceM(coords.latitude, coords.longitude, zc.latitude, zc.longitude);
+          if (dM <= 350) return null;
+          const arrow = compassArrow(bearingDeg(coords.latitude, coords.longitude, zc.latitude, zc.longitude));
+          const distTxt = dM >= 950 ? `${(dM / 1000).toFixed(1)} km` : `${Math.round(dM / 50) * 50} m`;
+          return (
+            <View style={styles.wayfinderChip}>
+              <Text style={styles.wayfinderText}>{arrow}  Head this way · ~{distTxt}</Text>
+            </View>
+          );
+        })()}
       </View>
 
       {/* Top-right: a stacked side rail of round buttons — the things reachable
@@ -5551,6 +5613,9 @@ const styles = StyleSheet.create({
   // --- Floating HUD (Pokémon-GO style) ----------------------------------------
   // Top-left identity chip (theme + area).
   hudTopLeft: { position: "absolute", top: 56, left: 16, right: 96 },
+  // Way-finder chip: coarse compass direction while far from the search zone.
+  wayfinderChip: { alignSelf: "flex-start", marginTop: 8, backgroundColor: "#fff", borderWidth: 3, borderColor: OUTLINE, borderRadius: 999, paddingVertical: 6, paddingHorizontal: 13, shadowColor: OUTLINE, shadowOpacity: 0.15, shadowRadius: 6, shadowOffset: { width: 0, height: 3 }, elevation: 3 },
+  wayfinderText: { fontSize: 14, fontWeight: "900", color: INK },
   identityChip: {
     alignSelf: "flex-start",
     maxWidth: "100%",
