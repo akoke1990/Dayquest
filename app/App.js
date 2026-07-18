@@ -4739,6 +4739,49 @@ export default function App() {
               Tap-to-toggle is the reliable baseline; the grabber + header are the
               tap targets. pointerEvents box-none on the wrap so map gaps still
               pan. ===== */}
+      {/* Bottom FAB layer: score (left) + primary action (right). Rendered
+          BEFORE the sheet so the sheet is ALWAYS on top — the layer can never
+          silently intercept sheet taps (field report: sheet wouldn't close).
+          Fades/slides out while the sheet is expanded; touches disabled the
+          instant hiding starts. At peek the band sits above the sheet area, so
+          being underneath changes nothing visually. */}
+      <Animated.View
+        style={[
+          styles.fabLayer,
+          {
+            opacity: fabAnim,
+            transform: [{ translateY: fabAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
+          },
+        ]}
+        pointerEvents={fabsHidden ? "none" : "box-none"}
+      >
+        {/* Bottom-left: profile/score button — opens the Scorecard. */}
+        <PressBounce style={styles.scoreFab} onPress={openScorecard}>
+          <Text style={styles.scoreFabPts}>{profilePoints}</Text>
+          <Text style={styles.scoreFabLabel}>pts</Text>
+        </PressBounce>
+
+        {/* Bottom-right: "Recap" once complete, otherwise "New Quest" —
+            startSoloQuest (not bare startQuest) so it honours saved Settings. */}
+        {allDone ? (
+          <PressBounce
+            style={[styles.primaryFab, styles.primaryFabRecap]}
+            onPress={() => {
+              setSelectedStop(null);
+              setRecapOpen(true);
+            }}
+          >
+            <Text style={styles.primaryFabIcon}>🎉</Text>
+            <Text style={styles.primaryFabText}>Recap</Text>
+          </PressBounce>
+        ) : (
+          <PressBounce style={styles.primaryFab} onPress={startSoloQuest}>
+            <Text style={styles.primaryFabIcon}>＋</Text>
+            <Text style={styles.primaryFabText}>New Quest</Text>
+          </PressBounce>
+        )}
+      </Animated.View>
+
       {currentTarget && !allDone && findReveal == null && !recapOpen ? (
         <View style={styles.sheetWrap} pointerEvents="box-none">
           {sheetCollapsed ? (
@@ -4769,11 +4812,23 @@ export default function App() {
                   <Text style={styles.clueKicker}>
                     CLUE {doneCount + 1} OF {quest.stops.length}
                   </Text>
-                  {/* ▾ while expanded: collapsing is now also how the bottom
-                      FABs come back, so the shrink gesture gets a visible cue. */}
-                  <Text style={styles.diffPip}>{sheetExpanded ? `▾ ${diffPip}` : diffPip}</Text>
+                  <Text style={styles.diffPip}>{diffPip}</Text>
                 </View>
               </TouchableOpacity>
+              {/* Explicit ✕ while expanded — belt-and-braces close (field
+                  report: header-tap close wasn't reliably registering). Big
+                  hitSlop; sibling of the header so neither can swallow it. */}
+              {sheetExpanded ? (
+                <TouchableOpacity
+                  style={styles.sheetCloseBtn}
+                  onPress={() => setSheetExpanded(false)}
+                  hitSlop={{ top: 14, bottom: 14, left: 14, right: 14 }}
+                  accessibilityRole="button"
+                  accessibilityLabel="Close clue"
+                >
+                  <Text style={styles.sheetCloseText}>✕</Text>
+                </TouchableOpacity>
+              ) : null}
 
               {sheetExpanded ? (
                 // EXPANDED: full clue (scrollable) + the 3-rung hint ladder.
@@ -4907,48 +4962,6 @@ export default function App() {
           )}
         </View>
       ) : null}
-
-      {/* Bottom FAB layer: score (left) + primary action (right). Fades/slides
-          out while the clue sheet is expanded (fabAnim) so it never covers the
-          hint ladder; touches are disabled the instant hiding starts. */}
-      <Animated.View
-        style={[
-          styles.fabLayer,
-          {
-            opacity: fabAnim,
-            transform: [{ translateY: fabAnim.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }],
-          },
-        ]}
-        pointerEvents={fabsHidden ? "none" : "box-none"}
-      >
-        {/* Bottom-left: profile/score button — chunky, shows lifetime points,
-            opens the Profile/Scorecard. */}
-        <PressBounce style={styles.scoreFab} onPress={openScorecard}>
-          <Text style={styles.scoreFabPts}>{profilePoints}</Text>
-          <Text style={styles.scoreFabLabel}>pts</Text>
-        </PressBounce>
-
-        {/* Bottom-right: the prominent PRIMARY action. "Recap" once complete
-            (re-opens the completion overlay), otherwise "New Quest" —
-            startSoloQuest (not bare startQuest) so it honours saved Settings. */}
-        {allDone ? (
-          <PressBounce
-            style={[styles.primaryFab, styles.primaryFabRecap]}
-            onPress={() => {
-              setSelectedStop(null);
-              setRecapOpen(true);
-            }}
-          >
-            <Text style={styles.primaryFabIcon}>🎉</Text>
-            <Text style={styles.primaryFabText}>Recap</Text>
-          </PressBounce>
-        ) : (
-          <PressBounce style={styles.primaryFab} onPress={startSoloQuest}>
-            <Text style={styles.primaryFabIcon}>＋</Text>
-            <Text style={styles.primaryFabText}>New Quest</Text>
-          </PressBounce>
-        )}
-      </Animated.View>
 
       {/* ===== Pop-out stop CARD (replaces the old expanded bottom sheet). A
               centered, scale/fade-popped Animated card carrying the FULL
@@ -5633,6 +5646,11 @@ const styles = StyleSheet.create({
   // --- Floating HUD (Pokémon-GO style) ----------------------------------------
   // Top-left identity chip (theme + area).
   hudTopLeft: { position: "absolute", top: 56, left: 16, right: 96 },
+  // Expanded-sheet explicit close (✕) — absolute so the header toggle and the
+  // close never fight over the same touch.
+  sheetCloseBtn: { position: "absolute", top: 10, right: 14, width: 34, height: 34, borderRadius: 17, backgroundColor: "#F0F4F8", alignItems: "center", justifyContent: "center", zIndex: 5 },
+  sheetCloseText: { fontSize: 16, fontWeight: "900", color: INK },
+
   // Loading-screen retry note, floated over the QuestScanner.
   loadingNoteWrap: { position: "absolute", bottom: 90, left: 24, right: 24, alignItems: "center" },
   loadingNoteText: { fontSize: 15, fontWeight: "800", color: INK, backgroundColor: "#FFFFFFEE", borderWidth: 3, borderColor: OUTLINE, borderRadius: 999, paddingVertical: 9, paddingHorizontal: 18, overflow: "hidden", textAlign: "center" },
