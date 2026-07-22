@@ -361,12 +361,21 @@ async function readScore() {
         quests_completed: s.quests_completed || 0,
         streak_weeks: s.streak_weeks || 0,
         last_week_index: s.last_week_index ?? null,
+        shield: s.shield ?? 1,
+        shield_used_week: s.shield_used_week ?? null,
       };
     }
   } catch {
     /* corrupt — start fresh */
   }
-  return { total: 0, quests_completed: 0, streak_weeks: 0, last_week_index: null };
+  return {
+    total: 0,
+    quests_completed: 0,
+    streak_weeks: 0,
+    last_week_index: null,
+    shield: 1,
+    shield_used_week: null,
+  };
 }
 
 // Apply one completed quest to the score: add points, bump the count, and roll
@@ -1919,7 +1928,7 @@ export default function App() {
           postHuntResult(userRef.current, {
             hunt_id: quest.hunt_id,
             area: areaLabel,
-            found_count: foundCount,
+            found_count: earnedFindCount,
             total_stops: quest.stops.length,
             time_seconds: timeS,
             points: earned,
