@@ -1,0 +1,2313 @@
+{
+  "artifact_type": "dayquest_remote_verification",
+  "schema_version": "remote-v1",
+  "site_id": "nyc",
+  "scope": {
+    "areas": [
+      "East Village",
+      "Chinatown",
+      "Union Square"
+    ],
+    "expected_candidate_count": 32,
+    "candidate_count": 32,
+    "source_bank": "../content-bank.v1.json"
+  },
+  "methodology": {
+    "checked_at": "2026-07-23T01:20:48Z",
+    "field_verified": false,
+    "statement": "Public unauthenticated remote research only. “Remote verification” means source review, not on-site confirmation. Sources are linked; imagery is not copied.",
+    "source_priority": "Official/operator sources and public datasets first; then OSM, Wikipedia/Wikimedia, and reputable public sources. Two independent sources and recent visual evidence were sought where feasible.",
+    "confidence_scale": "0–100 editorial confidence based on identity/coordinates (20), target and clue-claim support (30), current/visual evidence (20), public access/accessibility evidence (15), durability/ambiguity (15). Missing current/access evidence lowers the score.",
+    "decision_rules": {
+      "canary_eligible": "Strong current evidence, deterministic durable target, and safe public exterior completion without required payment. Still not field-verified.",
+      "needs_scout": "Plausible candidate blocked by sightline, hours, accessibility, operation, or exact-location questions answerable on site.",
+      "hold": "Material evidence/access/area/current-state blocker; do not scout as a canary until desk blocker is resolved.",
+      "reject": "Current formulation is non-deterministic, unsupported, or too volatile to justify scout effort."
+    }
+  },
+  "records": [
+    {
+      "candidate_id": "dq-nyc-001",
+      "hunt_idea_id": "idea:nyc:dq-nyc-001",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-001",
+      "bank_place_id": "place:wikipedia:768472",
+      "bank_area": "East Village",
+      "canonical_identity": "Alamo (sculpture)",
+      "coordinates": {
+        "lat": 40.730000000000004,
+        "lng": -73.99111111111111,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The eight-foot black cube balanced on one corner, with visibly uneven faces.",
+      "clue": "I weigh nearly a ton, yet balance on one toe. My six dark faces refuse to lie flat. Find me.",
+      "hints": [
+        "Look for geometry where the Village meets Astor Place.",
+        "You need the large black cube mounted on a corner."
+      ],
+      "remote_review": {
+        "finding": "Identity, Astor Place coordinates, eight-foot size, corner mounting, approximate 1,800-pound weight, and non-flat faces are consistently documented. “Nearly a ton” is a fair approximation.",
+        "public_exterior_visibility_and_access": "Permanent outdoor sculpture in a public pedestrian plaza; no entry, hours, or payment. Observe from plaza paving. Candidate-specific step-free-route documentation was not located, but the plaza is paved and approached from public sidewalks.",
+        "closure_construction_removal_risk": "No current closure or removal notice found. Remote imagery is not recent enough to exclude short-term scaffolding or maintenance.",
+        "durability": "Permanent Cor-Ten steel public artwork; highly durable.",
+        "nearby_ambiguity": "Uniquely identifiable at Astor Place. The nickname “Cube” is answer-adjacent but not used in the clue.",
+        "editorial_action": "Keep. Do not instruct players to push or touch the sculpture."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=768472",
+          "source_role": "identity/factual claim",
+          "quote": "Alamo, also known as the Astor Place Cube or simply The Cube, is an outdoor sculpture by Tony Rosenthal, located on Astor Place, in the East Village neighborhood of Manhattan in New York City. It is a black cube, 8 feet (2.4 m) long on each side, mounted on a corner. The cube is made of Cor-Ten steel and weighs about 1,800 pounds (820 kg). The faces of the cube are not flat but have various indentations, protrusions, and ledges. The sculpture's name, Alamo, is designated on a small plaque on the base and was selected by the artist's wife because its scale and mass reminded her of the Alamo…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Astor_Place_Cube_(Alamo).jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2019-08-05",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2019-08-05",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 89,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-002",
+      "hunt_idea_id": "idea:nyc:dq-nyc-002",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-002",
+      "bank_place_id": "place:wikipedia:4683905",
+      "bank_area": "Union Square",
+      "canonical_identity": "Metronome (public artwork)",
+      "coordinates": {
+        "lat": 40.7344005,
+        "lng": -73.9902579,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The orange LED clock paired with the concentric brick-wave wall and circular void.",
+      "clue": "My orange numbers race in two directions while a stone ripple waits beside them. What time am I trying to tell?",
+      "hints": [
+        "Search the south side of Union Square, above eye level.",
+        "Find the orange LED digits beside a circular void in a rippling brick wall."
+      ],
+      "remote_review": {
+        "finding": "Canonical artwork and wall/void/LED identity are supported, but the original clock display was repurposed as the Climate Clock in 2020. The clue’s “race in two directions” and ordinary time-reading premise are not supported as a current observable.",
+        "public_exterior_visibility_and_access": "Exterior façade visible free from public sidewalks/plaza; no entry or payment. Step-free viewing appears possible, but no candidate-specific accessibility source was located.",
+        "closure_construction_removal_risk": "High display-programming risk: digits can show climate or special-event content rather than the original elapsed/remaining-day clock.",
+        "durability": "Brick wall and LED hardware are durable; displayed meaning is volatile.",
+        "nearby_ambiguity": "Large unique façade, but the displayed number is inherently ambiguous without current programming context.",
+        "editorial_action": "Replace only after confirming current display. Source-supported fallback: “Orange digits beside a circular void count down a climate deadline,” but this also needs a current Climate Clock source and scout confirmation."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=4683905",
+          "source_role": "identity/factual claim",
+          "quote": "Metronome is a large public art installation located along the south end of Union Square in New York City. The work was commissioned by the Related Companies, developers of One Union Square South, with the participation of the Public Art Fund and the Municipal Art Society. The $4.2 million provided by the developer makes it one of the largest private commissions of public art. The artwork was created by Kristin Jones and Andrew Ginzel and consists of several sections, including a round circular void from which puffs of steam were at one point released throughout the day, and a clock made of…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:14th_St_Bway_td_(2019-10-28)_05_-_One_Union_Square_South_(Metronome).jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2019-10-28",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2019-10-28",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 58,
+      "risk": "high",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-019",
+      "hunt_idea_id": "idea:nyc:dq-nyc-019",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-019",
+      "bank_place_id": "place:wikipedia:22521183",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Firehouse, Engine Company 31",
+      "coordinates": {
+        "lat": 40.717222222222226,
+        "lng": -74.00138888888888,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The former firehouse styled after an early-sixteenth-century Loire Valley château.",
+      "clue": "My doors once welcomed engines, but my architects dressed me for a French noble beside the Loire.",
+      "hints": [
+        "This château was built for firefighters, not royalty.",
+        "Find former Engine Company 31."
+      ],
+      "remote_review": {
+        "finding": "Identity, 87 Lafayette address, 1895 date, LeBrun design, and Loire château styling are supported; current DCTV use independently supports continued existence.",
+        "public_exterior_visibility_and_access": "Exterior is free from a public sidewalk; DCTV interior programming is irrelevant. No purchase required. Candidate-specific step-free exterior evidence was not found.",
+        "closure_construction_removal_risk": "DCTV is actively presenting the Firehouse Cinema, lowering closure risk. Temporary façade work remains unverified.",
+        "durability": "Landmarked masonry building; high durability.",
+        "nearby_ambiguity": "Area taxonomy blocker: official descriptions place it in Civic Center/Tribeca, not Chinatown.",
+        "editorial_action": "Keep architecture wording but reassign area before canary use. Hint 2 leaks the canonical answer and should become “Find the former firehouse at 87 Lafayette Street.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=22521183",
+          "source_role": "identity/factual claim",
+          "quote": "Firehouse, Engine Company 31 is a historic fire station located at 87 Lafayette Street between Walker and White Streets in the Tribeca and Civic Center neighborhoods of Manhattan in New York City. It was built in 1895 and designed by architects Napoleon LeBrun & Sons, who styled it after early-16th-century chateaux in the Loire Valley of France. The building was designated a New York City Landmark in 1966 and added to the National Register of Historic Places in 1972. The New York City Fire Department vacated the building in November 1972, and it is currently occupied by the Downtown Community…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "DCTV",
+          "url": "https://www.dctvny.org/s/firehousecinema",
+          "source_role": "official/current operation or access",
+          "quote": "Current DCTV site identifies and programs the Firehouse Cinema.",
+          "publication_or_observation_date": null,
+          "date_note": "live page; no publication date visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Firehouse_Engine_Company_31_4.JPG",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2010-06-27",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2010-06-27",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 74,
+      "risk": "medium",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-020",
+      "hunt_idea_id": "idea:nyc:dq-nyc-020",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-020",
+      "bank_place_id": "place:wikipedia:9809645",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Doyers Street",
+      "coordinates": {
+        "lat": 40.714354,
+        "lng": -73.998102,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The one-block street’s sharp central bend.",
+      "clue": "I am only one block long, yet halfway through I abruptly change my mind.",
+      "hints": [
+        "Follow a Chinatown lane too short for a gentle curve.",
+        "Find the sharp bend in Doyers Street."
+      ],
+      "remote_review": {
+        "finding": "Name, approximately 200-foot/one-block length, and sharp central bend are consistently documented and directly map-observable.",
+        "public_exterior_visibility_and_access": "Public street and sidewalks, free and always exterior-visible; no hours or payment. Use sidewalks and legal crossings. Curb-ramp specifics were not located.",
+        "closure_construction_removal_risk": "No closure/removal risk found; temporary deliveries, dining, or street work may obscure part of the bend.",
+        "durability": "Street geometry is effectively permanent.",
+        "nearby_ambiguity": "Unique sharp bend in the immediate Chinatown street network.",
+        "editorial_action": "Hint 2 reveals the street name; replace with “Find the one-block lane linking Pell Street to the Bowery.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=9809645",
+          "source_role": "identity/factual claim",
+          "quote": "Doyers Street is a 200-foot-long (61 m) street in the Chinatown neighborhood of Manhattan in New York City. It is one block long with a sharp bend in the middle. The street runs south and then southeast from a terminus at Pell Street to the intersection of Bowery, Chatham Square, and Division Street. Doyers Street contains several restaurants, barber shops, and hair stylists, as well as the Chinatown branch of the United States Postal Service. The Nom Wah Tea Parlor opened at 13 Doyers Street in 1920, and is still in operation. Longstanding business Ting's Gift Shop at 18 Doyers opened in…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Doyers_Street_(Manhattan)",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 92,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-021",
+      "hunt_idea_id": "idea:nyc:dq-nyc-021",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-021",
+      "bank_place_id": "place:wikipedia:2976321",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Eldridge Street Synagogue",
+      "coordinates": {
+        "lat": 40.71472222222223,
+        "lng": -73.99361111111111,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The facade’s rose window framed by two stair towers and arched openings.",
+      "clue": "A glass rose blooms between twin stair towers, watered only by city light.",
+      "hints": [
+        "The flower is circular architecture, not a plant.",
+        "Find the rose window on the Eldridge Street facade."
+      ],
+      "remote_review": {
+        "finding": "Canonical synagogue/museum identity and the Eldridge Street façade’s rose window, two stair towers, and arches are supported. Official museum pages confirm active operation.",
+        "public_exterior_visibility_and_access": "Rose window is observable free from the public sidewalk without entry. Museum entry has posted hours/tickets; official visit page also exposes an Accessibility section, but an exact exterior route was not captured.",
+        "closure_construction_removal_risk": "Active 2026 official site; a dated closure notice demonstrates live operations. No façade construction notice found.",
+        "durability": "Landmarked restored masonry façade; high durability.",
+        "nearby_ambiguity": "The rose window is prominent and the paired towers make the target distinctive.",
+        "editorial_action": "Keep. Hint 2 names the answer and may be softened to “Find the circular window on the ornate façade at 12 Eldridge Street.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=2976321",
+          "source_role": "identity/factual claim",
+          "quote": "The Eldridge Street Synagogue is an Orthodox Jewish synagogue at 12–16 Eldridge Street in the Chinatown and Lower East Side neighborhoods of Manhattan in New York City. Built in 1887 for Congregation Kahal Adath Jeshurun, the synagogue is one of the first erected in the U.S. by Eastern European Jews. The congregation, officially known as Kahal Adath Jeshurun with Anshe Lubz, still owns the synagogue and hosts weekly services there in the 21st century. The Museum at Eldridge Street, founded in 1986 as the Eldridge Street Project, also occupies the synagogue under a long-term lease. The…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Museum at Eldridge Street",
+          "url": "https://www.eldridgestreet.org/visit",
+          "source_role": "official/current operation or access",
+          "quote": "Official Plan Your Visit page provides tickets, hours/closures, and an Accessibility section.",
+          "publication_or_observation_date": null,
+          "date_note": "live page; 2026 closure notice visible when checked",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Eldridge_Street_Synagogue_(42773).jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2018-10-14",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2018-10-14",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 91,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-022",
+      "hunt_idea_id": "idea:nyc:dq-nyc-022",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-022",
+      "bank_place_id": "place:wikipedia:22408670",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Jarmulowsky Bank Building",
+      "coordinates": {
+        "lat": 40.71472222222223,
+        "lng": -73.99222222222222,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The reconstructed rooftop tempietto and dome.",
+      "clue": "A tiny temple lost its perch for thirty years, then climbed back onto a banker’s roof.",
+      "hints": [
+        "Look above a former Lower East Side bank.",
+        "Find the replica tempietto completed around 2020."
+      ],
+      "remote_review": {
+        "finding": "Jarmulowsky/Nine Orchard identity, location, replica rooftop tempietto approval/completion, and present crown are supported; 2024 Commons imagery visibly confirms it.",
+        "public_exterior_visibility_and_access": "Exterior rooftop feature visible free from public sidewalks; no entry/payment. Viewing requires looking upward; exact low-vision alternative is not documented.",
+        "closure_construction_removal_risk": "Current hotel use and 2024 imagery lower closure/removal risk; temporary scaffolding remains possible.",
+        "durability": "Reconstructed architectural crown on a landmarked building; high durability.",
+        "nearby_ambiguity": "Distinctive rooftop, though sightline can be blocked close to the building.",
+        "editorial_action": "Keep. “Climbed back” is figurative but source-supported by reconstruction. Hint 2 is too answer-forward; omit “replica tempietto” until final rung."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=22408670",
+          "source_role": "identity/factual claim",
+          "quote": "The Jarmulowsky Bank Building (also Nine Orchard) is a 12-story building on the Lower East Side of Manhattan in New York City. Located at Canal Street and Orchard Street, the Jarmulowsky Bank Building was built in 1912 and designed by architects William Lawrence Rouse and Lafayette A. Goldstone in the Beaux-Arts style. The building is clad with limestone on its lower stories and architectural terracotta on its upper stories. Sender Jarmulowsky established the Jarmulowsky Bank in 1873. When World War I broke out two years after the building was completed, there was a run on the bank, as German…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Jarmulowsky_Bank_Building_005.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2024-08-16",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": true,
+        "latest_linked_observation_date": "2024-08-16",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 94,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-023",
+      "hunt_idea_id": "idea:nyc:dq-nyc-023",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-023",
+      "bank_place_id": "place:wikipedia:28435530",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Odd Fellows Hall (New York City)",
+      "coordinates": {
+        "lat": 40.71944444444445,
+        "lng": -73.99833333333333,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The later mansard roof sitting above the earlier Italianate building.",
+      "clue": "I was born Italianate, then decades later received a steep French hat.",
+      "hints": [
+        "The answer’s hat is younger than the building.",
+        "Find the mansard roof added to Odd Fellows Hall."
+      ],
+      "remote_review": {
+        "finding": "Original Italianate building and 1881–82 mansard addition are supported; exterior images confirm the roof form.",
+        "public_exterior_visibility_and_access": "Free exterior sidewalk observation; no entry/payment. Step-free route specifics not sourced.",
+        "closure_construction_removal_risk": "No current closure/removal evidence, but no recent visual evidence was found.",
+        "durability": "Landmarked 1840s building and roof; high durability.",
+        "nearby_ambiguity": "Area mismatch: sources place it at the Little Italy/SoHo/Nolita border rather than clearly within Chinatown. “French hat” is broad architectural metaphor.",
+        "editorial_action": "Resolve area policy. Replace answer-leaking hint 2 with “Look above 165–171 Grand Street for a roof younger than the walls.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=28435530",
+          "source_role": "identity/factual claim",
+          "quote": "The Odd Fellows Hall is a building at 165–171 Grand Street between Centre and Baxter Streets, in the Little Italy and SoHo neighborhoods of Manhattan, New York City. It was built in 1847–1848 and designed by the firm of Trench & Snook in the Italianate style, one of the city's earliest structures in this style, which Joseph Trench had brought to New York with his design for 280 Broadway in 1845. His partner, John B. Snook, was responsible for many cast-iron buildings in SoHo. The mansard roof was an addition, designed by John Buckingham and built in 1881–1882. The Independent Order of Odd…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Odd_Fellows_Hall_165-171_Grand_Street.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2011-04-21",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2011-04-21",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 82,
+      "risk": "medium",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-024",
+      "hunt_idea_id": "idea:nyc:dq-nyc-024",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-024",
+      "bank_place_id": "place:wikipedia:3134198",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Chatham Square",
+      "coordinates": {
+        "lat": 40.71361111111111,
+        "lng": -73.99805555555555,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The Kimlau memorial arch amid Chatham Square’s unusually complex street convergence.",
+      "clue": "Eight roads argue around me while I quietly remember Chinese American service members.",
+      "hints": [
+        "Find the Chinatown square where many streets converge.",
+        "Your target is the Kimlau memorial arch."
+      ],
+      "remote_review": {
+        "finding": "Eight-street convergence and Kimlau memorial purpose are supported, but “arch” condition and present viewing approach need a current project source/visual check.",
+        "public_exterior_visibility_and_access": "Public-square exterior, free. Complex crossings and traffic make safe/accessible approach material; no current step-free path evidence was captured.",
+        "closure_construction_removal_risk": "Kimlau Square has been subject to redesign/reconstruction planning; remote review could not rule out fencing, relocation, or obstructed access.",
+        "durability": "Stone memorial is durable, but plaza works can temporarily move or screen it.",
+        "nearby_ambiguity": "Several monuments occupy/abut Chatham/Kimlau/Lin Ze Xu Squares; nearby ambiguity is significant.",
+        "editorial_action": "Do not canary until construction status and exact safe viewpoint are scouted. Hint 2 names the answer and should describe the pale memorial gateway instead."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=3134198",
+          "source_role": "identity/factual claim",
+          "quote": "Chatham Square is a major intersection in Chinatown, Manhattan, New York City. The square lies at the confluence of eight streets: the Bowery, Doyers Street, East Broadway, St. James Place, Mott Street, Oliver Street, Worth Street and Park Row. The small park in the center of the square is known as Kimlau Square and Lin Ze Xu Square.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Kimlau_Memorial_Arch",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 61,
+      "risk": "high",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-027",
+      "hunt_idea_id": "idea:nyc:dq-nyc-027",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-027",
+      "bank_place_id": "place:wikipedia:19502719",
+      "bank_area": "Chinatown",
+      "canonical_identity": "240 Centre Street",
+      "coordinates": {
+        "lat": 40.72,
+        "lng": -73.99805555555555,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The central portico topped by a clocked cupola and gilded dome.",
+      "clue": "A police headquarters put on a gilded dome, a clock, and enough columns to impersonate a palace.",
+      "hints": [
+        "Look for law-enforcement history in Baroque dress.",
+        "Find the central portico and gilded dome at 240 Centre."
+      ],
+      "remote_review": {
+        "finding": "Former NYPD headquarters identity and central portico, clocked cupola, and gilded dome are supported.",
+        "public_exterior_visibility_and_access": "Exterior-only free sidewalk view; building is private residences and must not be entered. No payment/hours. Step-free public approach is plausible but not specifically sourced.",
+        "closure_construction_removal_risk": "No current closure/removal notice found; scaffolding may affect the façade.",
+        "durability": "Landmarked former headquarters; very durable.",
+        "nearby_ambiguity": "Large unique domed building occupying its block.",
+        "editorial_action": "Keep; add explicit “do not enter the residential building.” Hint 2 is answer-forward and should omit the street number until final rung."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=19502719",
+          "source_role": "identity/factual claim",
+          "quote": "240 Centre Street, formerly the New York City Police Headquarters, is a building in the Little Italy neighborhood of Manhattan in New York City, United States. Designed by the firm Hoppin & Koen, it was the headquarters of the New York City Police Department (NYPD) from 1909 to 1973. Afterward, it was converted into a luxury residential building in 1988 by the firm Ehrenkranz Group & Eckstut, becoming the Police Building Apartments. 240 Centre Street occupies an entire city block between Centre Street to the west, Broome Street to the north, Centre Market Place to the east, and Grand Street…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Old_New_York_City_Police_Headquarters_(37938201722).jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2017-10-08",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2017-10-08",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 88,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-032",
+      "hunt_idea_id": "idea:nyc:dq-nyc-032",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-032",
+      "bank_place_id": "place:wikipedia:22526150",
+      "bank_area": "East Village",
+      "canonical_identity": "Ottendorfer Public Library and Stuyvesant Polyclinic Hospital",
+      "coordinates": {
+        "lat": 40.72972222222222,
+        "lng": -73.9875,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "Terracotta busts of medical figures on the former hospital facade.",
+      "clue": "The doctors left the hospital, but several still keep watch from the fired-clay facade.",
+      "hints": [
+        "Look beside the historic Ottendorfer library.",
+        "Find the terracotta busts on the former polyclinic."
+      ],
+      "remote_review": {
+        "finding": "Paired-building identity, address, and terracotta busts of medical professionals on the former polyclinic façade are supported; NYPL current location page supports the adjacent library’s continued operation.",
+        "public_exterior_visibility_and_access": "Busts are exterior-visible free from sidewalk; no entry/payment. Sidewalk viewing is step-free in general, but no object-specific accessibility evidence was found.",
+        "closure_construction_removal_risk": "No current façade closure notice found. Former interior tenant The Wing ceased operations in 2022, but that does not affect exterior target.",
+        "durability": "Landmarked terracotta façade; high durability.",
+        "nearby_ambiguity": "Distinctive busts next to Ottendorfer Library; little nearby ambiguity.",
+        "editorial_action": "Keep. “The doctors left” is a metaphor, not a claim that all medical use ended. Replace answer-leaking second hint with the address range 135–137 Second Avenue."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=22526150",
+          "source_role": "identity/factual claim",
+          "quote": "The Ottendorfer Public Library and Stuyvesant Polyclinic Hospital are a pair of historic buildings at 135 and 137 Second Avenue in the East Village neighborhood of Manhattan in New York City. The buildings house the Ottendorfer Branch of the New York Public Library, as well as the women's workspace The Wing within the former Stuyvesant Polyclinic hospital until the company's cessation of operations in 2022. The buildings were jointly designed by German-born architect William Schickel in the neo-Italian Renaissance style. Both structures are three stories tall with a facade of Philadelphia…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "New York Public Library",
+          "url": "https://www.nypl.org/locations/ottendorfer",
+          "source_role": "official/current operation or access",
+          "quote": "NYPL maintains a current location page for the Ottendorfer Branch.",
+          "publication_or_observation_date": null,
+          "date_note": "live page; publication date not visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Stuyvesant_Polyclinic",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 90,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-039",
+      "hunt_idea_id": "idea:nyc:dq-nyc-039",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-039",
+      "bank_place_id": "place:wikipedia:14818028",
+      "bank_area": "East Village",
+      "canonical_identity": "Veniero's",
+      "coordinates": {
+        "lat": 40.72938888888889,
+        "lng": -73.98452777777779,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The adjoining room’s ceiling of stained-glass panels and original pressed tin.",
+      "clue": "Come for cannoli, then look away from the sweets: colored glass and pressed tin serve dessert overhead.",
+      "hints": [
+        "The clue is inside a family bakery founded in the nineteenth century.",
+        "Look up in Veniero’s adjoining room for stained-glass ceiling panels."
+      ],
+      "remote_review": {
+        "finding": "Veniero’s identity, 1894 founding, and stained-glass/pressed-tin interior are supported, but the exact room sightline and current customer access were not independently visually confirmed.",
+        "public_exterior_visibility_and_access": "Interior of a private bakery during business hours. Entry may be free, but practical completion may imply patronage; photography and wheelchair route are undocumented here.",
+        "closure_construction_removal_risk": "Official site had an expired TLS certificate during review; current business existence is otherwise supported, but room access/layout can change.",
+        "durability": "Historic interior fabric is durable; décor, seating, and access policies can change.",
+        "nearby_ambiguity": "Target may be invisible from entry and “adjoining room” is underspecified.",
+        "editorial_action": "Scout sightline, permission, hours, and step-free access. Remove “Come for cannoli” because it implies purchase; use “Inside the historic bakery, look above the adjoining room.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=14818028",
+          "source_role": "identity/factual claim",
+          "quote": "Veniero's Pasticceria & Caffè is an Italian bakery that was established in 1894, and is located at 342 East 11th Street (between First Avenue and Second Avenue), in the East Village neighborhood of Manhattan, New York City. Founded by Antonio Veniero of Sorrento, the bakery was opened as a pool emporium and caffè where Veniero served his baked products to customers. Later, the demand for his pastries and cakes won him awards in Rome, Bologna and the New York World's Fair. The bakery has been continuously owned and operated by the Veniero family since its founding. In 1984 the family added an…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Veniero's",
+          "url": "https://venierospastry.com/",
+          "source_role": "official/current operation or access",
+          "quote": "Official business URL; TLS certificate was expired at check time, so content was not relied on.",
+          "publication_or_observation_date": null,
+          "date_note": "live fetch failed; no source date",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_or_tls_error"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Veniero%27s",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 70,
+      "risk": "medium",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-040",
+      "hunt_idea_id": "idea:nyc:dq-nyc-040",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-040",
+      "bank_place_id": "place:wikipedia:25850609",
+      "bank_area": "East Village",
+      "canonical_identity": "Ray's Candy Store",
+      "coordinates": {
+        "lat": 40.72626388888889,
+        "lng": -73.98353888888889,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The old-school storefront identifying Ray’s Candy Store, whose offering spans egg creams, soft serve, beignets, fries, and coffee.",
+      "clue": "My sign promises candy; my counter answers with egg creams, beignets, Belgian fries, and coffee.",
+      "hints": [
+        "Look for a tiny East Village business operating since 1974.",
+        "Find Ray’s Candy Store and confirm its unlikely mix of treats."
+      ],
+      "remote_review": {
+        "finding": "Store identity, 113 Avenue A, 1974 start, and eclectic menu are supported. The target conflates exterior sign with menu facts that may not all be visible.",
+        "public_exterior_visibility_and_access": "Private counter-service business; exterior sign is free, but confirming offerings may require entering or buying. Current hours/accessibility were not reliably captured; official site had a TLS-protocol failure.",
+        "closure_construction_removal_risk": "Small independent business and menu are moderately volatile; no closure report found.",
+        "durability": "Storefront identity is moderately durable; menu items/signage can change.",
+        "nearby_ambiguity": "Nearby storefront clutter is high, but Ray’s name is distinctive.",
+        "editorial_action": "Make the observable target exterior signage only, or scout a posted menu. Delete any item not currently posted. The second hint reveals the answer and should use “113 Avenue A” instead."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=25850609",
+          "source_role": "identity/factual claim",
+          "quote": "Ray's Candy Store is a deli at 113 Avenue A in the East Village neighborhood of Manhattan in New York City. The store has been in business since 1974. Owned and operated by Ray Alvarez, it serves an eclectic mix of foods, including egg creams, soft serve ice cream, frozen yogurt, New Orleans-style beignets, Belgian fries, and coffee. The store has been featured in several American books, films, and television shows.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Ray's Candy Store",
+          "url": "https://www.rayscandystore.com/",
+          "source_role": "official/current operation or access",
+          "quote": "Official business URL; remote TLS negotiation failed, so content was not relied on.",
+          "publication_or_observation_date": null,
+          "date_note": "live fetch failed; no source date",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_or_tls_error"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Ray%27s_Candy_Store",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 78,
+      "risk": "medium",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r041",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r041",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r041",
+      "bank_place_id": "place:wikipedia:1358227",
+      "bank_area": "East Village",
+      "canonical_identity": "Tompkins Square Park",
+      "coordinates": {
+        "lat": 40.72638888888889,
+        "lng": -73.98166666666667,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The square granite fountain kiosk whose canopy is carved with the four words “Faith,” “Hope,” “Charity,” and “Temperance.”",
+      "clue": "Four virtues share my roof, but only one explains why I offered water instead of ale.",
+      "hints": [
+        "Look near Avenue A in Tompkins Square Park.",
+        "Read all four words carved around the granite fountain canopy."
+      ],
+      "remote_review": {
+        "finding": "NYC Parks/Wikipedia support the Temperance Fountain identity and four carved words. The bank coordinates are for Tompkins Square Park, not the fountain itself, so waypoint precision must be improved before publication.",
+        "public_exterior_visibility_and_access": "Outdoor public park target, free during posted park hours; no touching/climbing. Park-path accessibility is plausible, but fountain-specific step-free evidence was not found.",
+        "closure_construction_removal_risk": "No removal notice found; temporary park work/fencing may obstruct.",
+        "durability": "Granite monument; high durability.",
+        "nearby_ambiguity": "The fountain is distinct, but park-scale coordinates could send players to the wrong feature.",
+        "editorial_action": "Retain clue. Replace answer-leaking “Read all four words” hint only if desired; otherwise it is a legitimate final rung. Add exact fountain coordinates from an authoritative map."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=1358227",
+          "source_role": "identity/factual claim",
+          "quote": "Tompkins Square Park is a 10.5-acre (4.2 ha) public park in the Alphabet City portion of East Village, Manhattan, New York City. The square-shaped park, bounded on the north by East 10th Street, on the east by Avenue B, on the south by East 7th Street, and on the west by Avenue A, is abutted by St. Marks Place to the west. The park opened in 1834 and is named for Daniel D. Tompkins, Vice President of the United States.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Tompkins_Square_Park",
+          "source_role": "identity/factual claim",
+          "quote": "“The fountain is a square granite kiosk with four stone columns supporting a canopy on whose sides the words ‘Faith,’ ‘Hope,’ ‘Charity,’ and ‘Temperance’ are chiseled.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "nyc_parks",
+          "url": "https://www.nycgovparks.org/parks/tompkins-square-park/highlights/10823",
+          "source_role": "identity/factual claim",
+          "quote": "NYC Parks identifies “one elm in particular, located next to the semi-circular arrangement of benches in the park’s center” as important to adherents of the Hare Krishna religion.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_403_but_public_url"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Temperance_Fountain_(Tompkins_Square_Park)",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 91,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r042",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r042",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r042",
+      "bank_place_id": "place:wikipedia:1358227",
+      "bank_area": "East Village",
+      "canonical_identity": "Tompkins Square Park",
+      "coordinates": {
+        "lat": 40.72638888888889,
+        "lng": -73.98166666666667,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The square granite fountain kiosk whose canopy is carved with the four words “Faith,” “Hope,” “Charity,” and “Temperance.”",
+      "clue": "I am rooted like my neighbors, but a ring of benches and a borrowed name make me the one elm people seek.",
+      "hints": [
+        "Head toward the center of Tompkins Square Park.",
+        "Find the American elm beside the semicircle of benches."
+      ],
+      "remote_review": {
+        "finding": "NYC Parks identifies a particular American elm near semicircular benches as the Hare Krishna Tree. The content-bank observable target is incorrectly inherited from the Temperance Fountain, a data defect; clue text itself targets the tree.",
+        "public_exterior_visibility_and_access": "Public park, free during posted hours. Remain on paths and outside tree protection. Exact step-free path and identifying plaque visibility are unknown.",
+        "closure_construction_removal_risk": "Living-tree health, pruning, storm damage, fencing, and bench rearrangement are current risks. No recent visual evidence was found.",
+        "durability": "Living landmark: medium durability.",
+        "nearby_ambiguity": "Several mature elms stand in the park; without a legible plaque or precise coordinates the target may be ambiguous.",
+        "editorial_action": "Fix the place observable_evidence linkage before any use. Scout tree condition, plaque, bench layout, and waypoint. Keep the clue only if identification is unambiguous."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=1358227",
+          "source_role": "identity/factual claim",
+          "quote": "Tompkins Square Park is a 10.5-acre (4.2 ha) public park in the Alphabet City portion of East Village, Manhattan, New York City. The square-shaped park, bounded on the north by East 10th Street, on the east by Avenue B, on the south by East 7th Street, and on the west by Avenue A, is abutted by St. Marks Place to the west. The park opened in 1834 and is named for Daniel D. Tompkins, Vice President of the United States.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Tompkins_Square_Park",
+          "source_role": "identity/factual claim",
+          "quote": "“The fountain is a square granite kiosk with four stone columns supporting a canopy on whose sides the words ‘Faith,’ ‘Hope,’ ‘Charity,’ and ‘Temperance’ are chiseled.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "nyc_parks",
+          "url": "https://www.nycgovparks.org/parks/tompkins-square-park/highlights/10823",
+          "source_role": "identity/factual claim",
+          "quote": "NYC Parks identifies “one elm in particular, located next to the semi-circular arrangement of benches in the park’s center” as important to adherents of the Hare Krishna religion.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_403_but_public_url"
+        },
+        {
+          "publisher": "NYC Parks",
+          "url": "https://www.nycgovparks.org/parks/tompkins-square-park/highlights/10823",
+          "source_role": "official/current operation or access",
+          "quote": "NYC Parks identifies one elm next to semicircular benches in the park center as important to Hare Krishna adherents.",
+          "publication_or_observation_date": null,
+          "date_note": "live page blocked automated fetch; no publication date captured",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_or_tls_error"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Hare_Krishna_Tree",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 72,
+      "risk": "medium",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r043",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r043",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r043",
+      "bank_place_id": "place:official_place_site:6bc-the-garden",
+      "bank_area": "East Village",
+      "canonical_identity": "6BC Botanical Garden",
+      "coordinates": {
+        "lat": 40.7238644,
+        "lng": -73.9806699,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The koi pond’s two-and-a-half-foot waterfall, powered by solar panels partly camouflaged on a grape arbor and garden shed.",
+      "clue": "My pond borrows sunlight from six quiet helpers; four hide among grapes while water tumbles below.",
+      "hints": [
+        "Enter only when the community garden is officially open.",
+        "Look for the koi pond, then scan the grape arbor and shed roof for solar panels."
+      ],
+      "remote_review": {
+        "finding": "Official garden page supports six panels, their locations, a 2.5-foot timed waterfall, and koi pond. Current 2026 event content shows the site is maintained, but public opening schedule and target visibility remain unresolved.",
+        "public_exterior_visibility_and_access": "Entry only during community-garden public hours; free as far as sourced. Paths/threshold and wheelchair circulation are not documented. Waterfall may be off; do not enter beds or feed fish.",
+        "closure_construction_removal_risk": "Timed operation, seasonal vines, changing hours, and volunteer closures are substantial.",
+        "durability": "Pond/panels are semi-permanent; operation and visibility are volatile.",
+        "nearby_ambiguity": "Panels are partly camouflaged and may not be visible from permitted paths.",
+        "editorial_action": "Require a no-flow completion condition. Scout hours, step-free entry, sightline, and panel count. Do not claim water is tumbling unless observed at publication time."
+      },
+      "sources": [
+        {
+          "publisher": "official_place_site",
+          "url": "https://www.6bcgarden.org/the-garden.html",
+          "source_role": "identity/factual claim",
+          "quote": "“There are a total of six panels, four on the grape arbor, camouflaged by vines and climbing plants, and two on the roof of the garden’s raised library shed’s roof. The waterfall in the garden’s koi pond took ten years to complete… The 2 1/2-foot-high waterfall is on a timer.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/237532026",
+          "source_role": "coordinates/map identity",
+          "quote": "6BC Botanical Garden, Manhattan Community Board 3, Manhattan, New York County, New York, 10009, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "6BC Botanical Garden",
+          "url": "https://www.6bcgarden.org/the-garden.html",
+          "source_role": "official/current operation or access",
+          "quote": "“There are a total of six panels, four on the grape arbor” and the “2 1/2-foot-high waterfall is on a timer.”",
+          "publication_or_observation_date": null,
+          "date_note": "live official page; 2026 navigation/events visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:6_BC_Botanical_Garden",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 65,
+      "risk": "high",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r044",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r044",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r044",
+      "bank_place_id": "place:wikipedia:33946565",
+      "bank_area": "East Village",
+      "canonical_identity": "La Plaza Cultural de Armando Perez",
+      "coordinates": {
+        "lat": 40.72527777777778,
+        "lng": -73.9786111111111,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The juxtaposition of food-growing garden plots with an open area used as a neighborhood cultural and event space.",
+      "clue": "In one open lot, supper grows while a neighborhood makes room for a show.",
+      "hints": [
+        "Seek a community-managed space rather than a conventional city park.",
+        "Find where cultivated food plots meet La Plaza’s cultural gathering area."
+      ],
+      "remote_review": {
+        "finding": "Official and Wikipedia sources support that La Plaza grows food and hosts events, but the proposed “juxtaposition” is an interpretive concept, not a stable discrete observable. Official page currently says “La Plaza Cultural de Hernandez,” creating a naming inconsistency with Armando Perez.",
+        "public_exterior_visibility_and_access": "Community garden only during public hours/events; free entry not clearly documented. Respect plots/people. Step-free route unknown.",
+        "closure_construction_removal_risk": "Planting and event setup vary, and gates may be closed. Naming inconsistency increases identity risk.",
+        "durability": "Functions endure; exact visible arrangement does not.",
+        "nearby_ambiguity": "No objective completion boundary: many garden areas could satisfy the clue.",
+        "editorial_action": "Reject this formulation. A future candidate needs a named, fixed, source-documented object and precise public-hours/access evidence."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=33946565",
+          "source_role": "identity/factual claim",
+          "quote": "La Plaza Cultural de Armando Perez (also known as La Plaza Cultural) is a community garden and public green space in the East Village neighborhood of Manhattan, New York City. Serving as a community garden, park, playground, wildlife refuge, urban farm, community composting site, and performance venue, La Plaza Cultural is also utilized by local day-care centers, after-school programs and a growing number of parents with small children. The garden has been known to grow a number of various edible plants including fruits, vegetable, and herbs. The lot is approximately 0.64 acres and consists…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "official_place_site",
+          "url": "https://laplazacultural.com/about/",
+          "source_role": "identity/factual claim",
+          "quote": "The garden describes itself as “a community garden and cultural space in the heart of the East Village” and “a place for growing food, celebrating community, and hosting events.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "La Plaza Cultural",
+          "url": "https://laplazacultural.com/about/",
+          "source_role": "official/current operation or access",
+          "quote": "Official page calls it “a community garden and cultural space” and a place for “growing food, celebrating community, and hosting events.”",
+          "publication_or_observation_date": null,
+          "date_note": "live official page; no publication date visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:La_Plaza_Cultural",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 48,
+      "risk": "high",
+      "decision": "reject",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r045",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r045",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r045",
+      "bank_place_id": "place:artist_official_site:mosaic-trail",
+      "bank_area": "East Village",
+      "canonical_identity": "Jim Power’s Mosaic Trail on St. Mark’s Place",
+      "coordinates": {
+        "lat": 40.7281016,
+        "lng": -73.9864861,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "A surviving utility or lamppost on St. Mark’s Place wrapped in Jim Power’s multicolored mosaic work.",
+      "clue": "The lamp above is ordinary; the pole below has dressed itself in a thousand broken colors.",
+      "hints": [
+        "Walk St. Mark’s Place and inspect the utility poles rather than storefronts.",
+        "Find one of Jim Power’s surviving mosaic-covered lampposts."
+      ],
+      "remote_review": {
+        "finding": "Artist site supports a Mosaic Trail and lamppost mosaics, but the candidate specifies no exact pole. The source itself documents removal/return, confirming volatility.",
+        "public_exterior_visibility_and_access": "Sidewalk-only, free, no touching or traffic exposure. Exact accessible viewpoint cannot be assessed without an exact pole.",
+        "closure_construction_removal_risk": "Very high removal, relocation, damage, and maintenance risk.",
+        "durability": "Individual mosaic poles are volatile.",
+        "nearby_ambiguity": "Multiple poles and no qualifying inventory make completion non-deterministic.",
+        "editorial_action": "Reject until one exact pole has current visual evidence, coordinates, ownership/status, and a fallback. “A thousand” is unsupported hyperbole and should be removed."
+      },
+      "sources": [
+        {
+          "publisher": "artist_official_site",
+          "url": "https://mosaicmannyc.com/",
+          "source_role": "identity/factual claim",
+          "quote": "The artist’s site identifies “The Mosaic Man — Jim Power and His Mosaic Trail,” refers to “lamppost mosaics on St Mark’s Place,” and records that a removed Astor Place tribute pole later returned: “Update The Pole is back.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/847950378",
+          "source_role": "coordinates/map identity",
+          "quote": "Saint Marks Place, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Jim Power",
+          "url": "https://mosaicmannyc.com/",
+          "source_role": "official/current operation or access",
+          "quote": "Artist site names the Mosaic Trail and documents a tribute pole as removed and later returned.",
+          "publication_or_observation_date": null,
+          "date_note": "live artist page; no publication date visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Mosaic_Trail",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 42,
+      "risk": "high",
+      "decision": "reject",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r046",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r046",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r046",
+      "bank_place_id": "place:wikipedia:Physical%20Graffiti",
+      "bank_area": "East Village",
+      "canonical_identity": "96 and 98 St. Mark’s Place",
+      "coordinates": {
+        "lat": 40.7272068,
+        "lng": -73.9849107,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The paired five-story tenement facades used for Led Zeppelin’s die-cut Physical Graffiti album cover.",
+      "clue": "Two neighboring buildings became a record sleeve, and their windows once traded famous faces.",
+      "hints": [
+        "Look for a pair of five-story facades on St. Mark’s Place.",
+        "Match 96 and 98 to Led Zeppelin’s Physical Graffiti cover."
+      ],
+      "remote_review": {
+        "finding": "96 and 98 St. Mark’s Place and their use for the Physical Graffiti sleeve are consistently documented; OSM independently confirms address coordinates.",
+        "public_exterior_visibility_and_access": "Free exterior sidewalk view only; occupied buildings must not be entered or photographed through windows. Use legal crossing/opposite sidewalk; no payment/hours.",
+        "closure_construction_removal_risk": "No current demolition/closure signal; storefront change, scaffolding, trees, or vehicles may alter comparison.",
+        "durability": "Masonry tenements are durable.",
+        "nearby_ambiguity": "The numbered adjacent pair is unique.",
+        "editorial_action": "Keep. Title/concept says “enter,” but players must not enter; rename reveal wording to “The Album Cover on a Street” or explicitly state exterior only."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Physical_Graffiti",
+          "source_role": "identity/factual claim",
+          "quote": "The page identifies “the five-storey 96 and 98 St. Mark’s Place in New York’s East Village” and says the sleeve depicted “a New York City tenement block, through whose windows various cultural icons could be interchangeably viewed.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/248142692",
+          "source_role": "coordinates/map identity",
+          "quote": "96, Saint Marks Place, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10009, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:96_and_98_St._Mark%27s_Place",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 94,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r047",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r047",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r047",
+      "bank_place_id": "place:wikipedia:McSorley's%20Old%20Ale%20House",
+      "bank_area": "East Village",
+      "canonical_identity": "McSorley’s Old Ale House",
+      "coordinates": {
+        "lat": 40.7287612,
+        "lng": -73.9897021,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The cluster of old wishbones hanging above the bar.",
+      "clue": "These wishes were hung up before a journey and never carried home. Find them above the ale.",
+      "hints": [
+        "The target is inside a historic East 7th Street ale house.",
+        "Look above McSorley’s bar for the hanging wishbones."
+      ],
+      "remote_review": {
+        "finding": "Current official business site supports continued operation; wishbones are documented, but the WWI departure/return story is expressly qualified as “supposedly,” not established fact. The clue states the legend as fact.",
+        "public_exterior_visibility_and_access": "Interior of a licensed private bar during hours; crowding, age context, patronage, photography rules, and step-free sightline are unresolved. No equitable exterior alternative.",
+        "closure_construction_removal_risk": "Artifact placement and access policies can change; crowding can make completion unsafe/intrusive.",
+        "durability": "Wishbones are longstanding but fragile.",
+        "nearby_ambiguity": "Target is above a busy bar and may not be visible from a permissible position.",
+        "editorial_action": "Hold. If ever used, clue must say “Legend says…” and include a non-bar alternative; scout permission/access. Current hint 2 leaks the answer."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/McSorley%27s_Old_Ale_House",
+          "source_role": "identity/factual claim",
+          "quote": "“There are also wishbones hanging above the bar; supposedly they were hung there by boys going off to World War I, to be removed when they returned.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/9036389119",
+          "source_role": "coordinates/map identity",
+          "quote": "McSorley's Old Ale House, 15, East 7th Street, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "McSorley's Old Ale House",
+          "url": "https://mcsorleysoldalehouse.nyc/",
+          "source_role": "official/current operation or access",
+          "quote": "Current official site describes McSorley’s as an operating gathering place and saloon.",
+          "publication_or_observation_date": null,
+          "date_note": "live official page; no publication date visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:McSorley%27s_Old_Ale_House_001_crop.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2010-07-22",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2010-07-22",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 55,
+      "risk": "high",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r048",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r048",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r048",
+      "bank_place_id": "place:wikipedia:Stuyvesant%20Street",
+      "bank_area": "East Village",
+      "canonical_identity": "Stuyvesant Street",
+      "coordinates": {
+        "lat": 40.7299622,
+        "lng": -73.9882104,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The short street’s diagonal path between East 9th and East 10th Streets, visibly cutting across Manhattan’s surrounding grid.",
+      "clue": "My neighbors obey the grid; I take the shortest diagonal and quietly call it east.",
+      "hints": [
+        "Stand near the St. Mark’s Historic District and compare street angles.",
+        "Follow Stuyvesant Street between East 9th and East 10th."
+      ],
+      "remote_review": {
+        "finding": "Stuyvesant Street’s diagonal segment between East 9th/Third Avenue and East 10th/Second Avenue is supported by Wikipedia, OSM geometry, and imagery.",
+        "public_exterior_visibility_and_access": "Free public sidewalks, no hours/payment. Use curb ramps/legal crossings; no need to stand in roadway. Exact best wheelchair viewpoint is not sourced.",
+        "closure_construction_removal_risk": "Only temporary street work/vehicles can weaken the view.",
+        "durability": "Street alignment is permanent.",
+        "nearby_ambiguity": "Diagonal is clear against nearby grid; waypoint should use an intersection viewpoint rather than line midpoint.",
+        "editorial_action": "Keep. “Shortest” is unsupported and should be removed: “I cross my grid-bound neighbors on a diagonal and quietly call it east.” Hint 2 reveals the answer; use endpoints only."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Stuyvesant_Street",
+          "source_role": "identity/factual claim",
+          "quote": "“It runs diagonally from 9th Street at Third Avenue to 10th Street near Second Avenue” and “runs diagonally in relation to the Manhattan street grid.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/767398932",
+          "source_role": "coordinates/map identity",
+          "quote": "Stuyvesant Street, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Stuyvesant_Street_(164865217).jpeg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2016-07-25",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2016-07-25",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 90,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r049",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r049",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r049",
+      "bank_place_id": "place:wikipedia:Village%20East%20by%20Angelika",
+      "bank_area": "East Village",
+      "canonical_identity": "Village East by Angelika / former Yiddish Art Theatre",
+      "coordinates": {
+        "lat": 40.7309569,
+        "lng": -73.9863984,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The entrance cornerstone carrying May 23, 1926 in English and the corresponding Hebrew-calendar date, beneath capitals shaped like half-menorahs.",
+      "clue": "One opening day was carved twice, while broken menorahs—not broken lamps—hold up the arch.",
+      "hints": [
+        "Study the former Yiddish Art Theatre’s main entrance.",
+        "Find the cornerstone with English and Hebrew dates, then look upward for half-menorah capitals."
+      ],
+      "remote_review": {
+        "finding": "Former Yiddish Art Theatre/current Village East identity and carved English/Hebrew dates and half-menorah capitals are documented. Current theater site indicates operation, but no recent close-up confirms legibility.",
+        "public_exterior_visibility_and_access": "Exterior entrance details, free from sidewalk; no ticket needed. Small/high details create vision and reach-of-view concerns; accessible viewing position is not documented.",
+        "closure_construction_removal_risk": "Façade is durable; temporary marquee/scaffolding or weathering may obscure details.",
+        "durability": "Carved architectural details are durable.",
+        "nearby_ambiguity": "Two separate features may be hard to see together; Hebrew date can be mistaken for other inscriptions.",
+        "editorial_action": "Scout a precise, step-free viewpoint and legibility. “Broken menorahs” is misleading; source says capitals shaped like half-menorahs. Rewrite: “One opening day was carved twice, beneath capitals shaped like half-menorahs.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Village_East_by_Angelika",
+          "source_role": "identity/factual claim",
+          "quote": "The entrance has “a cornerstone, containing an inscription of the Gregorian date May 23, 1926, in English and the corresponding Hebrew calendar date in Hebrew.” Nearby, “capitals shaped like half-menorahs” appear at the top of the arch.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/247852538",
+          "source_role": "coordinates/map identity",
+          "quote": "Village East Cinema, 181-189, 2nd Avenue, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Angelika Film Center",
+          "url": "https://angelikafilmcenter.com/villageeast",
+          "source_role": "official/current operation or access",
+          "quote": "Current theater site serves Village East movie information, tickets, and showtimes.",
+          "publication_or_observation_date": null,
+          "date_note": "live official application",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Village_East_former_Yiddish_Arts_Theatre.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2010-09-29",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2010-09-29",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 78,
+      "risk": "medium",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r050",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r050",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r050",
+      "bank_place_id": "place:official_place_site:liz-christy-garden",
+      "bank_area": "East Village",
+      "canonical_identity": "Liz Christy Bowery-Houston Community Garden",
+      "coordinates": {
+        "lat": 40.724241,
+        "lng": -73.9921517,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The two-and-a-half-foot-deep pond inhabited year-round by fish and red-eared slider turtles, set among a grape arbor and garden plantings.",
+      "clue": "Behind a roaring avenue, fish and red-eared sliders keep a pond beneath grapes.",
+      "hints": [
+        "Look for the community garden at Bowery and Houston.",
+        "During open hours, follow the path toward the pond and grape arbor."
+      ],
+      "remote_review": {
+        "finding": "Official garden site supports 2.5-foot pond, year-round fish/red-eared sliders, grape arbor, and plantings. OSM confirms garden location. Official TLS certificate failed remote validation.",
+        "public_exterior_visibility_and_access": "Community-garden entry only during posted public hours; no payment evidence. Narrow paths/threshold, animal visibility, and accessible route are unverified.",
+        "closure_construction_removal_risk": "Gate schedule, animal visibility, vegetation, pond maintenance, and website security are volatile.",
+        "durability": "Pond is semi-permanent; animals and sightlines are not guaranteed.",
+        "nearby_ambiguity": "Animals may be hidden; “behind Houston” and “beneath grapes” do not ensure a unique visible target.",
+        "editorial_action": "Scout hours/access and require pond—not animals—as completion. Remove “fish and red-eared sliders” from required observation unless current signage guarantees them."
+      },
+      "sources": [
+        {
+          "publisher": "official_place_site",
+          "url": "https://www.lizchristygarden.us/",
+          "source_role": "identity/factual claim",
+          "quote": "“The Liz Christy Garden has a pond which is 2.5 feet deep. The fish and red-eared slider turtle communities live there year round. The garden also has … a grape arbor … vegetable gardens, berries, herbs and hundreds of varieties of flowering perennials.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "tls_validation_failed"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/4314829890",
+          "source_role": "coordinates/map identity",
+          "quote": "Liz Christy Garden, East Houston Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10012, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Liz Christy Garden",
+          "url": "https://www.lizchristygarden.us/",
+          "source_role": "official/current operation or access",
+          "quote": "Official page states the pond is 2.5 feet deep and fish and red-eared sliders live there year round.",
+          "publication_or_observation_date": null,
+          "date_note": "TLS validation failed; no publication date captured",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_or_tls_error"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Liz_christy_garden_0001.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2012-07-12",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2012-07-12",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 63,
+      "risk": "high",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r051",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r051",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r051",
+      "bank_place_id": "place:mta_arts_and_design:empress-voyage-2-22-1794",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Empress Voyage 2.22.1794 at Canal Street station",
+      "coordinates": {
+        "lat": 40.719527,
+        "lng": -74.001775,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "Bing Lee’s platform teapot motifs shaped to resemble Chinese characters for “good life.”",
+      "clue": "Underground, a good life pours from a pot whose shape is also a word.",
+      "hints": [
+        "This artwork is in the Canal Street station complex.",
+        "On the relevant platforms, look for repeated teapot motifs that double as Chinese characters."
+      ],
+      "remote_review": {
+        "finding": "MTA page supports Bing Lee’s permanent artwork and teapot motifs resembling characters for “good life.” Exact platform/route must be resolved; OSM only confirms the station complex.",
+        "public_exterior_visibility_and_access": "Inside a paid subway station area; fare required unless MTA confirms an unpaid view. Canal Street is a complex of multiple services/platforms; station-specific elevator/step-free route was not established.",
+        "closure_construction_removal_risk": "Service work, platform access, and construction can disrupt. Artwork is permanent but may be behind barriers or off the player’s route.",
+        "durability": "Permanent station art; physically durable.",
+        "nearby_ambiguity": "Station complex and repeated motifs create navigation ambiguity.",
+        "editorial_action": "Hold until exact line/platform, fare status, accessible route, and a legal no-travel completion path are documented. Hint 2 is answer-leaking and too vague."
+      },
+      "sources": [
+        {
+          "publisher": "mta_arts_and_design",
+          "url": "https://new.mta.info/agency/arts-design/collection/empress-voyage-2-22-1794",
+          "source_role": "identity/factual claim",
+          "quote": "The station artwork “contains motifs inspired by Chinese characters. The platforms are decorated with teapots resembling the Chinese characters for ‘good life.’” The cited MTA work is Empress Voyage 2.22.1794.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_403_but_public_url"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/6562022202",
+          "source_role": "coordinates/map identity",
+          "quote": "Canal Street, Broadway, Little Italy, Lower Manhattan, Manhattan, New York County, New York, 10013, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "mta_arts_and_design",
+          "url": "https://en.wikipedia.org/wiki/Canal_Street_station_(New_York_City_Subway)",
+          "source_role": "identity/factual claim",
+          "quote": "The station artwork “contains motifs inspired by Chinese characters. The platforms are decorated with teapots resembling the Chinese characters for ‘good life.’” The cited MTA work is Empress Voyage 2.22.1794.",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "MTA Arts & Design",
+          "url": "https://new.mta.info/agency/arts-design/collection/empress-voyage-2-22-1794",
+          "source_role": "official/current operation or access",
+          "quote": "MTA describes platform teapots resembling Chinese characters for “good life.”",
+          "publication_or_observation_date": null,
+          "date_note": "live page blocked automated fetch; no publication date captured",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_or_tls_error"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Empress_Voyage_2.22.1794.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2014-10-18",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2014-10-18",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 62,
+      "risk": "high",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r052",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r052",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r052",
+      "bank_place_id": "place:wikipedia:Canal%20Street%20station%20(New%20York%20City%20Subway)",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Canal Street station, Chinatown platforms",
+      "coordinates": {
+        "lat": 40.719527,
+        "lng": -74.001775,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "A Canal Street name tablet bearing Chinese characters for “China” and “Town,” plus platform-wall names written in Chinese.",
+      "clue": "My English name says where to exit; two added characters say what neighborhood waits above.",
+      "hints": [
+        "Search the Canal Street station complex, not a street-corner blade.",
+        "Inspect the station-name tablets and wall lettering for Chinese characters."
+      ],
+      "remote_review": {
+        "finding": "Wikipedia supports Chinese characters on a Canal Street name tablet/platform walls, but the candidate does not identify which platform set or distinguish these from the separate Bing Lee artwork.",
+        "public_exterior_visibility_and_access": "Paid subway interior; fare and specific line/platform required. ADA route not established.",
+        "closure_construction_removal_risk": "Platform rehabilitation/sign replacement/service changes can affect visibility.",
+        "durability": "Tile/tablet art is durable but transit work can cover or replace signage.",
+        "nearby_ambiguity": "Severe ambiguity across the Canal Street station complex; multiple “Canal Street” platforms and Chinese motifs.",
+        "editorial_action": "Hold. Specify exact line/direction/platform and source each inscription. Replace “two added characters” unless a current close-up proves the count. Hints currently disclose both station and answer."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Canal_Street_station_(New_York_City_Subway)",
+          "source_role": "identity/factual claim",
+          "quote": "“The ‘Canal Street’ name tablet has characters that read ‘China’ and ‘Town.’ The platform walls also feature the names ‘Canal Street’ and ‘Chinatown’ in Chinese.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/6562022202",
+          "source_role": "coordinates/map identity",
+          "quote": "Canal Street, Broadway, Little Italy, Lower Manhattan, Manhattan, New York County, New York, 10013, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Canal_Street_station_(New_York_City_Subway)",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 58,
+      "risk": "high",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r053",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r053",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r053",
+      "bank_place_id": "place:wikipedia:7501248",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Confucius Plaza",
+      "coordinates": {
+        "lat": 40.71472222222223,
+        "lng": -73.9961111111111,
+        "verification": "Coordinate is supported by the live encyclopedia identity page; no independent survey-grade check."
+      },
+      "observable_target_in_bank": "The 15-foot bronze Confucius statue and the proverb inscribed at its base beside an American flag.",
+      "clue": "A bronze teacher stands fifteen feet tall; wisdom and a small American flag share the lesson below.",
+      "hints": [
+        "Look in front of the high-rise complex north of Chatham Square.",
+        "Find the inscription and flag at the base of the Confucius statue."
+      ],
+      "remote_review": {
+        "finding": "Confucius Plaza identity and 15-foot bronze statue are supported. The base proverb and American-flag detail rely on a single encyclopedia statement; recent wide imagery confirms the complex but not the inscription.",
+        "public_exterior_visibility_and_access": "Exterior plaza/frontage visible without payment. Public-access status, exact step-free approach, and whether the base can be closely read were not established.",
+        "closure_construction_removal_risk": "No removal report found; construction, demonstrations, or plaza management can limit close access.",
+        "durability": "Bronze statue is durable; small painted/incised flag detail may weather or change.",
+        "nearby_ambiguity": "Other Chinatown statues are nearby; base details are necessary for disambiguation but may be illegible.",
+        "editorial_action": "Scout current inscription/flag and accessible viewing distance. Avoid “share the lesson below” if the flag is not currently legible."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/?curid=7501248",
+          "source_role": "identity/factual claim",
+          "quote": "Confucius Plaza Apartments is a limited-equity housing cooperative in Chinatown, Manhattan, New York City built as an affordable housing development under the Mitchell–Lama Housing Program. The 44-story brown brick tower block complex (433 ft (132 m)) with 762 apartments was constructed in 1975 at a cost of $38.387 million. The building was the first major public-funded housing project built for almost exclusively Chinese Americans. The Yung Wing Public School, P.S. 124 (K–5), shops, community space, and a daycare center are located beneath the apartments. The complex is located north of…",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Confucius_Plaza",
+          "source_role": "identity/factual claim",
+          "quote": "The plaza has a “15-foot bronze statue of Confucius” and “At its base, a Confucian proverb is inscribed aside an American Flag.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Confucius_Plaza_01.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2021-10-20",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": true,
+        "latest_linked_observation_date": "2021-10-20",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 70,
+      "risk": "medium",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r054",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r054",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r054",
+      "bank_place_id": "place:wikipedia:Manhattan%20Bridge",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Manhattan Bridge Arch and Colonnade",
+      "coordinates": {
+        "lat": 40.7154408,
+        "lng": -73.9955186,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The monumental arch and curved colonnade framing the Manhattan entrance to the bridge.",
+      "clue": "Before steel crosses the river, stone pretends the roadway is entering a triumph.",
+      "hints": [
+        "Look at the Manhattan approach to the Manhattan Bridge.",
+        "Find the monumental arch paired with a sweeping colonnade."
+      ],
+      "remote_review": {
+        "finding": "Manhattan Bridge Arch and Colonnade identity, Carrère and Hastings design, and landmark status are supported; OSM and imagery confirm exterior form.",
+        "public_exterior_visibility_and_access": "Large free exterior public-space target; no entry/payment/hours. Traffic and bridge approaches require a designated sidewalk/plaza viewpoint; exact construction-safe accessible route is not sourced.",
+        "closure_construction_removal_risk": "Bridge/plaza capital work can fence approaches, though the structure itself is not at removal risk. No current obstruction was conclusively found.",
+        "durability": "Monumental stone structure; very durable.",
+        "nearby_ambiguity": "Unique at the Manhattan bridge entrance.",
+        "editorial_action": "Keep, but publish a precise safe viewpoint south/west of traffic and check current fencing immediately before canary."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Manhattan_Bridge",
+          "source_role": "identity/factual claim",
+          "quote": "“Carrère and Hastings designed ornamental plazas at both ends of the bridge, including an arch and colonnade in Manhattan that is a New York City designated landmark.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/278241774",
+          "source_role": "coordinates/map identity",
+          "quote": "Manhattan Bridge Arch, Canal Street, Two Bridges, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/File:Manhattan_Bridge_June_2015.jpg",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": "2015-06-14",
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": "2015-06-14",
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 86,
+      "risk": "medium",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r055",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r055",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r055",
+      "bank_place_id": "place:wikipedia:Seward%20Park%20(Manhattan)",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Seward Park mosaic neighborhood map",
+      "coordinates": {
+        "lat": 40.7148871,
+        "lng": -73.9891265,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The circular mosaic map of the surrounding neighborhood, with Seward Park shown at its center and a spray-shower function incorporated into it.",
+      "clue": "Stand in the park, then find the park again—smaller, centered in a round map that can make rain.",
+      "hints": [
+        "Search at ground level inside Seward Park.",
+        "Find the circular neighborhood mosaic with the park marked in its center."
+      ],
+      "remote_review": {
+        "finding": "A 1999 circular mosaic neighborhood map with central park depiction and spray shower is historically sourced, but no current official source or recent image confirms it survives unchanged after later park work.",
+        "public_exterior_visibility_and_access": "Public park, free during posted hours. Ground-level wet feature can be slippery/seasonal; accessible route and operating schedule are unknown.",
+        "closure_construction_removal_risk": "High alteration, resurfacing, seasonal shutdown, and non-operation risk.",
+        "durability": "Mosaic may be durable, but spray infrastructure and legibility are vulnerable.",
+        "nearby_ambiguity": "Ground-level location within the park is not precisely mapped; other mosaics/play features may confuse.",
+        "editorial_action": "Do not require spray operation. Scout survival, exact coordinates, dry-condition legibility, and accessible path before use."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Seward_Park_(Manhattan)",
+          "source_role": "identity/factual claim",
+          "quote": "The 1999 renovation “introduced a mosaic map of the surrounding neighborhood, with the park depicted in the center of the circular map, which has a spray shower.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/108235836",
+          "source_role": "coordinates/map identity",
+          "quote": "Seward Park, Manhattan Community Board 3, Manhattan, New York County, New York, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Seward_Park_(Manhattan)",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 53,
+      "risk": "high",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r056",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r056",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r056",
+      "bank_place_id": "place:wikipedia:Collect%20Pond",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Collect Pond Park",
+      "coordinates": {
+        "lat": 40.7163123,
+        "lng": -74.0018517,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The park’s modern reflecting pool, placed as a visible acknowledgment of the former Collect Pond.",
+      "clue": "A vanished pond returned as a shallow mirror, remembering water where courts and streets now stand.",
+      "hints": [
+        "Look near Foley Square for a park named after a lost body of water.",
+        "Find Collect Pond Park’s reflecting pool."
+      ],
+      "remote_review": {
+        "finding": "Collect Pond Park identity and reflecting pool’s commemorative intent are supported by Wikipedia and OSM, but current water operation and condition are not established.",
+        "public_exterior_visibility_and_access": "Public park, free during posted hours. Pool edge/surface and step-free route need confirmation; completion should not require entering wet areas.",
+        "closure_construction_removal_risk": "Reflecting pools are seasonal and can be drained, fenced, or under repair.",
+        "durability": "Park and basin are durable; water state is volatile.",
+        "nearby_ambiguity": "The clue can be solved by park name without observing the pool, and drained basin may read ambiguously.",
+        "editorial_action": "Scout current basin/water state and exact viewpoint. Rewrite to permit a dry basin: “A vanished pond returned as a shallow basin, remembering water…”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Collect_Pond",
+          "source_role": "identity/factual claim",
+          "quote": "The site “became Collect Pond Park, which includes a reflecting pool to acknowledge the historic importance of this body of water.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/108153375",
+          "source_role": "coordinates/map identity",
+          "quote": "Collect Pond Park, 130, Lower Manhattan, Manhattan, New York County, New York, 10013, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Collect_Pond_Park",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 64,
+      "risk": "high",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r057",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r057",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r057",
+      "bank_place_id": "place:official_business_site:wing-on-wo-story",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Wing on Wo & Co.",
+      "coordinates": {
+        "lat": 40.7145893,
+        "lng": -73.9985501,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The porcelain wares displayed inside the longstanding shop at 26 Mott Street.",
+      "clue": "Five generations kept this shop, but groceries gave way to bowls, vases, and fired-white treasure.",
+      "hints": [
+        "Search Mott Street for Chinatown’s oldest continuously operating store.",
+        "At number 26, look for the shop specializing in Chinese porcelain."
+      ],
+      "remote_review": {
+        "finding": "Official shop history supports 26 Mott Street, oldest-continuously-operating claim, and primary porcelain/cultural-goods inventory; OSM confirms location. “Across five generations” was not captured in the quoted official excerpt used by the bank.",
+        "public_exterior_visibility_and_access": "Private retail interior during hours; entry is generally non-ticketed but purchase-free completion and photography are not explicit. Step-free entrance/aisles unknown.",
+        "closure_construction_removal_risk": "Independent retail and displays/hours are changeable; current official commerce site is live.",
+        "durability": "Business identity is longstanding; window/interior inventory is moderately volatile.",
+        "nearby_ambiguity": "Porcelain may be visible in windows or only inside; exact target unspecified.",
+        "editorial_action": "Scout window visibility, no-purchase completion, hours, and step-free entry. Remove “five generations” unless separately quoted from the official story; target one fixed sign/display rather than generic wares."
+      },
+      "sources": [
+        {
+          "publisher": "official_business_site",
+          "url": "https://wingonwoand.co/pages/story",
+          "source_role": "identity/factual claim",
+          "quote": "Wing on Wo identifies itself as “the oldest continuously operating store in Manhattan’s Chinatown,” says “We sell primarily porcelain ware and cultural goods,” and lists its current address as “26 Mott St.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/4316479989",
+          "source_role": "coordinates/map identity",
+          "quote": "Wing on Wo & Co, Mott Street, Five Points, Manhattan Community Board 3, Manhattan, New York County, New York, 10278, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wing on Wo & Co.",
+          "url": "https://wingonwoand.co/pages/story",
+          "source_role": "official/current operation or access",
+          "quote": "Official site says it sells primarily porcelain ware and cultural goods and identifies 26 Mott Street.",
+          "publication_or_observation_date": null,
+          "date_note": "live official commerce page",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Wing_on_Wo_and_Co.",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 75,
+      "risk": "medium",
+      "decision": "needs_scout",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r058",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r058",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r058",
+      "bank_place_id": "place:official_business_site:nom-wah-our-story",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Nom Wah Tea Parlor",
+      "coordinates": {
+        "lat": 40.7144593,
+        "lng": -73.9981968,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The original Nom Wah Tea Parlor location at 13–15 Doyers Street, identified as a tea parlor and bakery at the street’s sharp bend.",
+      "clue": "At a street’s sharp elbow, a tea parlor has been folding dumplings for more than a century.",
+      "hints": [
+        "Follow Doyers Street to its tight bend.",
+        "Find Nom Wah’s original 13–15 Doyers Street location."
+      ],
+      "remote_review": {
+        "finding": "Official business history supports original 13–15 Doyers location, 1920 opening as tea parlor/bakery, more than 100 years, and the sharp corner; OSM confirms location.",
+        "public_exterior_visibility_and_access": "Exterior storefront/corner view is free; no need to enter or purchase. Public sidewalk approach; exact curb-ramp details not sourced.",
+        "closure_construction_removal_risk": "Active official site and stable storefront; temporary queues, sheds, or repainting are possible.",
+        "durability": "Historic business/location are durable, though signage can change.",
+        "nearby_ambiguity": "Unique at Doyers Street’s elbow.",
+        "editorial_action": "Keep as exterior-only. “Folding dumplings for more than a century” overstates continuity of that exact activity; rewrite: “At a street’s sharp elbow, a tea parlor has served Chinatown for more than a century.” Hint 2 reveals the answer; use street numbers only."
+      },
+      "sources": [
+        {
+          "publisher": "official_business_site",
+          "url": "https://www.nomwah.com/our-story",
+          "source_role": "identity/factual claim",
+          "quote": "“Nom Wah is the oldest—celebrating over 100 years—continuously operating dim sum restaurant in New York City. Nom Wah opened its first location in 1920 as a tea parlor and bakery at 13-15 Doyers St,” at the street’s “sharp corner.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/4284811306",
+          "source_role": "coordinates/map identity",
+          "quote": "Nom Wah Tea Parlor, 13, Doyers Street, Five Points, Manhattan Community Board 3, Manhattan, New York County, New York, 10013, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Nom Wah",
+          "url": "https://www.nomwah.com/our-story",
+          "source_role": "official/current operation or access",
+          "quote": "Official history says the first location opened in 1920 as a tea parlor and bakery at 13–15 Doyers Street.",
+          "publication_or_observation_date": null,
+          "date_note": "live official page",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Nom_Wah_Tea_Parlor",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 90,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r059",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r059",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r059",
+      "bank_place_id": "place:wikipedia:Mahayana%20Buddhist%20Temple",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Mahayana Buddhist Temple",
+      "coordinates": {
+        "lat": 40.71614,
+        "lng": -73.9953678,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The approximately 16-foot golden seated Buddha inside the temple.",
+      "clue": "Beyond the traffic, a golden figure sits taller than three people standing head to head.",
+      "hints": [
+        "The target is inside a Buddhist temple near the Manhattan Bridge.",
+        "Look respectfully for the large seated golden Buddha."
+      ],
+      "remote_review": {
+        "finding": "OSM confirms an active temple at 133 Canal Street; a secondary listing describes a roughly 16-foot golden Buddha, but the cited Wikipedia URL is currently 404 and Atlas Obscura blocked automated review. Canonical/factual evidence is therefore weak.",
+        "public_exterior_visibility_and_access": "Interior religious space; hours, respectful visitation, donations/payment, photography, and step-free access are not authoritatively documented.",
+        "closure_construction_removal_risk": "Interior access and worship/event schedules are volatile; no current official visitor guidance was captured.",
+        "durability": "Large statue is likely durable, but remote evidence is insufficient.",
+        "nearby_ambiguity": "Other Buddhist temples/statues nearby; exact interior target requires entry.",
+        "editorial_action": "Hold until an official temple source and recent visual evidence confirm size, hours, visitor policy, photography, and accessibility. “Taller than three people” is imprecise and should be removed."
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Mahayana_Buddhist_Temple",
+          "source_role": "identity/factual claim",
+          "quote": "The public place listing describes the temple’s principal visual feature as a “16-foot-tall golden Buddha.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "404"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/node/4312238411",
+          "source_role": "coordinates/map identity",
+          "quote": "Mahayana Buddhist Temple, 133, Canal Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "wikipedia",
+          "url": "https://www.atlasobscura.com/places/mahayana-buddhist-temple",
+          "source_role": "identity/factual claim",
+          "quote": "The public place listing describes the temple’s principal visual feature as a “16-foot-tall golden Buddha.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "blocked_403_but_public_url"
+        },
+        {
+          "publisher": "Mahayana Buddhist Temple",
+          "url": "https://www.mahayana.us/",
+          "source_role": "official/current operation or access",
+          "quote": "A current temple-domain page responded, but supplied no machine-readable visitor or statue description.",
+          "publication_or_observation_date": null,
+          "date_note": "live page; no publication date visible",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Mahayana_Buddhist_Temple_(Manhattan)",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 55,
+      "risk": "high",
+      "decision": "hold",
+      "field_verified": false
+    },
+    {
+      "candidate_id": "dq-nyc-r060",
+      "hunt_idea_id": "idea:nyc:dq-nyc-r060",
+      "clue_package_id": "clue:nyc:candidate:dq-nyc-r060",
+      "bank_place_id": "place:wikipedia:Corky%20Lee",
+      "bank_area": "Chinatown",
+      "canonical_identity": "Corky Lee Way at Mott and Mosco Streets",
+      "coordinates": {
+        "lat": 40.7144885,
+        "lng": -73.9991951,
+        "verification": "OSM object/source independently supports the mapped place; coordinate is not a field reading."
+      },
+      "observable_target_in_bank": "The Corky Lee Way commemorative street sign at the corner of Mott and Mosco Streets.",
+      "clue": "A photographer who put overlooked faces into America’s picture now has his own name above a Chinatown corner.",
+      "hints": [
+        "Go to the meeting of Mott and Mosco Streets.",
+        "Look up for the commemorative blade reading Corky Lee Way."
+      ],
+      "remote_review": {
+        "finding": "Corky Lee biography source supports the October 22, 2023 unveiling at Mott/Mosco; OSM confirms Mosco Street geometry. The commemorative blade’s current presence lacks a recent independent close-up.",
+        "public_exterior_visibility_and_access": "Free exterior public-corner observation; no entry/hours/payment. Look from sidewalk without blocking the intersection; curb-ramp specifics not sourced.",
+        "closure_construction_removal_risk": "Street blades can be stolen, replaced, or obscured, but installation is recent and no removal report was found.",
+        "durability": "Municipal commemorative sign: medium-high durability.",
+        "nearby_ambiguity": "Unique named blade at a precise corner.",
+        "editorial_action": "Keep, but add a recent sign image before publication. Clue’s description of Lee’s work is interpretive; source it to a biography or simplify to “A Chinatown photographer now has his name above a corner.”"
+      },
+      "sources": [
+        {
+          "publisher": "wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Corky_Lee",
+          "source_role": "identity/factual claim",
+          "quote": "“On October 22, 2023, a street sign for Corky Lee Way was unveiled in New York’s Chinatown, at the corner of Mott Street and Mosco Street.”",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "openstreetmap-nominatim",
+          "url": "https://www.openstreetmap.org/way/183010767",
+          "source_role": "coordinates/map identity",
+          "quote": "Mosco Street, Five Points, Manhattan Community Board 3, Manhattan, New York County, New York, 10278, United States",
+          "publication_or_observation_date": null,
+          "date_note": "No publication date recorded in source artifact. Wikipedia pages returned current Last-Modified headers during review; OSM object pages were live.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok"
+        },
+        {
+          "publisher": "Wikimedia Commons",
+          "url": "https://commons.wikimedia.org/wiki/Category:Corky_Lee",
+          "source_role": "linked visual reference only",
+          "quote": "Linked imagery/category used to assess form or identify the absence of sufficiently recent close-up evidence; image not copied.",
+          "publication_or_observation_date": null,
+          "date_note": "Observation date from Commons metadata when available; “unknown” category links are not current visual proof.",
+          "checked_at": "2026-07-23T01:20:48Z",
+          "fetch_status": "ok_or_category_link"
+        }
+      ],
+      "recent_visual_evidence": {
+        "available": false,
+        "latest_linked_observation_date": null,
+        "limitation": "Remote imagery is reference evidence only and is never treated as field verification. A recent close-up was not found unless explicitly noted in the review."
+      },
+      "remote_confidence": 88,
+      "risk": "low",
+      "decision": "canary_eligible",
+      "field_verified": false
+    }
+  ],
+  "summary": {
+    "decision_counts": {
+      "canary_eligible": 12,
+      "hold": 8,
+      "needs_scout": 10,
+      "reject": 2
+    },
+    "risk_counts": {
+      "high": 12,
+      "low": 11,
+      "medium": 9
+    },
+    "area_counts": {
+      "Chinatown": 17,
+      "East Village": 14,
+      "Union Square": 1
+    },
+    "blockers": [
+      "Area taxonomy: Engine Company 31 and Odd Fellows Hall are not clearly in Chinatown.",
+      "Data defect: dq-nyc-r042 inherits the Temperance Fountain observable target instead of the Hare Krishna Tree.",
+      "Current-display risk: Metronome LED meaning is programmable and the original two-direction clock premise is not current-proof.",
+      "Construction/current-condition gaps: Kimlau Square, Manhattan Bridge approach, Seward Park mosaic, and Collect Pond pool need current close-up/status checks.",
+      "Paid/private/interior access: Veniero’s, McSorley’s, Canal Street subway clues, Wing on Wo, and Mahayana require stronger hours/payment/accessibility/permission evidence.",
+      "No exact target: La Plaza’s functional juxtaposition and Jim Power’s unspecified mosaic pole are non-deterministic.",
+      "Accessibility evidence is generally weak or absent at the object/viewpoint level; canary-eligible records are limited to public exterior targets."
+    ]
+  }
+}
