@@ -10,6 +10,13 @@
     "present_in_repository": false,
     "basis": "No advertising SDK, data broker sharing, targeted advertising, or linkage to third-party data is represented. Owner must confirm production systems and contracts."
   },
+  "app_review_demonstration": {
+    "status": "implemented_for_app_review_capable_builds_only",
+    "collected_off_device": false,
+    "linked_to_user": false,
+    "tracking": false,
+    "notes": "The disclosed demonstration route uses bundled fictional content, simulated coordinates, and in-memory progress. It requires normal sign-in, a fresh Supabase getUser entitlement check, and database-time RPC authorization on every entry, but does not add raw GPS collection, analytics, feedback, score, quest API, Supabase gameplay mutation, notification, photo-storage, history, visited, collections, settings, or install-ID writes."
+  },
   "data_types": [
     {
       "type": "Precise Location",
@@ -183,6 +190,7 @@
     "JURISDICTION_SPECIFIC_RIGHTS_AND_LEGAL_BASES",
     "LIVE_SCHEMA_AND_STORAGE_PREFLIGHT",
     "APPLE_DELETION_SECRETS_AND_LIVE_TEST",
-    "CONTENT_FAILURE_MIGRATION_SERVICE_KEY_ALERTING_AND_LIVE_READ_BACK"
+    "CONTENT_FAILURE_MIGRATION_SERVICE_KEY_ALERTING_AND_LIVE_READ_BACK",
+    "APP_REVIEW_ENTITLEMENT_MIGRATION_ACCOUNT_AND_DEVICE_TEST"
   ]
 }

@@ -52,3 +52,6 @@ export const APP_SCHEME = "dayquest";
 export const PRIVACY_POLICY_URL = extra.PRIVACY_POLICY_URL || process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL || "";
 export const TERMS_URL = extra.TERMS_URL || process.env.EXPO_PUBLIC_TERMS_URL || "";
 export const SUPPORT_URL = extra.SUPPORT_URL || process.env.EXPO_PUBLIC_SUPPORT_URL || "";
+
+export const APP_REVIEW_CAPABLE =
+  extra.APP_REVIEW_CAPABLE === true || process.env.EXPO_PUBLIC_APP_REVIEW_CAPABLE === "true";

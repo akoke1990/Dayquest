@@ -5,6 +5,7 @@ const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || "";
 const privacyPolicyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL || "";
 const termsUrl = process.env.EXPO_PUBLIC_TERMS_URL || "";
 const supportUrl = process.env.EXPO_PUBLIC_SUPPORT_URL || "";
+const appReviewCapable = process.env.EXPO_PUBLIC_APP_REVIEW_CAPABLE === "true";
 
 module.exports = {
   name: "DayQuest",
@@ -85,6 +86,7 @@ module.exports = {
     PRIVACY_POLICY_URL: privacyPolicyUrl,
     TERMS_URL: termsUrl,
     SUPPORT_URL: supportUrl,
+    APP_REVIEW_CAPABLE: appReviewCapable,
     eas: {
       projectId: "d590e873-0a0e-4d25-a78f-32478af4a91f",
     },

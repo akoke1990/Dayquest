@@ -42,6 +42,15 @@
 
 ## In-app reviewer path
 
+- [ ] Build submitted for review uses the `app-review` EAS profile only when App Review Demonstration is needed.
+- [ ] Normal development, preview, and production EAS profiles keep `EXPO_PUBLIC_APP_REVIEW_CAPABLE=false`.
+- [ ] Dedicated reviewer account signs in normally through Google or Apple; no credentials, tokens, hidden gestures, deep links, hardcoded IDs, or passwords are bundled.
+- [ ] Supabase `auth.getUser()` returns `app_metadata.dayquest_app_review` with `aud=com.akoke18.dayquest`, `version=1.0.0`, and an approved short `expires_at`.
+- [ ] Apply `supabase/migrations/202607230002_app_review_entitlement.sql`; verify each demo entry calls `dayquest_verify_app_review_entitlement()` and an expired entitlement is denied using database time even when the device clock is changed.
+- [ ] Non-entitled signed-in accounts and entitled accounts in normal builds do not see App Review Demonstration.
+- [ ] App Review Demonstration shows the persistent simulated-location/progress-not-saved banner and the “Demo — not saved” recap.
+- [ ] Demonstration checkpoints prove 65m is outside the unchanged 50m find radius and 45m is inside it.
+- [ ] Demonstration completion leaves score, history, visited places, collections, install ID, photos, notifications, analytics, feedback, `/quest`, `/event`, `/feedback`, `/score`, shared-hunt, and Supabase gameplay sinks untouched.
 - [ ] Signed in: Menu → Profile → Delete account is easy to find.
 - [ ] Confirmation names permanent effects and cannot be mistaken for sign-out.
 - [ ] VoiceOver announces deletion/reset buttons, busy/disabled state, and retry error.
@@ -54,9 +63,12 @@
 - [ ] Enter the privacy nutrition label from the reviewed machine inventory, not this draft verbatim.
 - [ ] Privacy Policy URL and Support URL are publicly reachable without login.
 - [ ] Reviewer test account and steps are supplied; no production secrets included.
+- [ ] Reviewer notes disclose that the demonstration route and coordinates are simulated solely to avoid requiring travel.
 - [ ] Reviewer note: “Account deletion: Menu → Profile → Delete account.”
 - [ ] Explain guest reset separately and state there are no in-app purchases/subscriptions in the represented build (reconfirm shipping binary).
 - [ ] Confirm Sign in with Apple token revocation with live logs that do not expose tokens.
+- [ ] Confirm ordinary production quest delivery is reliable despite the current zero eligible curated-content state.
+- [ ] Confirm safety/content-failure reports have a durable reviewed store, not only transient or local evidence.
 
 ## Required evidence archive
 
@@ -64,3 +76,4 @@
 - [ ] Test output and physical-device screen recording (confirmation, failure retry, success).
 - [ ] Redacted Supabase logs for caller validation, Apple revoke success, RPC summary, and auth deletion.
 - [ ] Live-schema preflight result and signed owner/legal approval of published drafts.
+- [ ] App Review entitlement provisioning, physical-device review-demo recording, and redacted no-side-effect evidence.

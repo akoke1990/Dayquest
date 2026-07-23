@@ -41,6 +41,7 @@ import {
   PRIVACY_POLICY_URL,
   TERMS_URL,
   SUPPORT_URL,
+  APP_REVIEW_CAPABLE,
 } from "./config";
 // Optional, anonymous-first auth layer. `authConfigured` is false by default
 // (empty Supabase keys), in which case every auth helper is a safe no-op and the
@@ -89,6 +90,13 @@ import mapStyle from "./mapStyle";
 import QuestScanner from "./QuestScanner";
 import CameraCatch from "./CameraCatch";
 import { normalizeStopHints } from "./lib/hintFlow";
+import { FIND_RADIUS_M, distanceM, isWithinFindRadius } from "./lib/geofence";
+import { loadReviewEntitlement } from "./lib/reviewerEntitlement";
+import {
+  REVIEW_DEMO_BANNER,
+  REVIEW_DEMO_RECAP_LABEL,
+  createReviewDemoRuntime,
+} from "./lib/reviewQuestRuntime";
 import {
   CONTENT_FAILURE_REASONS,
   applyContentReplacement,
@@ -104,11 +112,13 @@ const isExpoGo =
   Constants.appOwnership === "expo" ||
   Constants.executionEnvironment === "storeClient";
 
+const REVIEW_ENTITLEMENT_UNAVAILABLE = Object.freeze({ available: false, reason: "unavailable" });
+
 const QUEST_EMOJI = { photo: "📷", find_detail: "🔍", question: "❓", collect: "✨" };
 const CHECKIN_RADIUS_M = 100; // how close you must be to check in (legacy stop card)
 // --- Scavenger-hunt tuning ---------------------------------------------------
 const SEARCH_ZONE_RADIUS_M = 200; // hunt-zone scale: sizes the camera framing + zoneCenterFor offset (no circle is drawn)
-const FIND_RADIUS_M = 50; // within this of the target → FOUND IT (reveal + collect)
+// FIND_RADIUS_M is imported from lib/geofence; live and review demo share it.
 // Movement gate for the warmer/colder HEAT signal (band + edge-glow + haptic).
 // We only RECOMPUTE the heat after the user has physically moved ≥ this far from
 // the last heat-update position. This hides dense-urban GPS multipath jitter and
@@ -670,18 +680,6 @@ function formatHistoryDate(iso) {
   } catch {
     return iso;
   }
-}
-
-// Distance between two lat/lng points, in metres.
-function distanceM(lat1, lng1, lat2, lng2) {
-  const R = 6371000;
-  const toRad = (d) => (d * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
 }
 
 // --- Search-zone anti-leak (field-tester report) -----------------------------
@@ -1335,6 +1333,13 @@ export default function App() {
   const [dataActionBusy, setDataActionBusy] = useState(false);
   const [dataActionError, setDataActionError] = useState("");
   const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
+  const [reviewEntitlement, setReviewEntitlement] = useState(REVIEW_ENTITLEMENT_UNAVAILABLE);
+  const [reviewRuntime, setReviewRuntime] = useState(null);
+  const [reviewQuest, setReviewQuest] = useState(null);
+  const [reviewProgress, setReviewProgress] = useState({});
+  const [reviewCheckpoint, setReviewCheckpoint] = useState(null);
+  const [reviewFindMessage, setReviewFindMessage] = useState("");
+  const [reviewRecap, setReviewRecap] = useState(null);
   const userRef = useRef(null); // latest user for the completion effect (avoids re-subscribing)
   userRef.current = user;
 
@@ -1466,6 +1471,20 @@ export default function App() {
     });
     return unsub;
   }, []);
+
+  useEffect(() => {
+    if (!user) {
+      setReviewEntitlement(REVIEW_ENTITLEMENT_UNAVAILABLE);
+      setReviewRuntime(null);
+      setReviewQuest(null);
+      setReviewProgress({});
+      setReviewCheckpoint(null);
+      setReviewFindMessage("");
+      setReviewRecap(null);
+      return;
+    }
+    refreshReviewEntitlement();
+  }, [user]);
 
   // --- Deep links: dayquest://friend?uid=… and dayquest://join?hunt=… ---------
   // Two arrival paths: cold-start (getInitialURL) and warm (addEventListener).
@@ -1612,8 +1631,7 @@ export default function App() {
     if (screen !== "ready" || !quest || !coords || findReveal != null) return;
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     if (!target?.place) return;
-    const dist = distanceM(coords.latitude, coords.longitude, target.place.lat, target.place.lng);
-    if (dist <= FIND_RADIUS_M) findStop(target.order_index, { awardItem: true });
+    if (isWithinFindRadius(coords, target.place)) findStop(target.order_index, { awardItem: true });
   }, [coords, screen, quest, progress, findReveal]);
 
   // --- HEAT MOVEMENT GATE -----------------------------------------------------
@@ -2006,6 +2024,65 @@ export default function App() {
   // permission/GPS needed, the typed label is passed through, and opts.size
   // scales the loop. opts.label, when present, makes the server skip the
   // reverse-geocode so the HUD shows the place the user typed.
+  async function refreshReviewEntitlement() {
+    if (!APP_REVIEW_CAPABLE || !authConfigured || !supabase) {
+      setReviewEntitlement(REVIEW_ENTITLEMENT_UNAVAILABLE);
+      return REVIEW_ENTITLEMENT_UNAVAILABLE;
+    }
+    const next = await loadReviewEntitlement(supabase, { appReviewCapable: APP_REVIEW_CAPABLE });
+    setReviewEntitlement(next.available ? next : REVIEW_ENTITLEMENT_UNAVAILABLE);
+    return next;
+  }
+
+  async function startAppReviewDemo() {
+    // Recheck against Supabase on every entry. The welcome-card state is only a
+    // discoverability hint; it is never sufficient authorization to start.
+    const nextEntitlement = await refreshReviewEntitlement();
+    if (!nextEntitlement.available) return;
+    const runtime = createReviewDemoRuntime();
+    const demoQuest = runtime.start();
+    setReviewRuntime(runtime);
+    setReviewQuest(demoQuest);
+    setReviewProgress(runtime.getProgress());
+    setReviewCheckpoint(runtime.currentCheckpoint());
+    setReviewFindMessage("");
+    setReviewRecap(null);
+    setScreen("appReviewDemo");
+  }
+
+  function syncAppReviewDemo(runtime, result = null) {
+    setReviewProgress(runtime.getProgress());
+    setReviewCheckpoint(runtime.currentCheckpoint());
+    if (runtime.isComplete()) {
+      setReviewRecap(runtime.buildRecap());
+      setReviewFindMessage("Demo route complete. Progress was not saved.");
+    } else if (result?.found) {
+      setReviewFindMessage(`${result.stop.place.name} found. Progress is simulated and not saved.`);
+    }
+  }
+
+  function advanceAppReviewWalk() {
+    if (!reviewRuntime) return;
+    const checkpoint = reviewRuntime.advanceSimulatedWalk();
+    const result = reviewRuntime.tryFindCurrentStop();
+    if (result.found) {
+      syncAppReviewDemo(reviewRuntime, result);
+      return;
+    }
+    setReviewCheckpoint(checkpoint);
+    setReviewFindMessage(`${checkpoint?.label || "Checkpoint"}: still outside the unchanged ${FIND_RADIUS_M}m find radius.`);
+  }
+
+  function tryAppReviewFind() {
+    if (!reviewRuntime) return;
+    const result = reviewRuntime.tryFindCurrentStop();
+    if (result.found) {
+      syncAppReviewDemo(reviewRuntime, result);
+      return;
+    }
+    setReviewFindMessage(`Get closer: this simulated checkpoint is outside the unchanged ${FIND_RADIUS_M}m find radius.`);
+  }
+
   async function startQuest(opts = {}) {
     const hasPlace = Number.isFinite(opts.lat) && Number.isFinite(opts.lng);
     setScreen("loading");
@@ -3073,6 +3150,13 @@ export default function App() {
     } finally {
       setUser(null);
       setProfile(null);
+      setReviewEntitlement(REVIEW_ENTITLEMENT_UNAVAILABLE);
+      setReviewRuntime(null);
+      setReviewQuest(null);
+      setReviewProgress({});
+      setReviewCheckpoint(null);
+      setReviewFindMessage("");
+      setReviewRecap(null);
       setAuthBusy(false);
       track("sign_out");
     }
@@ -3138,6 +3222,13 @@ export default function App() {
         await signOut();
         setUser(null);
         setProfile(null);
+        setReviewEntitlement(REVIEW_ENTITLEMENT_UNAVAILABLE);
+        setReviewRuntime(null);
+        setReviewQuest(null);
+        setReviewProgress({});
+        setReviewCheckpoint(null);
+        setReviewFindMessage("");
+        setReviewRecap(null);
         setScreen("signin");
       }
     } catch (e) {
@@ -3394,6 +3485,83 @@ export default function App() {
     );
   }
 
+  if (screen === "appReviewDemo") {
+    const activeReviewStop = reviewRuntime ? reviewRuntime.currentStop() : null;
+    const foundCount = reviewQuest
+      ? reviewQuest.stops.filter((stop) => reviewProgress[stop.order_index]?.found).length
+      : 0;
+    const checkpointDistance =
+      activeReviewStop && reviewCheckpoint
+        ? distanceM(reviewCheckpoint.latitude, reviewCheckpoint.longitude, activeReviewStop.place.lat, activeReviewStop.place.lng)
+        : null;
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("welcome")}>
+          ← Back
+        </Text>
+        <View
+          style={styles.reviewBanner}
+          accessibilityLabel="App Review Demonstration — simulated location, progress not saved"
+        >
+          <Text style={styles.reviewBannerText}>{REVIEW_DEMO_BANNER}</Text>
+        </View>
+        <Text style={styles.theme}>App Review Demonstration</Text>
+        <Text style={styles.intro}>
+          This bundled route is fictional and generic. It demonstrates the find radius with simulated checkpoints; no location or progress is saved.
+        </Text>
+
+        <View style={styles.reviewDemoCard}>
+          <Text style={styles.resumeLabel}>
+            {reviewQuest ? `${foundCount}/${reviewQuest.stops.length} demo stops found` : "Demo route not started"}
+          </Text>
+          {reviewRecap ? (
+            <>
+              <Text style={styles.reviewRecapLabel}>{REVIEW_DEMO_RECAP_LABEL}</Text>
+              <Text style={styles.reviewDemoTitle}>{reviewQuest.theme}</Text>
+              <Text style={styles.intro}>
+                The demonstration completed in memory only. Collections, score, history, photos, analytics, and server gameplay state were not updated.
+              </Text>
+              <PressBounce style={styles.button} onPress={startAppReviewDemo}>
+                <Text style={styles.buttonText}>Restart demonstration</Text>
+              </PressBounce>
+            </>
+          ) : activeReviewStop ? (
+            <>
+              <Text style={styles.reviewDemoKicker}>CLUE {activeReviewStop.order_index} OF {reviewQuest.stops.length}</Text>
+              <Text style={styles.reviewDemoTitle}>{activeReviewStop.clue}</Text>
+              <Text style={styles.body}>{activeReviewStop.description}</Text>
+              <Text style={styles.why}>{activeReviewStop.quest_prompt}</Text>
+              <View style={styles.reviewCheckpointBox}>
+                <Text style={styles.optTitle}>{reviewCheckpoint?.label || "350m cold"}</Text>
+                <Text style={styles.optSub}>
+                  {checkpointDistance == null
+                    ? "Waiting for simulated checkpoint."
+                    : `${checkpointDistance}m from ${activeReviewStop.place.name}; find radius is ${FIND_RADIUS_M}m.`}
+                </Text>
+              </View>
+              <PressBounce style={styles.button} onPress={advanceAppReviewWalk}>
+                <Text style={styles.buttonText}>Advance simulated walk</Text>
+              </PressBounce>
+              <TouchableOpacity style={styles.actionBtn} onPress={tryAppReviewFind}>
+                <Text style={styles.actionText}>I found it!</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <>
+              <Text style={styles.reviewRecapLabel}>{REVIEW_DEMO_RECAP_LABEL}</Text>
+              <PressBounce style={styles.button} onPress={startAppReviewDemo}>
+                <Text style={styles.buttonText}>Begin demonstration</Text>
+              </PressBounce>
+            </>
+          )}
+        </View>
+        {reviewFindMessage ? <Text style={styles.settingNote}>{reviewFindMessage}</Text> : null}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
   if (screen === "hydrating") {
     return (
       <View style={styles.center}>
@@ -3606,6 +3774,14 @@ export default function App() {
               📅 Plan a weekend hunt with friends
             </Text>
           )
+        ) : null}
+        {reviewEntitlement.available ? (
+          <TouchableOpacity style={styles.reviewEntry} onPress={startAppReviewDemo} activeOpacity={0.86}>
+            <Text style={styles.reviewEntryTitle}>App Review Demonstration</Text>
+            <Text style={styles.reviewEntryBody}>
+              Simulated location; progress not saved. Uses the same {FIND_RADIUS_M}m find radius.
+            </Text>
+          </TouchableOpacity>
         ) : null}
         {/* Plain-language permission framing, shown before the OS dialog. */}
         <Text style={styles.permNote}>
@@ -4593,8 +4769,7 @@ export default function App() {
     !currentFailure &&
     !!coords &&
     !!currentTarget?.place &&
-    distanceM(coords.latitude, coords.longitude, currentTarget.place.lat, currentTarget.place.lng) <=
-      FIND_RADIUS_M;
+    isWithinFindRadius(coords, currentTarget.place);
   // The stop being REVEALED right now (the "You found it!" moment), if any.
   const revealStop =
     findReveal != null ? quest.stops.find((s) => s.order_index === findReveal) : null;
@@ -5560,6 +5735,16 @@ const styles = StyleSheet.create({
   planPickerRow: { flexDirection: "row", flexWrap: "wrap", gap: 10, marginTop: 14, alignItems: "center", justifyContent: "center" },
   planChip: { borderWidth: 3, borderColor: OUTLINE, borderRadius: 999, backgroundColor: "#fff", paddingVertical: 9, paddingHorizontal: 15 },
   planChipText: { fontSize: 14, fontWeight: "900", color: INK },
+  reviewEntry: { width: "100%", backgroundColor: "#fff", borderRadius: 18, borderWidth: 3, borderColor: ACCENT, paddingVertical: 15, paddingHorizontal: 16, marginTop: 16 },
+  reviewEntryTitle: { fontSize: 16, fontWeight: "900", color: INK },
+  reviewEntryBody: { fontSize: 13, color: INK, opacity: 0.68, fontWeight: "700", marginTop: 4, lineHeight: 18 },
+  reviewBanner: { backgroundColor: "#FFF7E0", borderWidth: 3, borderColor: AMBER, borderRadius: 14, paddingVertical: 10, paddingHorizontal: 12, marginBottom: 18 },
+  reviewBannerText: { fontSize: 13, color: INK, fontWeight: "900", textAlign: "center", lineHeight: 18 },
+  reviewDemoCard: { backgroundColor: "#fff", borderRadius: 22, padding: 18, marginTop: 18, borderWidth: 3, borderColor: OUTLINE, shadowColor: OUTLINE, shadowOpacity: 0.1, shadowRadius: 8, shadowOffset: { width: 0, height: 4 }, elevation: 2 },
+  reviewDemoKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 0.5, marginTop: 12 },
+  reviewDemoTitle: { fontSize: 20, fontWeight: "900", color: INK, lineHeight: 25, marginTop: 6 },
+  reviewCheckpointBox: { backgroundColor: CREAM, borderWidth: 2, borderColor: BORDER, borderRadius: 16, padding: 13, marginTop: 14 },
+  reviewRecapLabel: { fontSize: 17, color: GREEN, fontWeight: "900", marginTop: 10 },
 
   // Brand mark (the app icon, shown in-app). Rounded corners echo the iOS icon.
   brandMark: { width: 120, height: 120, borderRadius: 28, marginBottom: 18 },

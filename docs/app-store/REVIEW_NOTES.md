@@ -10,8 +10,8 @@ DayQuest is a free, clue-led scavenger-hunt app with limited coverage in select 
 DayQuest requests foreground location to request a nearby quest, show the player on the map, provide distance guidance, and recognize arrival. It does not request background location. Camera/photo access is optional, microphone access is disabled, and quest photos are not uploaded by the represented build.
 
 Guest path: On first launch choose “Continue as guest.”
-Reviewer path: {{BLOCKER_REVIEWER_DEMO_PATH_INSTRUCTIONS}}
-Account path: {{BLOCKER_REVIEWER_ACCOUNT_OR_NO_ACCOUNT_JUSTIFICATION}}
+Reviewer path: Sign in with the dedicated reviewer account supplied in App Store Connect. When the submitted build is the `app-review` profile and the Supabase user has the short-lived `dayquest_app_review` entitlement for `com.akoke18.dayquest` version `1.0.0`, Home shows “App Review Demonstration.” Every entry is reauthorized with Supabase `getUser()` and the database-time `dayquest_verify_app_review_entitlement()` RPC, so a stale local session or changed device clock cannot grant access. Open it to run a disclosed simulated three-stop route. The banner says “App Review Demonstration — simulated location, progress not saved.” Tap “Advance simulated walk” through the 350m, 220m, 120m, 65m, and 45m checkpoints. At 65m, “I found it!” asks the reviewer to get closer; at 45m the unchanged 50m predicate finds the stop. The recap is labeled “Demo — not saved.”
+Account path: {{BLOCKER_DEDICATED_REVIEWER_ACCOUNT_AND_ENTITLEMENT_EXPIRY}}
 
 Account deletion after sign-in: Menu → Profile → Delete account. Reset guest data is a separate on-device action.
 
@@ -27,13 +27,13 @@ Never include private keys, service-role keys, tokens, or personal credentials. 
 
 ## Script A — guest/core
 
-**Blocked until a deterministic review path works from Apple's location without GPS spoofing.**
+The deterministic App Review demonstration path is implemented in source, but remains blocked operationally until the submitted build, reviewer account entitlement, and physical-device path are verified.
 
 | Step | Action | Expected | Required evidence |
 |---:|---|---|---|
 | 1 | Install/launch candidate | Launches without account creation | Recording + build |
 | 2 | Continue as guest | Help/welcome; no sign-in trap | Device result |
-| 3 | Follow `{{REVIEWER_DEMO_PATH_INSTRUCTIONS}}` | Truthful demo quest loads | Backend/device proof |
+| 3 | Sign in with entitled reviewer account and open App Review Demonstration | Truthful disclosed demo quest loads; banner remains visible | Build/profile + Supabase entitlement proof |
 | 4 | Start quest and allow While Using location | Map/clue render; no background prompt | Recording/settings |
 | 5 | Expand clue; reveal hints; activate guidance | Progressive help; guidance does not find/advance remotely | Recording |
 | 6 | Reach approved test stop | Find/reveal occurs from actual coordinates | Recording/redacted logs |
@@ -65,8 +65,11 @@ If deletion destroys supplied credentials, provide a resettable disposable proce
 
 ## Current blockers
 
-- Deterministic out-of-NYC reviewer path (no GPS spoofing).
-- Dedicated credentials/no-account approach.
+- Dedicated reviewer credentials and short-lived Supabase entitlement provisioning.
+- Deployment and live verification of `202607230002_app_review_entitlement.sql`.
+- Physical-device verification of entitled and non-entitled accounts.
 - Live backend, shipping cohort, and TestFlight behavior.
 - SIWA token registration/revocation and deletion deployment.
 - Public legal/support/deletion URLs (committed config defaults are blank).
+- Current production curated content has zero eligible records; ordinary users still need a reliable live quest path.
+- Durable safety/content-failure report storage and owner review workflow.

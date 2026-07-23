@@ -1,0 +1,104 @@
+{
+  "route_id": "app-review-demonstration-v1",
+  "version": "1.0.0",
+  "purpose": "app_review_demonstration",
+  "theme": "App Review Demonstration",
+  "intro": "A disclosed simulated walk for App Review. Location and progress are simulated and not saved.",
+  "origin": {
+    "label": "Simulated Review Route",
+    "lat": 40.73061,
+    "lng": -73.935242
+  },
+  "stops": [
+    {
+      "id": 0,
+      "order_index": 1,
+      "clue": "Find the demo kiosk with the numbered placard.",
+      "description": "A generic demonstration marker used only to show the arrival flow.",
+      "reason": "The task is observable: locate the marked demo kiosk.",
+      "lore_hook": "This fictional marker exists only inside the App Review demonstration route.",
+      "quest_prompt": "Observe the numbered placard on the demo kiosk.",
+      "quest_type": "find_detail",
+      "virtual_item": "Demo Badge",
+      "hints": [
+        "Look for the generic kiosk label.",
+        "The simulated walk button moves closer to the placard."
+      ],
+      "place": {
+        "source_id": "app-review-demo:stop-1",
+        "name": "Demo Kiosk",
+        "lat": 40.73061,
+        "lng": -73.935242,
+        "source_url": "https://example.invalid/dayquest/app-review/demo-kiosk",
+        "lore": "Demo Kiosk is a fictional review stop. It does not assert a real-world field verification."
+      },
+      "simulated_walk": [
+        { "label": "350m cold", "latitude": 40.733758, "longitude": -73.935242 },
+        { "label": "220m cool", "latitude": 40.732588, "longitude": -73.935242 },
+        { "label": "120m warm", "latitude": 40.731689, "longitude": -73.935242 },
+        { "label": "65m outside", "latitude": 40.731195, "longitude": -73.935242 },
+        { "label": "45m inside", "latitude": 40.731015, "longitude": -73.935242 }
+      ]
+    },
+    {
+      "id": 1,
+      "order_index": 2,
+      "clue": "Find the demo mural panel with the simple pattern.",
+      "description": "A generic demonstration panel used only to show the next-stop flow.",
+      "reason": "The task is observable: locate the patterned demo panel.",
+      "lore_hook": "This fictional panel keeps the review route generic and non-authoritative.",
+      "quest_prompt": "Observe the pattern on the demo mural panel.",
+      "quest_type": "find_detail",
+      "virtual_item": "Demo Token",
+      "hints": [
+        "Look for the plain patterned panel.",
+        "The simulated walk checkpoints approach the panel in fixed steps."
+      ],
+      "place": {
+        "source_id": "app-review-demo:stop-2",
+        "name": "Demo Mural Panel",
+        "lat": 40.73141,
+        "lng": -73.932942,
+        "source_url": "https://example.invalid/dayquest/app-review/demo-mural-panel",
+        "lore": "Demo Mural Panel is a fictional review stop. It is not production content."
+      },
+      "simulated_walk": [
+        { "label": "350m cold", "latitude": 40.734558, "longitude": -73.932942 },
+        { "label": "220m cool", "latitude": 40.733388, "longitude": -73.932942 },
+        { "label": "120m warm", "latitude": 40.732489, "longitude": -73.932942 },
+        { "label": "65m outside", "latitude": 40.731995, "longitude": -73.932942 },
+        { "label": "45m inside", "latitude": 40.731815, "longitude": -73.932942 }
+      ]
+    },
+    {
+      "id": 2,
+      "order_index": 3,
+      "clue": "Find the demo fountain rail with the square marker.",
+      "description": "A generic demonstration rail used only to show completion and recap.",
+      "reason": "The task is observable: locate the square marker on the demo rail.",
+      "lore_hook": "This fictional rail is bundled solely for App Review demonstration.",
+      "quest_prompt": "Observe the square marker on the demo fountain rail.",
+      "quest_type": "find_detail",
+      "virtual_item": "Demo Stamp",
+      "hints": [
+        "Look for the square demo marker.",
+        "The final simulated checkpoint enters the unchanged 50 meter geofence."
+      ],
+      "place": {
+        "source_id": "app-review-demo:stop-3",
+        "name": "Demo Fountain Rail",
+        "lat": 40.72992,
+        "lng": -73.930942,
+        "source_url": "https://example.invalid/dayquest/app-review/demo-fountain-rail",
+        "lore": "Demo Fountain Rail is a fictional review stop. It does not enter the production content bank."
+      },
+      "simulated_walk": [
+        { "label": "350m cold", "latitude": 40.733068, "longitude": -73.930942 },
+        { "label": "220m cool", "latitude": 40.731898, "longitude": -73.930942 },
+        { "label": "120m warm", "latitude": 40.730999, "longitude": -73.930942 },
+        { "label": "65m outside", "latitude": 40.730505, "longitude": -73.930942 },
+        { "label": "45m inside", "latitude": 40.730325, "longitude": -73.930942 }
+      ]
+    }
+  ]
+}
