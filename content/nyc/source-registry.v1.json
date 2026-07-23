@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "registry_id": "dayquest-nyc-sources",
+  "providers": [
+    {
+      "provider_id": "licensed-imagery",
+      "display_name": "Contracted imagery provider placeholder",
+      "aliases": [],
+      "trust_tier": "licensed",
+      "allowed_uses": ["visual_confirmation", "change_signal"],
+      "storage_policy": "store_licensed_asset",
+      "licensing": { "license_required": true, "license": "Provider contract required before use", "attribution_required": true, "attribution": "Attribution supplied by provider contract" },
+      "access": { "auth": "vendor_managed", "credential_env": ["DAYQUEST_IMAGERY_API_KEY"], "rate_limit": "Contract-defined; compiler performs no network calls" }
+    },
+    {
+      "provider_id": "nyc-official",
+      "display_name": "Official City of New York sources",
+      "aliases": ["nyc_parks", "battery-park-city-authority", "mta_arts_and_design", "the-battery-conservancy"],
+      "trust_tier": "official",
+      "allowed_uses": ["identity", "coordinates", "observable_target", "current_status", "public_access", "accessibility", "historical_context"],
+      "storage_policy": "store_metadata_excerpt",
+      "licensing": { "license_required": false, "license": null, "attribution_required": true, "attribution": "Source agency and canonical URL" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Respect each published endpoint policy; no scraping" }
+    },
+    {
+      "provider_id": "openstreetmap",
+      "display_name": "OpenStreetMap",
+      "aliases": ["openstreetmap-nominatim"],
+      "trust_tier": "community_structured",
+      "allowed_uses": ["identity", "coordinates", "public_access", "accessibility", "change_signal"],
+      "storage_policy": "store_metadata_excerpt",
+      "licensing": { "license_required": true, "license": "ODbL 1.0", "attribution_required": true, "attribution": "© OpenStreetMap contributors" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Use approved endpoints and published usage policies; no live calls in compilation" }
+    },
+    {
+      "provider_id": "public-change-signals",
+      "display_name": "Lower-trust public change signals",
+      "aliases": [],
+      "trust_tier": "change_signal",
+      "allowed_uses": ["change_signal"],
+      "storage_policy": "link_only",
+      "licensing": { "license_required": false, "license": null, "attribution_required": true, "attribution": "Link and publisher name only; do not copy restricted content" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Manual/public links only; never scrape restricted sites" }
+    },
+    {
+      "provider_id": "public-web",
+      "display_name": "Public first-party or editorial web pages",
+      "aliases": ["artist_official_site", "downtown-alliance", "official_business_site", "official_place_site"],
+      "trust_tier": "public_web",
+      "allowed_uses": ["identity", "observable_target", "current_status", "public_access", "accessibility", "historical_context", "change_signal"],
+      "storage_policy": "link_only",
+      "licensing": { "license_required": false, "license": null, "attribution_required": true, "attribution": "Publisher name and canonical link; excerpt only when permitted" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Manual/public links only; respect robots, terms, and copyright" }
+    },
+    {
+      "provider_id": "wikidata",
+      "display_name": "Wikidata",
+      "aliases": [],
+      "trust_tier": "community_structured",
+      "allowed_uses": ["identity", "coordinates", "historical_context", "change_signal"],
+      "storage_policy": "store_metadata_excerpt",
+      "licensing": { "license_required": true, "license": "CC0 1.0", "attribution_required": true, "attribution": "Wikidata contributors" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Respect Wikimedia User-Agent and query service limits" }
+    },
+    {
+      "provider_id": "wikimedia-commons",
+      "display_name": "Wikimedia Commons",
+      "aliases": [],
+      "trust_tier": "community_reviewed",
+      "allowed_uses": ["identity", "observable_target", "historical_context", "visual_confirmation"],
+      "storage_policy": "link_only",
+      "licensing": { "license_required": true, "license": "Per-file license must be recorded", "attribution_required": true, "attribution": "Per-file author, title, source, and license" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Respect Wikimedia User-Agent and API etiquette" }
+    },
+    {
+      "provider_id": "wikipedia",
+      "display_name": "Wikipedia",
+      "aliases": ["wikipedia-section"],
+      "trust_tier": "community_reviewed",
+      "allowed_uses": ["identity", "observable_target", "historical_context"],
+      "storage_policy": "link_only",
+      "licensing": { "license_required": true, "license": "CC BY-SA 4.0 / GFDL; verify page terms", "attribution_required": true, "attribution": "Wikipedia article title, contributors, canonical URL, and license" },
+      "access": { "auth": "none", "credential_env": [], "rate_limit": "Respect Wikimedia User-Agent and API etiquette" }
+    }
+  ]
+}

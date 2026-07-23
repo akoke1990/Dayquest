@@ -12,11 +12,16 @@ The v1 bank is an **offline authoring artifact**. It is not read by `lib/quest.j
 - NYC data: `content/nyc/content-bank.v1.json`
 - Approved-POI + candidate build: `scripts/import-nyc-content-bank.js`
 - Validator: `scripts/validate-content-bank.js`
+- Source registry / remote verification guide: `docs/NYC_SOURCE_VERIFICATION.md`
+- Seed source registry: `content/nyc/source-registry.v1.json`
+- Claim-level remote artifact: `content/nyc/remote-verification.v1.json`
 
 ```bash
 npm run content:compile:candidates:nyc  # deterministic 40 + 60 candidate compile
 npm run content:import:nyc  # deterministic rebuild from db/nyc-pois-labeled.json
 npm run content:validate  # validate the committed NYC bank
+npm run content:compile:remote:nyc  # adapt claim evidence into the remote contract
+npm run content:validate:remote:nyc # validate registry, claims, and canary gates
 npm test                  # built-in Node tests
 ```
 

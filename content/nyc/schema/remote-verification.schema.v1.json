@@ -1,0 +1,73 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dayquest.app/schemas/remote-verification/v1.0.0",
+  "title": "DayQuest claim-level remote verification v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "site_id", "registry_version", "generated_from", "verifications"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" }, "site_id": { "const": "nyc" },
+    "registry_version": { "const": "1.0.0" }, "generated_from": { "type": "string", "minLength": 1 },
+    "verifications": { "type": "array", "items": { "$ref": "#/$defs/verification" } }
+  },
+  "$defs": {
+    "claim": {
+      "type": "object", "additionalProperties": false,
+      "required": ["claim_id", "role", "text", "supports_claim_ids", "evidence"],
+      "properties": {
+        "claim_id": { "type": "string", "pattern": "^claim:" },
+        "role": { "enum": ["identity", "coordinates", "observable_target", "current_status", "public_access", "accessibility", "historical_context", "visual_confirmation", "change_signal"] },
+        "text": { "type": "string", "minLength": 1 },
+        "supports_claim_ids": { "type": "array", "uniqueItems": true, "items": { "type": "string" } },
+        "evidence": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/evidence" } }
+      }
+    },
+    "evidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["evidence_id", "provider_id", "source_url", "source_date", "reviewed_at", "freshness", "verification_method", "attribution", "license"],
+      "properties": {
+        "evidence_id": { "type": "string", "minLength": 1 }, "provider_id": { "type": "string", "minLength": 1 },
+        "source_url": { "type": ["string", "null"], "format": "uri" },
+        "source_date": { "type": ["string", "null"], "pattern": "^\\d{4}-\\d{2}-\\d{2}$" },
+        "reviewed_at": { "type": ["string", "null"], "format": "date-time" },
+        "freshness": {
+          "type": "object", "additionalProperties": false, "required": ["max_age_days", "status"],
+          "properties": { "max_age_days": { "type": "integer", "minimum": 1 }, "status": { "enum": ["fresh", "stale", "unknown"] } }
+        },
+        "verification_method": { "enum": ["source_review", "official_record_review", "structured_data_review", "map_review", "licensed_or_open_image_review", "change_signal_review"] },
+        "attribution": { "type": ["string", "null"] }, "license": { "type": ["string", "null"] }
+      }
+    },
+    "verification": {
+      "type": "object", "additionalProperties": false,
+      "required": ["verification_id", "subject_id", "lifecycle", "verification_scope", "claims", "confidence", "risk", "constraints", "decision", "decision_reasons"],
+      "properties": {
+        "verification_id": { "type": "string", "pattern": "^verification:" }, "subject_id": { "type": "string", "pattern": "^place:" },
+        "lifecycle": { "enum": ["source_reviewed", "remote_verified", "canary", "proven", "paused", "retired"] },
+        "verification_scope": { "const": "remote" },
+        "claims": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/claim" } },
+        "confidence": {
+          "type": "object", "additionalProperties": false,
+          "required": ["identity", "spatial", "observability", "currency", "access_safety"],
+          "properties": {
+            "identity": { "$ref": "#/$defs/confidence" }, "spatial": { "$ref": "#/$defs/confidence" },
+            "observability": { "$ref": "#/$defs/confidence" }, "currency": { "$ref": "#/$defs/confidence" },
+            "access_safety": { "$ref": "#/$defs/confidence" }
+          }
+        },
+        "risk": { "enum": ["low", "medium", "high"] },
+        "constraints": {
+          "type": "object", "additionalProperties": false,
+          "required": ["public_access", "purchase_required", "safety", "unsupported"],
+          "properties": {
+            "public_access": { "enum": ["yes", "no", "unknown"] }, "purchase_required": { "enum": ["yes", "no", "unknown"] },
+            "safety": { "enum": ["supported", "unsafe", "unknown"] }, "unsupported": { "type": "boolean" }
+          }
+        },
+        "decision": { "enum": ["canary_eligible", "needs_scout", "hold", "reject"] },
+        "decision_reasons": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "confidence": { "enum": ["unknown", "low", "medium", "high"] }
+  }
+}

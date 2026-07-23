@@ -15,6 +15,8 @@
     "content:compile:candidates:nyc": "node scripts/compile-nyc-source-candidates.js",
     "content:import:nyc": "node scripts/import-nyc-content-bank.js",
     "content:validate": "node scripts/validate-content-bank.js",
+    "content:compile:remote:nyc": "node scripts/compile-remote-verification.js",
+    "content:validate:remote:nyc": "node scripts/validate-remote-verification.js",
     "test": "node --test"
   },
   "dependencies": {

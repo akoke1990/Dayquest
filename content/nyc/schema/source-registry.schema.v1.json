@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://dayquest.app/schemas/source-registry/v1.0.0",
+  "title": "DayQuest source provider registry v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "registry_id", "providers"],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "registry_id": { "type": "string", "minLength": 1 },
+    "providers": { "type": "array", "items": { "$ref": "#/$defs/provider" } }
+  },
+  "$defs": {
+    "claim_role": { "enum": ["identity", "coordinates", "observable_target", "current_status", "public_access", "accessibility", "historical_context", "visual_confirmation", "change_signal"] },
+    "provider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider_id", "display_name", "aliases", "trust_tier", "allowed_uses", "storage_policy", "licensing", "access"],
+      "properties": {
+        "provider_id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "display_name": { "type": "string", "minLength": 1 },
+        "aliases": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+        "trust_tier": { "enum": ["official", "licensed", "community_structured", "community_reviewed", "public_web", "change_signal"] },
+        "allowed_uses": { "type": "array", "uniqueItems": true, "items": { "$ref": "#/$defs/claim_role" } },
+        "storage_policy": { "enum": ["link_only", "store_metadata_excerpt", "store_licensed_asset"] },
+        "licensing": {
+          "type": "object", "additionalProperties": false,
+          "required": ["license_required", "license", "attribution_required", "attribution"],
+          "properties": {
+            "license_required": { "type": "boolean" }, "license": { "type": ["string", "null"] },
+            "attribution_required": { "type": "boolean" }, "attribution": { "type": ["string", "null"] }
+          }
+        },
+        "access": {
+          "type": "object", "additionalProperties": false,
+          "required": ["auth", "credential_env", "rate_limit"],
+          "properties": {
+            "auth": { "enum": ["none", "api_key", "oauth", "vendor_managed"] },
+            "credential_env": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" } },
+            "rate_limit": { "type": "string", "minLength": 1 }
+          }
+        }
+      }
+    }
+  }
+}

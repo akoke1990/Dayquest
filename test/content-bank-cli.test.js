@@ -56,3 +56,27 @@ test("validator CLI exits nonzero for invalid content", () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /difficulty is not part of content-bank v1/);
 });
+
+test("remote-verification compiler and validator CLIs are deterministic", () => {
+  const dir = mkdtempSync(join(tmpdir(), "dayquest-remote-"));
+  const output = join(dir, "remote.json");
+  const first = run("scripts/compile-remote-verification.js", ["--out", output]);
+  assert.equal(first.status, 0, first.stderr);
+  const bytes = readFileSync(output, "utf8");
+  const second = run("scripts/compile-remote-verification.js", ["--out", output]);
+  assert.equal(second.status, 0, second.stderr);
+  assert.equal(readFileSync(output, "utf8"), bytes);
+  assert.match(first.stdout, /Compiled 100 remote verification records with 100 claims/);
+  const validation = run("scripts/validate-remote-verification.js", [output]);
+  assert.equal(validation.status, 0, validation.stderr);
+  assert.match(validation.stdout, /Valid remote verification v1.0.0: 100 records; 100 claims/);
+});
+
+test("remote-verification validator exits nonzero for malformed content", () => {
+  const dir = mkdtempSync(join(tmpdir(), "dayquest-remote-invalid-"));
+  const input = join(dir, "invalid.json");
+  writeFileSync(input, JSON.stringify({ schema_version: "1.0.0", site_id: "nyc", registry_version: "1.0.0", generated_from: "test", verifications: [], raw_route: [] }));
+  const result = run("scripts/validate-remote-verification.js", [input]);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /raw_route is not allowed|raw_route is forbidden/);
+});
