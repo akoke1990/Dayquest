@@ -21,6 +21,11 @@ Ship free 1.0 with no ads/subscriptions/IAP; Custom Hunts stay deployment 2. Rel
 - [ ] Approved content cohort published through lifecycle with claim-appropriate field/access/safety evidence.
 - [ ] Research candidates cannot leak; pause/retire and penalty-free replacement exercised.
 - [ ] Supabase RLS/auth/social reviewed; deletion deployed/live-tested.
+- [ ] Apply `supabase/migrations/202607230001_content_failures.sql` to production and verify RLS is enabled/forced, no anon/authenticated policies or grants exist, and only `service_role` has table access.
+- [ ] Configure the API host's server-only `SUPABASE_URL` and `SUPABASE_SERVICE_KEY`; confirm the service-role key is absent from the app, public config, logs, and evidence archives.
+- [ ] Exercise a production-like `/content-failure` request and perform a service-role **live read-back** by its response `request_id` before accepting replacement behavior. A 503 without a replacement is the required result when storage is unavailable.
+- [ ] Activate a **queue alert** for persistence failures and overdue open safety-priority rows; test paging to `{{CONTENT_SAFETY_OWNER}}` and `{{BACKEND_OWNER}}`.
+- [ ] Assign and acknowledge the **immediate unsafe pause owner** (`{{CONTENT_SAFETY_OWNER}}`), including access to pause/retire affected content before release.
 - [ ] Production map key restricted.
 - [ ] Public URLs/config, privacy/manifests, age/content rights/export, metadata/screenshots/reviewer notes approved.
 - [ ] Privacy-safe monitoring, support inbox, on-call owners active.
@@ -66,7 +71,8 @@ Before release: Apple approval valid; production dependencies/URLs healthy; coho
 
 | Incident | Containment | Recovery | Owner |
 |---|---|---|---|
-| Unsafe/closed stop | Pause/retire; penalty-free bypass/replacement | Re-verify/new content version | `{{CONTENT_SAFETY_OWNER}}` |
+| Unsafe/closed stop | Immediate unsafe pause owner pauses/retires content; do not replace unless the report is durably queued | Read back by request ID; re-verify/new content version; resolve queue row | `{{CONTENT_SAFETY_OWNER}}` |
+| Content-failure queue unavailable/backlogged | Production API fails closed with sanitized 503 and no replacement; page queue alert | Restore persistence, live read-back a test report, then re-enable replacement | `{{BACKEND_OWNER}}` + `{{CONTENT_SAFETY_OWNER}}` |
 | API outage | Serve approved cached/curated path or halt | Roll server after compatibility review | `{{BACKEND_OWNER}}` |
 | Auth/RLS exposure | Halt; disable feature/provider; preserve evidence | Fix, legal/security assessment | `{{SECURITY_OWNER}}` |
 | Deletion/revocation | Halt; retain retry/support; no false success | Repair and rerun destructive matrix | `{{PRIVACY_ENGINEERING_OWNER}}` |

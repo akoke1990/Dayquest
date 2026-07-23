@@ -128,9 +128,10 @@
         "Analytics"
       ],
       "destinations": [
-        "DayQuest API JSONL feedback logs"
+        "DayQuest API JSONL feedback logs",
+        "Supabase service-role-only content_failures queue"
       ],
-      "notes": "Optional feedback text, rating, stop flag/context with install ID. Linked follows the conservative Device ID treatment pending production evidence."
+      "notes": "Optional feedback text, rating, stop flag/context with install ID. Structured content-failure reports contain only reason, curated place/content-version IDs, queue fields, and a server request ID; no coordinates, route, media, clue/answer, contact/network/account/install identifier, or free-form field. Linked follows the conservative Device ID treatment pending production evidence."
     },
     {
       "type": "Photos or Videos",
@@ -181,6 +182,7 @@
     "OPEN_DATA_ATTRIBUTION_TEXT_AND_LINKS",
     "JURISDICTION_SPECIFIC_RIGHTS_AND_LEGAL_BASES",
     "LIVE_SCHEMA_AND_STORAGE_PREFLIGHT",
-    "APPLE_DELETION_SECRETS_AND_LIVE_TEST"
+    "APPLE_DELETION_SECRETS_AND_LIVE_TEST",
+    "CONTENT_FAILURE_MIGRATION_SERVICE_KEY_ALERTING_AND_LIVE_READ_BACK"
   ]
 }

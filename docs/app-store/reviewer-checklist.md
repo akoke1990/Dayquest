@@ -31,6 +31,15 @@
 - [ ] Verify server success clears represented local keys/photos/reminders, signs out, and routes to sign-in.
 - [ ] Verify repeated data RPC/auth-delete-failure retry uses Apple `revoked_at` and idempotent SQL.
 
+## Durable content-failure queue (hard stop; no deployment performed here)
+
+- [ ] Review/apply `supabase/migrations/202607230001_content_failures.sql`; verify RLS enabled/forced, zero anon/authenticated policies or grants, and service-role-only table privileges.
+- [ ] Configure server-only `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` on the production API host; verify neither value reaches app/public config, responses, or logs.
+- [ ] Post every structured reason against production-like content and complete a service-role **live read-back** by response `request_id`; confirm the row has only the approved structured columns.
+- [ ] Prove unconfigured and failed writes return sanitized 503 `CONTENT_FAILURE_PERSISTENCE_UNAVAILABLE`, `penalty:false`, and no replacement or live-AI call.
+- [ ] Enable and test a **queue alert** for persistence failures and overdue open `safety` rows; archive redacted alert evidence.
+- [ ] Assign the immediate unsafe pause owner (`{{CONTENT_SAFETY_OWNER}}`) and verify that owner can pause/retire affected content immediately.
+
 ## In-app reviewer path
 
 - [ ] Signed in: Menu → Profile → Delete account is easy to find.

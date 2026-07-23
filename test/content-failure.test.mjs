@@ -69,6 +69,8 @@ function dependencies(overrides = {}) {
     resolvePlace: trap,
     fetchSharedHunt: async () => null,
     upsertSharedHunt: async () => false,
+    contentFailuresConfigured: () => false,
+    persistContentFailure: async () => false,
     appendRecord: () => {},
     ...overrides,
   };
@@ -89,13 +91,17 @@ test("curated replacement uses the existing lifecycle gate and excludes every ac
   assert.equal(replacement.place.source, "dayquest_content_bank");
 });
 
-test("unsafe report is stored as safety-priority structured data and returns a curated same-slot replacement", async () => {
+test("configured unsafe report is durably stored before returning a curated same-slot replacement", async () => {
   const records = [];
+  const persisted = [];
+  const sequence = [];
   const calls = [];
   const replacement = { order_index: 99, clue: "Replacement clue", place: { source_id: "place:test:new" } };
-  await withApi({ dependencies: dependencies({
+  await withApi({ production: true, dependencies: dependencies({
     appendRecord: (file, record) => records.push({ file, record }),
-    loadCuratedReplacement: async (input) => { calls.push(input); return replacement; },
+    contentFailuresConfigured: () => true,
+    persistContentFailure: async (record) => { sequence.push("persist"); persisted.push(record); return true; },
+    loadCuratedReplacement: async (input) => { sequence.push("replace"); calls.push(input); return replacement; },
   }) }, async (base) => {
     const result = await post(base, {
       reason: "unsafe",
@@ -109,26 +115,95 @@ test("unsafe report is stored as safety-priority structured data and returns a c
     assert.equal(result.body.replacement.order_index, 2);
     assert.equal(result.body.penalty, false);
     assert.equal(result.body.report.priority, "safety");
+    assert.equal(result.body.report.durable_persisted, true);
+    assert.match(result.body.report.request_id, /^[0-9a-f-]{36}$/i);
+    assert.deepEqual(sequence, ["persist", "replace"]);
     assert.deepEqual(calls[0], {
       reportedPlaceId: "place:test:reported",
       excludedPlaceIds: new Set(["place:test:a", "place:test:b", "place:test:reported"]),
       orderIndex: 2,
     });
-    assert.equal(records[0].file, "content-failures.jsonl");
-    assert.deepEqual(records[0].record, {
+    const expectedRecord = {
       reason: "unsafe",
       place_id: "place:test:reported",
       quest_content_version_id: "nyc:1.0.0:abc",
       priority: "safety",
       curator_action: "immediate_review",
       accessibility_status: "unknown",
-    });
+      request_id: result.body.report.request_id,
+      status: "open",
+    };
+    assert.deepEqual(persisted, [expectedRecord]);
+    assert.deepEqual(records, [{ file: "content-failures.jsonl", record: expectedRecord }]);
   });
 });
 
-test("replacement unavailable is explicit and never invokes live generation", async () => {
+test("unconfigured nonproduction keeps local fallback and reports that persistence was not durable", async () => {
+  const replacement = { clue: "Local replacement", place: { source_id: "place:test:new" } };
+  await withApi({ production: false, dependencies: dependencies({
+    loadCuratedReplacement: async () => replacement,
+  }) }, async (base) => {
+    const result = await post(base, {
+      reason: "incorrect",
+      place_id: "place:test:reported",
+      slot: 1,
+      excluded_place_ids: ["place:test:reported"],
+    });
+    assert.equal(result.response.status, 200);
+    assert.equal(result.body.report.durable_persisted, false);
+    assert.match(result.body.report.request_id, /^[0-9a-f-]{36}$/i);
+  });
+});
+
+test("unconfigured production fails closed before selecting any replacement", async () => {
   let replacementCalls = 0;
-  await withApi({ dependencies: dependencies({
+  await withApi({ production: true, dependencies: dependencies({
+    loadCuratedReplacement: async () => { replacementCalls += 1; return { clue: "must not return" }; },
+  }) }, async (base) => {
+    const result = await post(base, {
+      reason: "unsafe",
+      place_id: "place:test:reported",
+      slot: 1,
+      excluded_place_ids: ["place:test:reported"],
+    });
+    assert.equal(result.response.status, 503);
+    assert.equal(result.body.code, "CONTENT_FAILURE_PERSISTENCE_UNAVAILABLE");
+    assert.equal(result.body.penalty, false);
+    assert.equal(result.body.report.durable_persisted, false);
+    assert.equal(result.body.report.request_id, result.body.request_id);
+    assert.equal(result.body.replacement, undefined);
+    assert.equal(replacementCalls, 0);
+  });
+});
+
+test("production durable write failure is sanitized and fails closed before replacement", async () => {
+  let replacementCalls = 0;
+  await withApi({ production: true, dependencies: dependencies({
+    contentFailuresConfigured: () => true,
+    persistContentFailure: async () => { throw new Error("postgres secret raw failure"); },
+    loadCuratedReplacement: async () => { replacementCalls += 1; return { clue: "must not return" }; },
+  }) }, async (base) => {
+    const result = await post(base, {
+      reason: "blocked_closed",
+      place_id: "place:test:reported",
+      slot: 1,
+      excluded_place_ids: ["place:test:reported"],
+    });
+    assert.equal(result.response.status, 503);
+    assert.equal(result.body.code, "CONTENT_FAILURE_PERSISTENCE_UNAVAILABLE");
+    assert.equal(result.body.penalty, false);
+    assert.equal(result.body.report.durable_persisted, false);
+    assert.equal(result.body.report.request_id, result.body.request_id);
+    assert.doesNotMatch(JSON.stringify(result.body), /postgres|secret|raw failure/i);
+    assert.equal(replacementCalls, 0);
+  });
+});
+
+test("durably recorded report returns explicit unavailable when no curated replacement exists", async () => {
+  let replacementCalls = 0;
+  await withApi({ production: true, dependencies: dependencies({
+    contentFailuresConfigured: () => true,
+    persistContentFailure: async () => true,
     loadCuratedReplacement: async () => { replacementCalls += 1; return null; },
   }) }, async (base) => {
     const result = await post(base, {
@@ -140,6 +215,8 @@ test("replacement unavailable is explicit and never invokes live generation", as
     assert.equal(result.response.status, 409);
     assert.equal(result.body.code, "REPLACEMENT_UNAVAILABLE");
     assert.equal(result.body.penalty, false);
+    assert.equal(result.body.report.durable_persisted, true);
+    assert.equal(result.body.report.request_id, result.body.request_id);
     assert.equal(replacementCalls, 1);
   });
 });
@@ -161,17 +238,37 @@ test("curated replacement loader failure is an explicit unavailable response", a
   });
 });
 
-test("content-failure endpoint rejects free text, coordinates, photos, and unknown reasons", async () => {
-  await withApi({ dependencies: dependencies() }, async (base) => {
+test("content-failure endpoint rejects free text, coordinates, routes, media, clue content, and identifiers", async () => {
+  let persistenceCalls = 0;
+  await withApi({ dependencies: dependencies({
+    contentFailuresConfigured: () => true,
+    persistContentFailure: async () => { persistenceCalls += 1; return true; },
+  }) }, async (base) => {
+    const valid = {
+      reason: "incorrect",
+      place_id: "place:test:1",
+      slot: 1,
+      excluded_place_ids: ["place:test:1"],
+    };
     for (const body of [
-      { reason: "other", place_id: "place:test:1", slot: 1, excluded_place_ids: [] },
-      { reason: "incorrect", place_id: "place:test:1", slot: 1, excluded_place_ids: [], text: "details" },
-      { reason: "missing", place_id: "place:test:1", slot: 1, excluded_place_ids: [], lat: 40.72 },
-      { reason: "inaccessible", place_id: "place:test:1", slot: 1, excluded_place_ids: [], photo: "data" },
+      { ...valid, reason: "other" },
+      { ...valid, text: "details" },
+      { ...valid, lat: 40.72 },
+      { ...valid, lng: -74 },
+      { ...valid, route: [[40.72, -74]] },
+      { ...valid, photo: "data" },
+      { ...valid, clue_text: "secret clue" },
+      { ...valid, answer: "secret answer" },
+      { ...valid, email: "private@example.test" },
+      { ...valid, ip: "192.0.2.1" },
+      { ...valid, user_id: "user" },
+      { ...valid, install_id: "install" },
+      { ...valid, free_form: "details" },
     ]) {
       const result = await post(base, body);
       assert.equal(result.response.status, 400);
       assert.equal(result.body.code, "INVALID_CONTENT_FAILURE");
     }
+    assert.equal(persistenceCalls, 0);
   });
 });
