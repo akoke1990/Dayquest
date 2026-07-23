@@ -1,0 +1,619 @@
+{
+  "artifact_type": "dayquest_concept_research",
+  "research_date": "2026-07-22",
+  "field_verified": false,
+  "record_count": 20,
+  "area_counts": {
+    "East Village": 10,
+    "Chinatown": 10
+  },
+  "balance_checks": {
+    "primarily_architecture_count": 2,
+    "history_led_count": 2,
+    "all_records_new_to_source_candidates_v1": true,
+    "all_records_lifecycle": "needs_field_verification"
+  },
+  "records": [
+    {
+      "research_id": "DQ-NYC-R041",
+      "title": "Four Virtues Under One Roof",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Tompkins Square Park",
+        "canonical_url": "https://en.wikipedia.org/wiki/Tompkins_Square_Park"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Temperance Fountain, Tompkins Square Park",
+      "area": "East Village",
+      "category": "public monument / playful lettering",
+      "observable_target": "The square granite fountain kiosk whose canopy is carved with the four words “Faith,” “Hope,” “Charity,” and “Temperance.”",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Tompkins_Square_Park",
+        "quoted_evidence": "“The fountain is a square granite kiosk with four stone columns supporting a canopy on whose sides the words ‘Faith,’ ‘Hope,’ ‘Charity,’ and ‘Temperance’ are chiseled.”"
+      },
+      "riddle": "Four virtues share my roof, but only one explains why I offered water instead of ale.",
+      "hints": [
+        "Look near Avenue A in Tompkins Square Park.",
+        "Read all four words carved around the granite fountain canopy."
+      ],
+      "reveal_concept": "A tiny neoclassical kiosk turns a nineteenth-century drinking-water campaign into a four-word visual hunt.",
+      "access_safety_mobility": "Outdoor public-park target during posted hours. Observe from paths; do not climb the fountain. Step-free viewing appears possible but must be field-confirmed.",
+      "durability_risk": "Low; permanent stone monument, with temporary fencing, restoration, or foliage as possible obstructions.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R042",
+      "title": "The Tree with a Second Name",
+      "source_identity": {
+        "provider": "nyc_parks",
+        "external_id": "highlight-10823",
+        "canonical_url": "https://www.nycgovparks.org/parks/tompkins-square-park/highlights/10823"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Hare Krishna Tree, Tompkins Square Park",
+      "area": "East Village",
+      "category": "nature / living cultural artifact",
+      "observable_target": "The named American elm beside the semicircular arrangement of benches in the park’s center.",
+      "evidence": {
+        "url": "https://www.nycgovparks.org/parks/tompkins-square-park/highlights/10823",
+        "quoted_evidence": "NYC Parks identifies “one elm in particular, located next to the semi-circular arrangement of benches in the park’s center” as important to adherents of the Hare Krishna religion."
+      },
+      "riddle": "I am rooted like my neighbors, but a ring of benches and a borrowed name make me the one elm people seek.",
+      "hints": [
+        "Head toward the center of Tompkins Square Park.",
+        "Find the American elm beside the semicircle of benches."
+      ],
+      "reveal_concept": "Players distinguish one culturally named living landmark from the park’s broader elm canopy.",
+      "access_safety_mobility": "Use public park paths and remain outside any tree-protection fencing. Do not carve, tie objects to, or otherwise touch the tree. Confirm an accessible path and the visibility of any identifying plaque.",
+      "durability_risk": "Medium; a living tree can be pruned, storm-damaged, fenced, or lost, and the plaque or bench arrangement may change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R043",
+      "title": "The Waterfall Powered Through Leaves",
+      "source_identity": {
+        "provider": "official_place_site",
+        "external_id": "6bc-the-garden",
+        "canonical_url": "https://www.6bcgarden.org/the-garden.html"
+      },
+      "match_status": "new_to_bank; new_public_place_candidate_with_stable_official_identity",
+      "canonical_place": "6BC Botanical Garden",
+      "area": "East Village",
+      "category": "garden / ecology / hidden infrastructure",
+      "observable_target": "The koi pond’s two-and-a-half-foot waterfall, powered by solar panels partly camouflaged on a grape arbor and garden shed.",
+      "evidence": {
+        "url": "https://www.6bcgarden.org/the-garden.html",
+        "quoted_evidence": "“There are a total of six panels, four on the grape arbor, camouflaged by vines and climbing plants, and two on the roof of the garden’s raised library shed’s roof. The waterfall in the garden’s koi pond took ten years to complete… The 2 1/2-foot-high waterfall is on a timer.”"
+      },
+      "riddle": "My pond borrows sunlight from six quiet helpers; four hide among grapes while water tumbles below.",
+      "hints": [
+        "Enter only when the community garden is officially open.",
+        "Look for the koi pond, then scan the grape arbor and shed roof for solar panels."
+      ],
+      "reveal_concept": "A small garden waterfall reveals a concealed solar-energy system distributed overhead.",
+      "access_safety_mobility": "Visit only during posted public hours. Stay on paths, do not feed fish, and do not enter planting beds. The waterfall runs on a timer, so completion must not require flowing water; field-test a pond-and-panel fallback. Audit narrow paths and threshold access.",
+      "durability_risk": "Medium-high; seasonal vines can hide panels, the timed waterfall may be off, and community-garden hours or access can change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R044",
+      "title": "Where Dinner and Performance Share the Soil",
+      "source_identity": {
+        "provider": "official_place_site",
+        "external_id": "la-plaza-about",
+        "canonical_url": "https://laplazacultural.com/about/"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "La Plaza Cultural de Armando Perez",
+      "area": "East Village",
+      "category": "community garden / cultural life",
+      "observable_target": "The juxtaposition of food-growing garden plots with an open area used as a neighborhood cultural and event space.",
+      "evidence": {
+        "url": "https://laplazacultural.com/about/",
+        "quoted_evidence": "The garden describes itself as “a community garden and cultural space in the heart of the East Village” and “a place for growing food, celebrating community, and hosting events.”"
+      },
+      "riddle": "In one open lot, supper grows while a neighborhood makes room for a show.",
+      "hints": [
+        "Seek a community-managed space rather than a conventional city park.",
+        "Find where cultivated food plots meet La Plaza’s cultural gathering area."
+      ],
+      "reveal_concept": "One lot visibly supports two kinds of neighborhood production: food and culture.",
+      "access_safety_mobility": "Enter only during posted public hours or public events. Remain on common paths, avoid assigned plots, and do not photograph participants without consent. Field-check the exact public viewing point and step-free route.",
+      "durability_risk": "Medium; planting patterns, event setup, opening hours, and the division between plots and gathering space can vary.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R045",
+      "title": "The Streetlights Wearing Shards",
+      "source_identity": {
+        "provider": "artist_official_site",
+        "external_id": "mosaic-trail",
+        "canonical_url": "https://mosaicmannyc.com/"
+      },
+      "match_status": "new_to_bank; new_public_art_place_candidate_with_named_artist_identity",
+      "canonical_place": "Jim Power’s Mosaic Trail on St. Mark’s Place",
+      "area": "East Village",
+      "category": "public art / playful street detail",
+      "observable_target": "A surviving utility or lamppost on St. Mark’s Place wrapped in Jim Power’s multicolored mosaic work.",
+      "evidence": {
+        "url": "https://mosaicmannyc.com/",
+        "quoted_evidence": "The artist’s site identifies “The Mosaic Man — Jim Power and His Mosaic Trail,” refers to “lamppost mosaics on St Mark’s Place,” and records that a removed Astor Place tribute pole later returned: “Update The Pole is back.”"
+      },
+      "riddle": "The lamp above is ordinary; the pole below has dressed itself in a thousand broken colors.",
+      "hints": [
+        "Walk St. Mark’s Place and inspect the utility poles rather than storefronts.",
+        "Find one of Jim Power’s surviving mosaic-covered lampposts."
+      ],
+      "reveal_concept": "Street infrastructure becomes a vertical, handmade neighborhood mosaic.",
+      "access_safety_mobility": "Complete from the sidewalk without touching or circling into traffic. Choose a wide, curb-accessible location that does not block businesses. The exact qualifying pole must be field-selected and photographed before publication.",
+      "durability_risk": "High; poles have previously been removed, restored, or relocated, and individual mosaics can be damaged or altered.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R046",
+      "title": "The Album Cover You Can Enter",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Physical Graffiti",
+        "canonical_url": "https://en.wikipedia.org/wiki/Physical_Graffiti"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "96 and 98 St. Mark’s Place",
+      "area": "East Village",
+      "category": "music artifact / streetscape",
+      "observable_target": "The paired five-story tenement facades used for Led Zeppelin’s die-cut Physical Graffiti album cover.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Physical_Graffiti",
+        "quoted_evidence": "The page identifies “the five-storey 96 and 98 St. Mark’s Place in New York’s East Village” and says the sleeve depicted “a New York City tenement block, through whose windows various cultural icons could be interchangeably viewed.”"
+      },
+      "riddle": "Two neighboring buildings became a record sleeve, and their windows once traded famous faces.",
+      "hints": [
+        "Look for a pair of five-story facades on St. Mark’s Place.",
+        "Match 96 and 98 to Led Zeppelin’s Physical Graffiti cover."
+      ],
+      "reveal_concept": "A familiar rock-album image resolves into two ordinary, still-occupied city buildings.",
+      "access_safety_mobility": "Exterior sidewalk observation only. These are occupied buildings: do not enter, photograph through windows, or obstruct doors. Select a safe opposite-side viewpoint using legal crossings.",
+      "durability_risk": "Low-medium; the buildings are durable, but storefront alterations, scaffolding, trees, or parked vehicles can affect the comparison.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R047",
+      "title": "The Unclaimed Wishbones",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "McSorley's Old Ale House",
+        "canonical_url": "https://en.wikipedia.org/wiki/McSorley%27s_Old_Ale_House"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "McSorley’s Old Ale House",
+      "area": "East Village",
+      "category": "food-and-drink culture / interior artifact",
+      "observable_target": "The cluster of old wishbones hanging above the bar.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/McSorley%27s_Old_Ale_House",
+        "quoted_evidence": "“There are also wishbones hanging above the bar; supposedly they were hung there by boys going off to World War I, to be removed when they returned.”"
+      },
+      "riddle": "These wishes were hung up before a journey and never carried home. Find them above the ale.",
+      "hints": [
+        "The target is inside a historic East 7th Street ale house.",
+        "Look above McSorley’s bar for the hanging wishbones."
+      ],
+      "reveal_concept": "A fragile cluster of bones, rather than a plaque, carries the bar’s best-known story.",
+      "access_safety_mobility": "Private licensed business during posted hours. Adults should patronize respectfully; provide an exterior or non-alcohol alternative for minors and anyone avoiding bars. Ask before photography, do not reach over patrons, and audit step-free entry and sightline.",
+      "durability_risk": "Medium; the artifact is longstanding, but interior access, crowding, placement, operating hours, and house rules can change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R048",
+      "title": "The Street That Refused the Grid",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Stuyvesant Street",
+        "canonical_url": "https://en.wikipedia.org/wiki/Stuyvesant_Street"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Stuyvesant Street",
+      "area": "East Village",
+      "category": "spatial oddity / street geometry",
+      "observable_target": "The short street’s diagonal path between East 9th and East 10th Streets, visibly cutting across Manhattan’s surrounding grid.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Stuyvesant_Street",
+        "quoted_evidence": "“It runs diagonally from 9th Street at Third Avenue to 10th Street near Second Avenue” and “runs diagonally in relation to the Manhattan street grid.”"
+      },
+      "riddle": "My neighbors obey the grid; I take the shortest diagonal and quietly call it east.",
+      "hints": [
+        "Stand near the St. Mark’s Historic District and compare street angles.",
+        "Follow Stuyvesant Street between East 9th and East 10th."
+      ],
+      "reveal_concept": "The answer is the orientation of an entire street, apparent against the regular blocks around it.",
+      "access_safety_mobility": "Use sidewalks and marked crossings only. Completion should rely on a broad public viewpoint, not standing in the carriageway. Field-select a curb-accessible angle where the diagonal is legible.",
+      "durability_risk": "Low; street geometry is permanent, though construction sheds, vehicles, or closures may weaken the view.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R049",
+      "title": "Two Calendars Over One Door",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Village East by Angelika",
+        "canonical_url": "https://en.wikipedia.org/wiki/Village_East_by_Angelika"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Village East by Angelika / former Yiddish Art Theatre",
+      "area": "East Village",
+      "category": "cultural artifact / architectural lettering",
+      "observable_target": "The entrance cornerstone carrying May 23, 1926 in English and the corresponding Hebrew-calendar date, beneath capitals shaped like half-menorahs.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Village_East_by_Angelika",
+        "quoted_evidence": "The entrance has “a cornerstone, containing an inscription of the Gregorian date May 23, 1926, in English and the corresponding Hebrew calendar date in Hebrew.” Nearby, “capitals shaped like half-menorahs” appear at the top of the arch."
+      },
+      "riddle": "One opening day was carved twice, while broken menorahs—not broken lamps—hold up the arch.",
+      "hints": [
+        "Study the former Yiddish Art Theatre’s main entrance.",
+        "Find the cornerstone with English and Hebrew dates, then look upward for half-menorah capitals."
+      ],
+      "reveal_concept": "A movie-theater entrance preserves its Yiddish-theater identity through dual calendars and menorah-shaped ornament.",
+      "access_safety_mobility": "Exterior completion only; no ticket or entry required. Keep the doorway clear and use an opposite-side view if needed. Confirm lettering size, nighttime lighting, and a step-free viewing point.",
+      "durability_risk": "Low; landmark facade details are durable, with scaffolding, signage, or grime as potential obstructions.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R050",
+      "title": "A Pond Behind Houston",
+      "source_identity": {
+        "provider": "official_place_site",
+        "external_id": "liz-christy-garden",
+        "canonical_url": "https://www.lizchristygarden.us/"
+      },
+      "match_status": "new_to_bank; new_public_place_candidate_with_stable_official_identity",
+      "canonical_place": "Liz Christy Bowery-Houston Community Garden",
+      "area": "East Village",
+      "category": "garden / wildlife / hidden green space",
+      "observable_target": "The two-and-a-half-foot-deep pond inhabited year-round by fish and red-eared slider turtles, set among a grape arbor and garden plantings.",
+      "evidence": {
+        "url": "https://www.lizchristygarden.us/",
+        "quoted_evidence": "“The Liz Christy Garden has a pond which is 2.5 feet deep. The fish and red-eared slider turtle communities live there year round. The garden also has … a grape arbor … vegetable gardens, berries, herbs and hundreds of varieties of flowering perennials.”"
+      },
+      "riddle": "Behind a roaring avenue, fish and red-eared sliders keep a pond beneath grapes.",
+      "hints": [
+        "Look for the community garden at Bowery and Houston.",
+        "During open hours, follow the path toward the pond and grape arbor."
+      ],
+      "reveal_concept": "A small urban garden conceals a year-round aquatic habitat beside one of downtown’s busiest intersections.",
+      "access_safety_mobility": "Enter only during published open hours. Stay on paths; never feed, handle, or add animals. The official rules prohibit entering plots or picking plants. Audit thresholds, path width, and a no-entry fallback view.",
+      "durability_risk": "Medium; garden hours, pond visibility, foliage, animal visibility, and path access are variable. Completion must require the pond, not a visible animal.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R051",
+      "title": "Teapots That Spell a Good Life",
+      "source_identity": {
+        "provider": "mta_arts_and_design",
+        "external_id": "empress-voyage-2-22-1794",
+        "canonical_url": "https://new.mta.info/agency/arts-design/collection/empress-voyage-2-22-1794"
+      },
+      "match_status": "new_to_bank; matched_stable_transit_art_identity",
+      "canonical_place": "Empress Voyage 2.22.1794 at Canal Street station",
+      "area": "Chinatown",
+      "category": "transit art / playful visual language",
+      "observable_target": "Bing Lee’s platform teapot motifs shaped to resemble Chinese characters for “good life.”",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Canal_Street_station_(New_York_City_Subway)",
+        "quoted_evidence": "The station artwork “contains motifs inspired by Chinese characters. The platforms are decorated with teapots resembling the Chinese characters for ‘good life.’” The cited MTA work is Empress Voyage 2.22.1794."
+      },
+      "riddle": "Underground, a good life pours from a pot whose shape is also a word.",
+      "hints": [
+        "This artwork is in the Canal Street station complex.",
+        "On the relevant platforms, look for repeated teapot motifs that double as Chinese characters."
+      ],
+      "reveal_concept": "A household vessel becomes a pictographic word inside the subway.",
+      "access_safety_mobility": "Paid-fare-area target; never approach platform edges or block circulation. The exact line, platform, elevator path, and fare-free alternative must be field-audited. Service changes can make the target temporarily inaccessible.",
+      "durability_risk": "Low-medium; permanent station art, but construction, service changes, grime, or temporary coverings can interfere.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R052",
+      "title": "Chinatown Written Into the Subway",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Canal Street station (New York City Subway)",
+        "canonical_url": "https://en.wikipedia.org/wiki/Canal_Street_station_(New_York_City_Subway)"
+      },
+      "match_status": "new_to_bank; matched_stable_transit_place_identity",
+      "canonical_place": "Canal Street station, Chinatown platforms",
+      "area": "Chinatown",
+      "category": "infrastructure / bilingual lettering",
+      "observable_target": "A Canal Street name tablet bearing Chinese characters for “China” and “Town,” plus platform-wall names written in Chinese.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Canal_Street_station_(New_York_City_Subway)",
+        "quoted_evidence": "“The ‘Canal Street’ name tablet has characters that read ‘China’ and ‘Town.’ The platform walls also feature the names ‘Canal Street’ and ‘Chinatown’ in Chinese.”"
+      },
+      "riddle": "My English name says where to exit; two added characters say what neighborhood waits above.",
+      "hints": [
+        "Search the Canal Street station complex, not a street-corner blade.",
+        "Inspect the station-name tablets and wall lettering for Chinese characters."
+      ],
+      "reveal_concept": "The neighborhood’s identity is incorporated directly into otherwise standardized subway wayfinding.",
+      "access_safety_mobility": "Paid-fare-area target. Stay behind tactile strips and out of passenger flow. Field-confirm the precise platform and an elevator-compatible route; do not require transfers across inaccessible portions of the complex.",
+      "durability_risk": "Low-medium; tile and lettering are durable, but station work, barriers, and line-specific access can change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R053",
+      "title": "A Proverb Beneath the Philosopher",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Confucius Plaza",
+        "canonical_url": "https://en.wikipedia.org/wiki/Confucius_Plaza"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Confucius statue at Confucius Plaza",
+      "area": "Chinatown",
+      "category": "public art / inscribed detail",
+      "observable_target": "The 15-foot bronze Confucius statue and the proverb inscribed at its base beside an American flag.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Confucius_Plaza",
+        "quoted_evidence": "The plaza has a “15-foot bronze statue of Confucius” and “At its base, a Confucian proverb is inscribed aside an American Flag.”"
+      },
+      "riddle": "A bronze teacher stands fifteen feet tall; wisdom and a small American flag share the lesson below.",
+      "hints": [
+        "Look in front of the high-rise complex north of Chatham Square.",
+        "Find the inscription and flag at the base of the Confucius statue."
+      ],
+      "reveal_concept": "The hunt moves from a monumental figure to a cross-cultural detail at ground level.",
+      "access_safety_mobility": "View from publicly accessible plaza space without entering residential areas. Do not climb or touch the base, and avoid photographing residents. Confirm step-free access and whether barriers permit the inscription to be read.",
+      "durability_risk": "Low; permanent bronze and stone inscription, with construction, events, or barriers as temporary risks.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R054",
+      "title": "A Ceremonial Door for a Bridge",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Manhattan Bridge",
+        "canonical_url": "https://en.wikipedia.org/wiki/Manhattan_Bridge"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Manhattan Bridge Arch and Colonnade",
+      "area": "Chinatown",
+      "category": "architecture / infrastructure",
+      "observable_target": "The monumental arch and curved colonnade framing the Manhattan entrance to the bridge.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Manhattan_Bridge",
+        "quoted_evidence": "“Carrère and Hastings designed ornamental plazas at both ends of the bridge, including an arch and colonnade in Manhattan that is a New York City designated landmark.”"
+      },
+      "riddle": "Before steel crosses the river, stone pretends the roadway is entering a triumph.",
+      "hints": [
+        "Look at the Manhattan approach to the Manhattan Bridge.",
+        "Find the monumental arch paired with a sweeping colonnade."
+      ],
+      "reveal_concept": "Utilitarian bridge traffic passes through an unexpectedly ceremonial civic gateway.",
+      "access_safety_mobility": "Use plazas and sidewalks only; never enter vehicle or bicycle lanes for a centered photograph. Traffic noise and complex crossings require a carefully field-selected, step-free viewpoint.",
+      "durability_risk": "Low; designated landmark, with scaffolding, bridge work, or traffic barriers as temporary obstructions.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R055",
+      "title": "The Neighborhood Under Your Feet",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Seward Park (Manhattan)",
+        "canonical_url": "https://en.wikipedia.org/wiki/Seward_Park_(Manhattan)"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Seward Park mosaic neighborhood map",
+      "area": "Chinatown",
+      "category": "playful infrastructure / map art",
+      "observable_target": "The circular mosaic map of the surrounding neighborhood, with Seward Park shown at its center and a spray-shower function incorporated into it.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Seward_Park_(Manhattan)",
+        "quoted_evidence": "The 1999 renovation “introduced a mosaic map of the surrounding neighborhood, with the park depicted in the center of the circular map, which has a spray shower.”"
+      },
+      "riddle": "Stand in the park, then find the park again—smaller, centered in a round map that can make rain.",
+      "hints": [
+        "Search at ground level inside Seward Park.",
+        "Find the circular neighborhood mosaic with the park marked in its center."
+      ],
+      "reveal_concept": "Players locate themselves recursively: inside a park and simultaneously on its mosaic map.",
+      "access_safety_mobility": "Public park during posted hours. Wet pavement may be slippery when the spray feature operates; water need not be running for completion. Confirm a step-free approach and that play activity does not make the target intrusive.",
+      "durability_risk": "Medium; mosaic is durable, but resurfacing, winter shutdown, active water play, repairs, or temporary closure can affect use.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R056",
+      "title": "The Pond Remembered in a Pool",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Collect Pond",
+        "canonical_url": "https://en.wikipedia.org/wiki/Collect_Pond"
+      },
+      "match_status": "new_to_bank; matched_stable_public_place_identity",
+      "canonical_place": "Collect Pond Park",
+      "area": "Chinatown",
+      "category": "landscape / water / memory",
+      "observable_target": "The park’s modern reflecting pool, placed as a visible acknowledgment of the former Collect Pond.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Collect_Pond",
+        "quoted_evidence": "The site “became Collect Pond Park, which includes a reflecting pool to acknowledge the historic importance of this body of water.”"
+      },
+      "riddle": "A vanished pond returned as a shallow mirror, remembering water where courts and streets now stand.",
+      "hints": [
+        "Look near Foley Square for a park named after a lost body of water.",
+        "Find Collect Pond Park’s reflecting pool."
+      ],
+      "reveal_concept": "A contemporary water feature marks the footprint and memory of a much larger vanished pond.",
+      "access_safety_mobility": "Outdoor public park. Remain on paths and outside the water feature; wet or icy paving may be hazardous. Field-confirm operating condition, fencing, and a step-free dry-weather viewpoint.",
+      "durability_risk": "Medium; the park is stable, but the pool may be drained, repaired, fenced, or visually affected by seasonal maintenance.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R057",
+      "title": "Porcelain Across Five Generations",
+      "source_identity": {
+        "provider": "official_business_site",
+        "external_id": "wing-on-wo-story",
+        "canonical_url": "https://wingonwoand.co/pages/story"
+      },
+      "match_status": "new_to_bank; matched_stable_business_identity",
+      "canonical_place": "Wing on Wo & Co.",
+      "area": "Chinatown",
+      "category": "storefront culture / craft",
+      "observable_target": "The porcelain wares displayed inside the longstanding shop at 26 Mott Street.",
+      "evidence": {
+        "url": "https://wingonwoand.co/pages/story",
+        "quoted_evidence": "Wing on Wo identifies itself as “the oldest continuously operating store in Manhattan’s Chinatown,” says “We sell primarily porcelain ware and cultural goods,” and lists its current address as “26 Mott St.”"
+      },
+      "riddle": "Five generations kept this shop, but groceries gave way to bowls, vases, and fired-white treasure.",
+      "hints": [
+        "Search Mott Street for Chinatown’s oldest continuously operating store.",
+        "At number 26, look for the shop specializing in Chinese porcelain."
+      ],
+      "reveal_concept": "A working retail display serves as a visible continuation of a multigenerational craft-and-commerce tradition.",
+      "access_safety_mobility": "Private business during posted hours. Patronize respectfully, do not handle merchandise without permission, and ask before photography. An exterior identification fallback is required. Field-check doorway, aisle width, and current display visibility.",
+      "durability_risk": "Medium; the identity is longstanding, but hours, window displays, inventory layout, and interior access can change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R058",
+      "title": "Tea at the Sharp Corner",
+      "source_identity": {
+        "provider": "official_business_site",
+        "external_id": "nom-wah-our-story",
+        "canonical_url": "https://www.nomwah.com/our-story"
+      },
+      "match_status": "new_to_bank; matched_stable_business_identity",
+      "canonical_place": "Nom Wah Tea Parlor",
+      "area": "Chinatown",
+      "category": "food / storefront culture",
+      "observable_target": "The original Nom Wah Tea Parlor location at 13–15 Doyers Street, identified as a tea parlor and bakery at the street’s sharp bend.",
+      "evidence": {
+        "url": "https://www.nomwah.com/our-story",
+        "quoted_evidence": "“Nom Wah is the oldest—celebrating over 100 years—continuously operating dim sum restaurant in New York City. Nom Wah opened its first location in 1920 as a tea parlor and bakery at 13-15 Doyers St,” at the street’s “sharp corner.”"
+      },
+      "riddle": "At a street’s sharp elbow, a tea parlor has been folding dumplings for more than a century.",
+      "hints": [
+        "Follow Doyers Street to its tight bend.",
+        "Find Nom Wah’s original 13–15 Doyers Street location."
+      ],
+      "reveal_concept": "A food landmark and Chinatown’s unusual street geometry reinforce each other at one address.",
+      "access_safety_mobility": "Exterior identification must suffice; no purchase or queueing required. Do not obstruct the restaurant entrance or neighboring businesses. Use pedestrianized or sidewalk space and field-check curb access and delivery conflicts.",
+      "durability_risk": "Medium; business identity is exceptionally longstanding, but signage, operating hours, queues, and storefront treatment can change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R059",
+      "title": "The Golden Giant Indoors",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Mahayana Buddhist Temple",
+        "canonical_url": "https://en.wikipedia.org/wiki/Mahayana_Buddhist_Temple"
+      },
+      "match_status": "new_to_bank; matched_stable_religious_place_identity",
+      "canonical_place": "Mahayana Buddhist Temple",
+      "area": "Chinatown",
+      "category": "religious cultural artifact",
+      "observable_target": "The approximately 16-foot golden seated Buddha inside the temple.",
+      "evidence": {
+        "url": "https://www.atlasobscura.com/places/mahayana-buddhist-temple",
+        "quoted_evidence": "The public place listing describes the temple’s principal visual feature as a “16-foot-tall golden Buddha.”"
+      },
+      "riddle": "Beyond the traffic, a golden figure sits taller than three people standing head to head.",
+      "hints": [
+        "The target is inside a Buddhist temple near the Manhattan Bridge.",
+        "Look respectfully for the large seated golden Buddha."
+      ],
+      "reveal_concept": "A monumental devotional figure occupies an unexpectedly close, street-level Chinatown interior.",
+      "access_safety_mobility": "Religious site only during publicly posted visiting hours. Silence phones, follow all worship and photography rules, never interrupt services, and provide a non-entry alternative. Exact hours, admission expectations, step-free access, and current visitor policy require field verification.",
+      "durability_risk": "Medium; the artifact is stable, but public access, ceremonies, photography policy, hours, and interior sightlines may change.",
+      "lifecycle": "needs_field_verification"
+    },
+    {
+      "research_id": "DQ-NYC-R060",
+      "title": "The Photographer on the Street Blade",
+      "source_identity": {
+        "provider": "wikipedia",
+        "external_id": "Corky Lee",
+        "canonical_url": "https://en.wikipedia.org/wiki/Corky_Lee"
+      },
+      "match_status": "new_to_bank; matched_stable_public_commemorative_identity",
+      "canonical_place": "Corky Lee Way at Mott and Mosco Streets",
+      "area": "Chinatown",
+      "category": "photography / community artifact / street sign",
+      "observable_target": "The Corky Lee Way commemorative street sign at the corner of Mott and Mosco Streets.",
+      "evidence": {
+        "url": "https://en.wikipedia.org/wiki/Corky_Lee",
+        "quoted_evidence": "“On October 22, 2023, a street sign for Corky Lee Way was unveiled in New York’s Chinatown, at the corner of Mott Street and Mosco Street.”"
+      },
+      "riddle": "A photographer who put overlooked faces into America’s picture now has his own name above a Chinatown corner.",
+      "hints": [
+        "Go to the meeting of Mott and Mosco Streets.",
+        "Look up for the commemorative blade reading Corky Lee Way."
+      ],
+      "reveal_concept": "A small piece of street infrastructure commemorates the photographer known for documenting Asian American community life.",
+      "access_safety_mobility": "Observe from the sidewalk and use marked crossings for a better angle. Do not stand in the roadway or block the corner. Confirm sign height, foliage, construction, and a curb-accessible viewing position.",
+      "durability_risk": "Low-medium; official street signs are durable but can be temporarily removed, replaced, obscured, or vandalized.",
+      "lifecycle": "needs_field_verification"
+    }
+  ],
+  "rejected_notes": [
+    {
+      "candidate": "East Broadway station — Shad Crossing",
+      "decision": "reject",
+      "reason": "Research did not support the initial station attribution. The documented artwork at East Broadway is Displacing Details by Noel Copeland; retaining the fish concept would risk a false location."
+    },
+    {
+      "candidate": "Theatre 80 Walk of Fame",
+      "decision": "defer",
+      "reason": "The theatre entered bankruptcy and the current operating/access status is unstable. Available reviewed evidence did not sufficiently confirm which sidewalk stars remain unobstructed and publicly legible."
+    },
+    {
+      "candidate": "First Street Green current mural lineup",
+      "decision": "reject for launch bank",
+      "reason": "The official site strongly documents mural walls and past installations, but the reviewed material was dated 2015–2016 and did not establish a specific current mural target."
+    },
+    {
+      "candidate": "Joe Strummer mural at Niagara",
+      "decision": "defer",
+      "reason": "The mural has been repainted in different versions. No sufficiently current authoritative source was obtained for exact present-day imagery and visibility."
+    },
+    {
+      "candidate": "Columbus Park mahjong players",
+      "decision": "reject as required target",
+      "reason": "Community play is culturally important but depends on people being present. A DayQuest should not require photographing or observing identifiable residents engaged in an activity."
+    },
+    {
+      "candidate": "Hua Mei Bird Garden — hanging songbird cages",
+      "decision": "defer",
+      "reason": "The practice is schedule- and participant-dependent, and the reviewed evidence did not establish a durable fixed visual target that avoids making community members or captive birds the completion requirement."
+    },
+    {
+      "candidate": "Lin Zexu statue detail",
+      "decision": "defer",
+      "reason": "A stable statue identity was found, but the reviewed public text did not provide sufficiently exact quoted evidence for the proposed pose, pedestal lettering, or material details."
+    },
+    {
+      "candidate": "Sun Yat-sen statue detail in Columbus Park",
+      "decision": "defer",
+      "reason": "The public source confirmed an outdoor statue and its artists, but did not provide enough textual visual detail to support a distinctive fair hunt beyond simply locating the statue."
+    },
+    {
+      "candidate": "Chinatown Fair arcade chicken",
+      "decision": "reject",
+      "reason": "The famous tic-tac-toe chicken belongs to an earlier operating era and is not a defensible current observable target."
+    },
+    {
+      "candidate": "Doyers Street painted pavement",
+      "decision": "reject as duplicate and volatile",
+      "reason": "Doyers Street geometry is already in the bank, while paint schemes are resurfacing-dependent and were previously deferred in the source file."
+    }
+  ],
+  "research_summary": {
+    "what_was_done": "Reviewed the existing 40-candidate NYC source bank for duplication and researched 20 additional source-grounded concepts split evenly between East Village and Chinatown.",
+    "what_was_found": "Produced 10 East Village and 10 Chinatown records emphasizing gardens, public art, food and storefront culture, transit details, music, community artifacts, water, and spatial oddities. Only two are primarily architectural and two are history-led.",
+    "files_created_or_modified": [],
+    "issues_encountered": [
+      "NYC Parks and MTA pages intermittently blocked automated retrieval, so some official identities were corroborated through public secondary pages that quote or cite those agencies.",
+      "Several attractive concepts were rejected because their imagery was temporary, their source evidence was stale, or completion would depend on residents, worshippers, animals, or scheduled activity."
+    ]
+  }
+}

@@ -12,6 +12,7 @@
     "pull:nyc": "node scripts/pull-nyc.js",
     "label:pois": "node scripts/label-pois.js",
     "compile:haunted": "node scripts/compile-haunted.js",
+    "content:compile:candidates:nyc": "node scripts/compile-nyc-source-candidates.js",
     "content:import:nyc": "node scripts/import-nyc-content-bank.js",
     "content:validate": "node scripts/validate-content-bank.js",
     "test": "node --test"

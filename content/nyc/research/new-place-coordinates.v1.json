@@ -1,0 +1,515 @@
+{
+  "artifact_version": "1.0.0",
+  "site_id": "nyc",
+  "provenance": {
+    "retrieved_at": "2026-07-22",
+    "field_verified": false,
+    "note": "Public OpenStreetMap/Nominatim results selected only for source-grounded numeric coordinates; these coordinates are not field observations."
+  },
+  "coordinates": [
+    {
+      "research_id": "DQ-NYC-FD-001",
+      "lat": 40.7021621,
+      "lng": -74.0150044,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/494622097",
+        "url": "https://www.openstreetmap.org/way/494622097",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=SeaGlass+Carousel%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "SeaGlass Carousel, Brooklyn-Battery Tunnel, Nolan Park, South Battery, Manhattan, New York County, New York, 10004, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-002",
+      "lat": 40.7019433,
+      "lng": -74.014567,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "relation/16029655",
+        "url": "https://www.openstreetmap.org/relation/16029655",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Battery+Playscape%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Battery Playscape, Peter Minuit Plaza, Whitehall, Manhattan, New York County, New York, 10004, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-003",
+      "lat": 40.7027649,
+      "lng": -74.016516,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/575210133",
+        "url": "https://www.openstreetmap.org/way/575210133",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Bosque+Fountain%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Bosque Fountain, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-004",
+      "lat": 40.7168519,
+      "lng": -74.0167622,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/372701952",
+        "url": "https://www.openstreetmap.org/way/372701952",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Rockefeller+Park+Manhattan+NY&format=jsonv2&limit=5",
+        "excerpt": "Nelson A. Rockefeller Park, Lower Manhattan, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-005",
+      "lat": 40.7074879,
+      "lng": -74.018654,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "relation/20779350",
+        "url": "https://www.openstreetmap.org/relation/20779350",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=South+Cove%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "South Cove, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-006",
+      "lat": 40.7128724,
+      "lng": -74.0171689,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/128668831",
+        "url": "https://www.openstreetmap.org/way/128668831",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=North+Cove+Marina%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "North Cove Yacht Harbor, Lower Manhattan, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-007",
+      "lat": 40.7089315,
+      "lng": -74.015989,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/806341216",
+        "url": "https://www.openstreetmap.org/way/806341216",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Rector+Place+Manhattan+NY&format=jsonv2&limit=5",
+        "excerpt": "Rector Place, Battery Park City, Lower Manhattan, Manhattan, New York County, New York, 10280, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-008",
+      "lat": 40.7082331,
+      "lng": -74.0169814,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/1067728688",
+        "url": "https://www.openstreetmap.org/way/1067728688",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=West+Thames+Street+Manhattan+NY&format=jsonv2&limit=5",
+        "excerpt": "West Thames Street, Battery Park City, Lower Manhattan, Manhattan, New York County, New York, 10280, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-009",
+      "lat": 40.7118553,
+      "lng": -74.0169317,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/11457630561",
+        "url": "https://www.openstreetmap.org/node/11457630561",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Kowsky+Plaza+Manhattan+NY&format=jsonv2&limit=5",
+        "excerpt": "Kowsky Plaza, Lower Manhattan, Manhattan, New York County, New York, 10281, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-010",
+      "lat": 40.7128724,
+      "lng": -74.0171689,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/128668831",
+        "url": "https://www.openstreetmap.org/way/128668831",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=North+Cove+Marina%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "North Cove Yacht Harbor, Lower Manhattan, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-011",
+      "lat": 40.7167681,
+      "lng": -74.0156066,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/372721441",
+        "url": "https://www.openstreetmap.org/way/372721441",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Teardrop+Park%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Teardrop Park, Lower Manhattan, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-012",
+      "lat": 40.708637,
+      "lng": -74.0100343,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/278042250",
+        "url": "https://www.openstreetmap.org/way/278042250",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=140+Broadway%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Marine Midland Building, 140, Broadway, Financial District, Lower Manhattan, Manhattan, New York County, New York, 10005, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-013",
+      "lat": 40.7032255,
+      "lng": -74.0090671,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/278203280",
+        "url": "https://www.openstreetmap.org/way/278203280",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=55+Water+Street%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "55 Water Street, 55, Water Street, Financial District, Manhattan, New York County, New York, 10004, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-017",
+      "lat": 40.7066787,
+      "lng": -74.0139943,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/538080002",
+        "url": "https://www.openstreetmap.org/way/538080002",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Elizabeth+H.+Berger+Plaza%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Elizabeth H. Berger Plaza, 2, Lower Manhattan, Manhattan, New York County, New York, 10006, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-018",
+      "lat": 40.704432,
+      "lng": -74.0101979,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/176498778",
+        "url": "https://www.openstreetmap.org/way/176498778",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Stone+Street%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Stone Street, Financial District, Lower Manhattan, Manhattan, New York County, New York, 10004, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-019",
+      "lat": 40.7076592,
+      "lng": -74.0079511,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/109447376",
+        "url": "https://www.openstreetmap.org/way/109447376",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Louise+Nevelson+Plaza%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Louise Nevelson Plaza, Lower Manhattan, Manhattan, New York County, New York, 10038, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-FD-020",
+      "lat": 40.7104439,
+      "lng": -74.0089465,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/1104125894",
+        "url": "https://www.openstreetmap.org/way/1104125894",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Fulton+Center%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Fulton Center, 200, Broadway, Financial District, Lower Manhattan, Manhattan, New York County, New York, 10038, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R043",
+      "lat": 40.7238644,
+      "lng": -73.9806699,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/237532026",
+        "url": "https://www.openstreetmap.org/way/237532026",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=6BC+Botanical+Garden%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "6BC Botanical Garden, Manhattan Community Board 3, Manhattan, New York County, New York, 10009, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R045",
+      "lat": 40.7281016,
+      "lng": -73.9864861,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/847950378",
+        "url": "https://www.openstreetmap.org/way/847950378",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Saint+Marks+Place%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Saint Marks Place, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R046",
+      "lat": 40.7272068,
+      "lng": -73.9849107,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/248142692",
+        "url": "https://www.openstreetmap.org/way/248142692",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=96+Saint+Marks+Place%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "96, Saint Marks Place, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10009, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R047",
+      "lat": 40.7287612,
+      "lng": -73.9897021,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/9036389119",
+        "url": "https://www.openstreetmap.org/node/9036389119",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=McSorley%E2%80%99s+Old+Ale+House%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "McSorley's Old Ale House, 15, East 7th Street, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R048",
+      "lat": 40.7299622,
+      "lng": -73.9882104,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/767398932",
+        "url": "https://www.openstreetmap.org/way/767398932",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Stuyvesant+Street%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Stuyvesant Street, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R049",
+      "lat": 40.7309569,
+      "lng": -73.9863984,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/247852538",
+        "url": "https://www.openstreetmap.org/way/247852538",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Village+East+Cinema%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Village East Cinema, 181-189, 2nd Avenue, East Village, Manhattan Community Board 3, Manhattan, New York County, New York, 10003, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R050",
+      "lat": 40.724241,
+      "lng": -73.9921517,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/4314829890",
+        "url": "https://www.openstreetmap.org/node/4314829890",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Liz+Christy+Garden%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Liz Christy Garden, East Houston Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10012, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R051",
+      "lat": 40.719527,
+      "lng": -74.001775,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/6562022202",
+        "url": "https://www.openstreetmap.org/node/6562022202",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Canal+Street+Station+Broadway+New+York+NY&format=jsonv2&limit=5",
+        "excerpt": "Canal Street, Broadway, Little Italy, Lower Manhattan, Manhattan, New York County, New York, 10013, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R052",
+      "lat": 40.719527,
+      "lng": -74.001775,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/6562022202",
+        "url": "https://www.openstreetmap.org/node/6562022202",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Canal+Street+Station+Broadway+New+York+NY&format=jsonv2&limit=5",
+        "excerpt": "Canal Street, Broadway, Little Italy, Lower Manhattan, Manhattan, New York County, New York, 10013, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R054",
+      "lat": 40.7154408,
+      "lng": -73.9955186,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/278241774",
+        "url": "https://www.openstreetmap.org/way/278241774",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Manhattan+Bridge+Arch%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Manhattan Bridge Arch, Canal Street, Two Bridges, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R055",
+      "lat": 40.7148871,
+      "lng": -73.9891265,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/108235836",
+        "url": "https://www.openstreetmap.org/way/108235836",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Seward+Park%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Seward Park, Manhattan Community Board 3, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R056",
+      "lat": 40.7163123,
+      "lng": -74.0018517,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/108153375",
+        "url": "https://www.openstreetmap.org/way/108153375",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Collect+Pond+Park%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Collect Pond Park, 130, Lower Manhattan, Manhattan, New York County, New York, 10013, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R057",
+      "lat": 40.7145893,
+      "lng": -73.9985501,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/4316479989",
+        "url": "https://www.openstreetmap.org/node/4316479989",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Wing+on+Wo+%26+Co.%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Wing on Wo & Co, Mott Street, Five Points, Manhattan Community Board 3, Manhattan, New York County, New York, 10278, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R058",
+      "lat": 40.7144593,
+      "lng": -73.9981968,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/4284811306",
+        "url": "https://www.openstreetmap.org/node/4284811306",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Nom+Wah+Tea+Parlor%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Nom Wah Tea Parlor, 13, Doyers Street, Five Points, Manhattan Community Board 3, Manhattan, New York County, New York, 10013, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R059",
+      "lat": 40.71614,
+      "lng": -73.9953678,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "node/4312238411",
+        "url": "https://www.openstreetmap.org/node/4312238411",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Mahayana+Buddhist+Temple%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Mahayana Buddhist Temple, 133, Canal Street, Manhattan Community Board 3, Manhattan, New York County, New York, 10002, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-R060",
+      "lat": 40.7144885,
+      "lng": -73.9991951,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/183010767",
+        "url": "https://www.openstreetmap.org/way/183010767",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Mosco+Street+Manhattan+NY&format=jsonv2&limit=5",
+        "excerpt": "Mosco Street, Five Points, Manhattan Community Board 3, Manhattan, New York County, New York, 10278, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-041",
+      "lat": 40.7335034,
+      "lng": -74.0030641,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/1308390918",
+        "url": "https://www.openstreetmap.org/way/1308390918",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Hess+Triangle%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Hess Triangle, Christopher Street, West Village, Manhattan, New York County, New York, 10014, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-042",
+      "lat": 40.7335823,
+      "lng": -74.0023869,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/30657456",
+        "url": "https://www.openstreetmap.org/way/30657456",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Christopher+Park%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Christopher Park, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-043",
+      "lat": 40.7374626,
+      "lng": -74.0014555,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/471550476",
+        "url": "https://www.openstreetmap.org/way/471550476",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=New+York+City+AIDS+Memorial%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "New York City AIDS Memorial, West 12th Street, West Village, Manhattan, New York County, New York, 10011, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-044",
+      "lat": 40.7420041,
+      "lng": -74.0106105,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/833335529",
+        "url": "https://www.openstreetmap.org/way/833335529",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Little+Island%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Little Island, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-045",
+      "lat": 40.7398872,
+      "lng": -74.0108166,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "relation/20784351",
+        "url": "https://www.openstreetmap.org/relation/20784351",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Gansevoort+Peninsula%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Gansevoort Peninsula, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-051",
+      "lat": 40.7339151,
+      "lng": -74.0020726,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/249664004",
+        "url": "https://www.openstreetmap.org/way/249664004",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=51+Christopher+Street%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "51, Christopher Street, West Village, Manhattan, New York County, New York, 10014, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-052",
+      "lat": 40.7301463,
+      "lng": -74.0021776,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/171562481",
+        "url": "https://www.openstreetmap.org/way/171562481",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Father+Demo+Square%2C+New+York+City%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Father Demo Square, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-055",
+      "lat": 40.7308955,
+      "lng": -73.9976,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/22899302",
+        "url": "https://www.openstreetmap.org/way/22899302",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Washington+Square+Park%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Washington Square Park, Manhattan, New York County, New York, United States"
+      }
+    },
+    {
+      "research_id": "DQ-NYC-VILLAGE-057",
+      "lat": 40.729838,
+      "lng": -74.0015311,
+      "coordinate_source": {
+        "provider": "openstreetmap-nominatim",
+        "external_id": "way/5670498",
+        "url": "https://www.openstreetmap.org/way/5670498",
+        "query_url": "https://nominatim.openstreetmap.org/search?q=Minetta+Street%2C+Manhattan%2C+NY&format=jsonv2&limit=3",
+        "excerpt": "Minetta Street, University Village, Manhattan, New York County, New York, 10014, United States"
+      }
+    }
+  ]
+}

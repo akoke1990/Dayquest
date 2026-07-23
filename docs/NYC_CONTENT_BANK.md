@@ -5,18 +5,24 @@ The v1 bank is an **offline authoring artifact**. It is not read by `lib/quest.j
 ## Files and commands
 
 - Contract: `content/nyc/schema/content-bank.schema.v1.json`
-- Versioned source candidates: `content/nyc/source-candidates.v1.json`
+- Baseline source candidates: `content/nyc/source-candidates.v1.json` (preserved input)
+- Compiled 100-idea portfolio: `content/nyc/source-candidates.v2.json`
+- Durable research tranches: `content/nyc/research/*.v1.json`
+- Source-grounded coordinate registry: `content/nyc/research/new-place-coordinates.v1.json`
 - NYC data: `content/nyc/content-bank.v1.json`
 - Approved-POI + candidate build: `scripts/import-nyc-content-bank.js`
 - Validator: `scripts/validate-content-bank.js`
 
 ```bash
+npm run content:compile:candidates:nyc  # deterministic 40 + 60 candidate compile
 npm run content:import:nyc  # deterministic rebuild from db/nyc-pois-labeled.json
 npm run content:validate  # validate the committed NYC bank
 npm test                  # built-in Node tests
 ```
 
-The importer selects only legacy rows with `status: "approved"`. It derives place IDs from `(source, ext_id)`, preserves source identity and source text, then deterministically merges the separately versioned source-candidate artifact. The 40 researched records add source-reviewed-but-not-field-verified evidence, `needs_field_verification` hunt ideas, and `candidate` clue packages containing the report's draft riddle and two hints. The artifact also records rejected/deferred alternatives so rebuilds never need to guess at them.
+The importer selects only legacy rows with `status: "approved"`. It derives place IDs from `(source, ext_id)`, preserves source identity and source text, then deterministically merges the separately compiled v2 source-candidate artifact. The portfolio contains the original 40 plus 60 durable research records. They add source-reviewed-but-not-field-verified evidence, `needs_field_verification` hunt ideas, and `candidate` clue packages containing each report's draft riddle and two hints. The artifact also carries all rejected/deferred alternatives so rebuilds never need to guess at them.
+
+Of the new 60 concepts, 18 map by exact stable ID and exact catalog name to existing places. The other 42 create source-derived place IDs. A new place is accepted only when its canonical research source has a stable provider/external ID and the coordinate registry supplies numeric coordinates with a public OpenStreetMap identity, URL, and excerpt. Missing identity or grounded coordinates fails compilation/import rather than triggering name-based guessing. Coordinates remain desk-sourced and do not imply a field check.
 
 For approved POIs without a mapped candidate, the importer deliberately creates:
 
@@ -26,7 +32,7 @@ For approved POIs without a mapped candidate, the importer deliberately creates:
 
 For mapped source candidates, it preserves the exact catalog place ID, cited URL/excerpt, and observable claim. Evidence uses `verification.status: "source_verified"` with `method: "source_review"`; this means desk research only and never a current human site check. No imported record is `field_verified` or `published`.
 
-Re-running the importer produces byte-identical output for identical inputs and never writes the source-candidate artifact. Edit the source artifact rather than hand-editing generated bank records, then rebuild.
+Re-running either compiler produces byte-identical output for identical inputs. The candidate compiler writes only v2; the bank importer writes only the generated bank. Neither overwrites baseline candidates, research tranches, or the coordinate registry. Edit durable inputs rather than hand-editing generated records, then rebuild.
 
 ## Identity and versions
 
@@ -56,6 +62,8 @@ Choose one primary category from the schema vocabulary:
 `architecture`, `gallery`, `historic_site`, `infrastructure`, `landmark`, `monument_memorial`, `museum`, `other`, `park_garden`, `public_art`, `religious`, `shop_market`, `venue_nightlife`.
 
 Category describes the target a player can look for, not merely why it is historically notable. Editors must intentionally seek varied objects, art, façades, materials, shapes, streetscapes, landscapes, views, spatial relationships, movement, and light. Review area/campaign mixes so architecture and historical sites do not crowd out public art, parks, commerce, infrastructure, and contemporary observable city life.
+
+The v2 compiler normalizes research labels deterministically. Exact v1 categories win. Otherwise ordered category rules map public/transit/map art; monument/memorial; park/garden/landscape/nature/water; architecture; infrastructure/lettering; religious; storefront/shop/food/craft; venue/nightlife; and historic/history, with `other` as the fail-safe fallback. Observable targets use ordered keyword rules for streetscape, facade, landscape, artwork, signage, light, and shape, then fall back to `object`. The original label is preserved as `category_source_value` for audit.
 
 There is no Easy/Tricky/Hard field in v1. Every published package must meet the same quality bar.
 

@@ -1,0 +1,556 @@
+{
+  "records": [
+    {
+      "research_id": "DQ-NYC-FD-001",
+      "title": "A Nautilus Full of Fish",
+      "source_identity": {
+        "provider": "The Battery Conservancy",
+        "external_id": "destinations/seaglass"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "SeaGlass Carousel pavilion",
+      "area": "The Battery",
+      "category": "other",
+      "observable_target": "The spiraling curved-glass-and-steel pavilion and monumental fish visible within.",
+      "source_url": "https://www.thebattery.org/destinations/seaglass/",
+      "source_quote": "“A spiraling pavilion of curved glass and steel, inspired by the chambered nautilus, houses the magical ride.”",
+      "riddle": "I borrow a shell’s spiral, but my school of fish swims in circles. Find my glassy sea.",
+      "hints": [
+        "Look in The Battery’s Woodland, off State Street.",
+        "Find the curved-glass pavilion modeled on a chambered nautilus."
+      ],
+      "reveal_concept": "A landlocked aquarium-like pavilion resolves the shell and circling-fish wordplay without requiring a paid ride.",
+      "public_approach_safety_mobility": "Target the exterior from park paths; no ticket or ride is required. Confirm free exterior sightlines, operating barriers, and a step-free approach in the field.",
+      "durability_risk": "Medium: the pavilion is permanent, but ride closures, curtains, or event barriers may reduce fish visibility.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-002",
+      "title": "Five Slides in a Bluff",
+      "source_identity": {
+        "provider": "The Battery Conservancy",
+        "external_id": "in-design/playscape"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Battery Playscape — Bluff",
+      "area": "The Battery",
+      "category": "park_garden",
+      "observable_target": "Five Adirondack-granite slides set among gardens and rock outcroppings, including an 18-foot high slide.",
+      "source_url": "https://www.thebattery.org/in-design/playscape/",
+      "source_quote": "“Five Adirondack granite slides are set among perennial gardens and rock outcroppings... The high slide reaches 18 feet in height.”",
+      "riddle": "A rocky bluff has no mountain, yet five stone chutes run down it. Find the tallest family.",
+      "hints": [
+        "Search the nature-inspired playground in The Battery.",
+        "Count the granite slides in the zone called the Bluff."
+      ],
+      "reveal_concept": "The “bluff” is a flood-resilient play landscape whose five granite slides form one unmistakable group.",
+      "public_approach_safety_mobility": "Observe without occupying slide run-outs or obstructing children. The source reports wheelchair transfer platforms at the low and medium slides and an accessible ramp; verify current gate hours, crowd conditions, and routes.",
+      "durability_risk": "Low-medium: the granite is durable, but closures, repairs, crowding, or seasonal hours may interfere.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-003",
+      "title": "The Spiral That Leaps",
+      "source_identity": {
+        "provider": "The Battery Conservancy",
+        "external_id": "destinations/bosque-fountain"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Bosque Fountain",
+      "area": "The Battery",
+      "category": "infrastructure",
+      "observable_target": "A flush granite spiral fountain with 35 jets that can shoot as high as 15 feet.",
+      "source_url": "https://www.thebattery.org/destinations/bosque-fountain/",
+      "source_quote": "“The Bosque Fountain’s 35 jets... shoot up to heights of 15 feet... the granite fountain is flush with the ground plane.”",
+      "riddle": "I am a granite spiral with thirty-five jumpers, but off-season I become a stage. Find me.",
+      "hints": [
+        "Look in The Battery Bosque among perennial gardens.",
+        "Find the ground-level fountain whose jets form the action."
+      ],
+      "reveal_concept": "The same flush spiral alternates between splash fountain and performance surface.",
+      "public_approach_safety_mobility": "Use park paths and remain clear of active jets and wet surfaces. Do not require water to be running; verify drainage, seasonal operation, and step-free approach.",
+      "durability_risk": "Medium-high: the granite spiral is stable, but the defining jets are seasonal and weather- or maintenance-dependent.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-004",
+      "title": "Pennies for a Tiny Society",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/the-real-world"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "The Real World by Tom Otterness",
+      "area": "Battery Park City waterfront",
+      "category": "public_art",
+      "observable_target": "Miniature bronze figures including workers rolling giant pennies toward a multi-armed idol.",
+      "source_url": "https://bpca.ny.gov/place/the-real-world/",
+      "source_quote": "“There is an entire bustling society in miniature including frogs wrestling over a moat, a titling tower and diminutive workers rolling giant pennies toward a multi-armed idol.”",
+      "riddle": "In my tiny city, workers roll money bigger than themselves toward a many-armed boss. Find the scene.",
+      "hints": [
+        "Search Rockefeller Park for a society scattered in bronze.",
+        "Look for the little workers pushing giant pennies."
+      ],
+      "reveal_concept": "The scale reversal turns ordinary coins into monumental cargo in Otterness’s miniature world.",
+      "public_approach_safety_mobility": "Approach on park paths; do not require touching or climbing on low sculptures. Verify exact penny-group visibility, crowds, and an accessible viewing position.",
+      "durability_risk": "Low: permanent bronze, though low pieces may be blocked by play, maintenance, or snow.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-005",
+      "title": "A Pier That Bends Back",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/south-cove"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "South Cove",
+      "area": "Battery Park City waterfront",
+      "category": "park_garden",
+      "observable_target": "The large arching wooden jetty curving inward toward shore, paired with a raised metal tower.",
+      "source_url": "https://bpca.ny.gov/place/south-cove/",
+      "source_quote": "“the large, arching wooden jetty... extends into the Hudson like a pier. The jetty gently curves inward, back toward shore... Overlooking the view is a raised metal tower.”",
+      "riddle": "I walk into the Hudson, think better of it, and curve back toward shore beneath a metal lookout. Find me.",
+      "hints": [
+        "Follow the Battery Park City Esplanade to a meditative recess.",
+        "Find the wooden jetty that bends inward beside the raised metal tower."
+      ],
+      "reveal_concept": "The apparent pier refuses a straight escape and becomes environmental art joining land and water.",
+      "public_approach_safety_mobility": "Stay on the designated jetty or walkway and behind waterfront edges; never lean beyond railings. Verify current resiliency-work closures, surface condition, width, and step-free route.",
+      "durability_risk": "Medium: the artwork is permanent, but waterfront weathering and resiliency construction can close or alter access.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-006",
+      "title": "Opposite Beacons",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/pylons"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Pylons by Martin Puryear",
+      "area": "Battery Park City waterfront",
+      "category": "public_art",
+      "observable_target": "Two six-segment stainless-steel columns: one solid and angular, the other an airy spiral of mesh.",
+      "source_url": "https://bpca.ny.gov/place/pylons/",
+      "source_quote": "“Both columns are made from stainless steel and are composed from six segments... One is solid and all angles... the other, an airy, volumetric weave of steel mesh gracefully spirals upward.”",
+      "riddle": "We are twin beacons that disagree: one shuts itself solid, one spirals open to the sky. Find us.",
+      "hints": [
+        "Look between the ferry dock and North Cove Harbor.",
+        "Find the mismatched stainless-steel columns framing the Winter Garden sightline."
+      ],
+      "reveal_concept": "The pair is intentionally opposite in mass and contour, turning a waterfront passage into a portal.",
+      "public_approach_safety_mobility": "View from the public waterfront route and avoid ferry queues and dock operations. Verify construction, treat night lighting as optional, and confirm step-free sightlines.",
+      "durability_risk": "Low-medium: permanent steel, but ferry operations, events, or waterfront construction may obstruct the pair.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-007",
+      "title": "Gotham Gate to the River",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/rector-gate"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Rector Gate by R. M. Fischer",
+      "area": "Battery Park City waterfront",
+      "category": "public_art",
+      "observable_target": "A 50-foot steel, bronze, and granite arch with shafts, skeletal cupola, fanciful spires, and seating at its base.",
+      "source_url": "https://bpca.ny.gov/place/rector-gate/",
+      "source_quote": "“R.M. Fischer’s Rector Gate is a festive archway marking the intersection of Rector Place and the Hudson River Esplanade... rising 50 feet high... The arch features seating at its base.”",
+      "riddle": "I am a fifty-foot gate with no door, part old Gotham and part science fiction. Find my crown by the river.",
+      "hints": [
+        "Go where Rector Place meets the Hudson River Esplanade.",
+        "Look for the steel, bronze, and granite arch with a skeletal cupola and spires."
+      ],
+      "reveal_concept": "The theatrical arch miniaturizes skyscraper and engineering motifs into a walk-through waterfront marker.",
+      "public_approach_safety_mobility": "Use the esplanade crossing and do not climb the base or structure. Verify nearby work zones, clear approach, and mobility route.",
+      "durability_risk": "Low: permanent metal-and-stone work, though temporary construction or event equipment may obscure it.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-008",
+      "title": "Furniture That Forgot Its Scale",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/sitting-stance"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Sitting/Stance by Richard Artschwager",
+      "area": "Battery Park City waterfront",
+      "category": "other",
+      "observable_target": "An ensemble with a squat streetlamp, raised circular bench and table, giant tree-grate-like seat, granite throne, and paired deck chairs.",
+      "source_url": "https://bpca.ny.gov/place/sitting-stance/",
+      "source_quote": "“At the center is a street lamp shrunken to squat proportions... A second circular seating area resembles an enlarged tree grating... completed by a throne-like seat... and a pair of reclining... deck chairs.”",
+      "riddle": "A streetlamp shrank, a tree grate grew, and a stone throne joined two deck chairs. Find this confused furniture.",
+      "hints": [
+        "Search the cul-de-sac where West Thames Street meets the Esplanade.",
+        "Match the squat lamp with the circular seating and granite throne."
+      ],
+      "reveal_concept": "Everyday street furniture changes scale and becomes an eccentric public recreation deck.",
+      "public_approach_safety_mobility": "Observe from the paved public area; do not make sitting or touching part of completion. Verify that all components remain present, unobstructed, and reachable without stairs.",
+      "durability_risk": "Medium: the ensemble is durable, but individual seating pieces can be repaired, removed, or occupied.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-009",
+      "title": "The Unlikely Dance Couple",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/ape-cat-at-the-dance"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Ape & Cat (At the Dance) by Jim Dine",
+      "area": "Battery Park City waterfront",
+      "category": "public_art",
+      "observable_target": "A cast-bronze ape and cat posed together as an affectionate, unlikely couple.",
+      "source_url": "https://bpca.ny.gov/place/ape-cat-at-the-dance/",
+      "source_quote": "“Jim Dine’s Ape & Cat (At the Dance)... Made of cast bronze... follow the relationship of this unlikely but adoring couple.”",
+      "riddle": "One partner is an ape, the other a cat; bronze makes their unlikely dance last. Find the couple.",
+      "hints": [
+        "Look along a sheltered stretch of the Battery Park City promenade.",
+        "Find the cast-bronze animal pair posed together."
+      ],
+      "reveal_concept": "The reveal is not a fable to read but a clearly visible cross-species couple in bronze.",
+      "public_approach_safety_mobility": "Observe from the promenade without touching or entering planted areas. Exact placement and current sightline require field confirmation.",
+      "durability_risk": "Low-medium: bronze is durable, but sheltered placement, vegetation, or maintenance could hide the pair.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-010",
+      "title": "A Plaza in Two Moods",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/waterfront-plaza"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Waterfront Plaza at North Cove",
+      "area": "Battery Park City waterfront",
+      "category": "park_garden",
+      "observable_target": "The contrast between a broad civic court and a quieter southern space with benches and tables around an oval lawn.",
+      "source_url": "https://bpca.ny.gov/place/waterfront-plaza/",
+      "source_quote": "“Starting from the north, there is the wide-open space of the court outside the Winter Garden... At the southern edge... benches and tables... line an oval lawn.”",
+      "riddle": "My north half welcomes a crowd; my south half whispers around an oval of green. Find the plaza with two moods.",
+      "hints": [
+        "Walk the edge of North Cove beside the Winter Garden.",
+        "Compare the open northern court with the intimate oval lawn to the south."
+      ],
+      "reveal_concept": "One commissioned waterfront plaza deliberately shifts scale from civic gathering space to quiet garden room.",
+      "public_approach_safety_mobility": "Use public plaza paths and remain outside event setups and marina operations. Verify a continuous accessible route, lawn visibility, and temporary programming.",
+      "durability_risk": "Medium: the core layout is durable, but events, furniture changes, or construction can blur the north-south contrast.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-011",
+      "title": "Four Pieces of a Mountain",
+      "source_identity": {
+        "provider": "Battery Park City Authority",
+        "external_id": "place/geologic-sections"
+      },
+      "match_status": "new_official_operator_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Geologic Sections in Teardrop Park",
+      "area": "Battery Park City",
+      "category": "public_art",
+      "observable_target": "Four integrated bluestone rock formations thrusting through Teardrop Park’s designed landscape.",
+      "source_url": "https://bpca.ny.gov/place/geologic-sections/",
+      "source_quote": "“Integrated into the surface of the landscape are four dramatic rock formations, Geologic Sections... the bluestone rock outcroppings... thrust upward to activate the man-made park.”",
+      "riddle": "Four slices of geology push through a park that humans built. Find the mountain pretending to be fragments.",
+      "hints": [
+        "Enter Teardrop Park’s winding landscape, not a museum.",
+        "Look for four bluestone outcroppings integrated into paths and slopes."
+      ],
+      "reveal_concept": "The works look geologic but are artist-made sections embedded in a designed urban park.",
+      "public_approach_safety_mobility": "Stay on intended park paths and do not rock-hop for completion. Slopes, play activity, vegetation, and exact step-free viewpoints must be field checked.",
+      "durability_risk": "Medium: the stone is durable, but vegetation, repairs, or path closures may conceal parts of the four-work set.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-012",
+      "title": "The Cube That Is Not a Cube",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/lms-famed-red-cube-invites-a-closer-look"
+      },
+      "match_status": "new_source_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Red Cube by Isamu Noguchi",
+      "area": "Financial District",
+      "category": "public_art",
+      "observable_target": "A giant red distorted “cube,” apparently balanced on a point, with a circular hole framing 140 Broadway.",
+      "source_url": "https://downtownny.com/news/lms-famed-red-cube-invites-a-closer-look/",
+      "source_quote": "“This ‘cube’ is not really a cube. It is a distorted shape... Most noticeable... is the hole in its center, revealing the building right behind it.”",
+      "riddle": "I call myself a cube, balance like a die, and punch a round window through my red body. Find the impostor.",
+      "hints": [
+        "Search Broadway outside number 140.",
+        "Look for the red tilted form whose central hole reveals the building behind it."
+      ],
+      "reveal_concept": "The satisfying trick is recognizing that the famous “cube” is geometrically distorted and uses its hole to frame the site.",
+      "public_approach_safety_mobility": "View from the plaza or sidewalk without climbing or entering traffic. Confirm security perimeters, crowding, and an unobstructed step-free viewpoint.",
+      "durability_risk": "Low: permanent sculpture, though security barriers or plaza work may affect the framing view.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-013",
+      "title": "An Acre Above the Rush",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/picture-lower-manhattan-the-elevated-acre"
+      },
+      "match_status": "new_source_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Elevated Acre at 55 Water Street",
+      "area": "Financial District",
+      "category": "park_garden",
+      "observable_target": "A hidden public park resting above street-level Lower Manhattan.",
+      "source_url": "https://downtownny.com/news/picture-lower-manhattan-the-elevated-acre/",
+      "source_quote": "“the Elevated Acre at 55 Water Street — a hidden park resting above the bustle of Lower Manhattan.”",
+      "riddle": "I am an acre that left the ground, hiding above Lower Manhattan’s rush. Find my green escape.",
+      "hints": [
+        "Start at 55 Water Street and look for the public way up.",
+        "Your destination is the park above street level, not the plaza below."
+      ],
+      "reveal_concept": "The reveal is a substantial public green space concealed on an elevated deck amid office towers.",
+      "public_approach_safety_mobility": "Use only the signed public entrance. Stairs or elevator availability, hours, privately managed rules, and current access require field verification. No purchase should be needed.",
+      "durability_risk": "Medium-high: the park is established, but private management, elevator outages, events, or closures can block access.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-014",
+      "title": "The Worker Who Never Leaves",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/picture-lower-manhattan-double-check"
+      },
+      "match_status": "matched_approved_poi_new_target",
+      "matched_catalog_name": "Zuccotti Park",
+      "canonical_place": "Double Check by J. Seward Johnson II",
+      "area": "Financial District",
+      "category": "public_art",
+      "observable_target": "A life-size bronze businessman seated and looking through his open briefcase.",
+      "source_url": "https://downtownny.com/news/picture-lower-manhattan-double-check/",
+      "source_quote": "“This bronze sculpture by J. Seward Johnson, depicting a businessman looking in his briefcase, was originally installed in 1982 in the middle of what was then called Liberty Park Plaza.”",
+      "riddle": "He has checked the same briefcase since 1982, yet his workday never ends. Find the seated businessman.",
+      "hints": [
+        "Search the approved Zuccotti Park place, once called Liberty Plaza Park.",
+        "Look for the bronze office worker with an open briefcase."
+      ],
+      "reveal_concept": "A seemingly ordinary worker turns out to be a permanent sculpture embedded in the district’s daily flow.",
+      "public_approach_safety_mobility": "Approach within the publicly accessible park; do not touch, sit on, or require reading memorial additions. Verify exact current placement, crowding, and step-free access.",
+      "durability_risk": "Low: permanent bronze, though temporary events, demonstrations, or park maintenance may obstruct it.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-015",
+      "title": "A Garden Below the Plaza",
+      "source_identity": {
+        "provider": "Wikipedia",
+        "external_id": "996283"
+      },
+      "match_status": "matched_approved_poi_new_target",
+      "matched_catalog_name": "28 Liberty Street",
+      "canonical_place": "Sunken Garden at 28 Liberty Street",
+      "area": "Financial District",
+      "category": "park_garden",
+      "observable_target": "A Japanese rock garden recessed below the surrounding open plaza.",
+      "source_url": "https://en.wikipedia.org/?curid=996283",
+      "source_quote": "“The tower is surrounded by a plaza that contains a sunken Japanese rock garden.”",
+      "riddle": "My stones make a garden, but the city plaza looks down on me. Find the landscape below.",
+      "hints": [
+        "Search the open plaza at the approved 28 Liberty Street place.",
+        "Look below plaza level for the Japanese rock garden."
+      ],
+      "reveal_concept": "The contrast between a broad corporate plaza and a carefully composed garden below creates the discovery.",
+      "public_approach_safety_mobility": "Observe from legal plaza edges and designated overlooks; do not enter the recessed garden. Verify barrier heights, visibility from a wheelchair-accessible position, and plaza hours.",
+      "durability_risk": "Low-medium: the built garden is durable, but maintenance, temporary installations, or plaza barriers may obscure it.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-016",
+      "title": "She Faces the Exchange",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/fearless-girl-heads-to-wall-street"
+      },
+      "match_status": "new_source_identity_at_approved_poi",
+      "matched_catalog_name": "New York Stock Exchange",
+      "canonical_place": "Fearless Girl by Kristen Visbal",
+      "area": "Financial District",
+      "category": "public_art",
+      "observable_target": "A 50-inch bronze girl standing within the NYSE security zone and facing the exchange.",
+      "source_url": "https://downtownny.com/news/fearless-girl-heads-to-wall-street/",
+      "source_quote": "“she’ll face the New York Stock Exchange... Protected within the NYSE security zone, the 50-inch bronze statue...”",
+      "riddle": "I stand only fifty inches tall, yet square my shoulders to the Big Board. Find me facing the exchange.",
+      "hints": [
+        "Go to Broad Street within the New York Stock Exchange security zone.",
+        "Find the small bronze girl directly confronting the exchange facade."
+      ],
+      "reveal_concept": "Her scale is modest, but her placement creates a face-off with one of the district’s largest institutions.",
+      "public_approach_safety_mobility": "Remain in pedestrian-permitted areas and follow security barriers; do not step into restricted zones or block queues. Verify current placement and an accessible viewpoint.",
+      "durability_risk": "Medium: the bronze is durable, but the artwork has relocated before and security arrangements can change.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-017",
+      "title": "Green in the Street Split",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/elizabeth-berger-plaza-now-open"
+      },
+      "match_status": "new_source_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Elizabeth H. Berger Plaza",
+      "area": "Financial District",
+      "category": "park_garden",
+      "observable_target": "A grass-filled center enclosed by a stone-paved walkway and benches in a triangular street-bound space.",
+      "source_url": "https://downtownny.com/news/elizabeth-berger-plaza-now-open/",
+      "source_quote": "“The... plaza includes a lush grass-filled center surrounded by a stone-paved walkway and benches... bound by Greenwich Street... Edgar Street... and Trinity Place.”",
+      "riddle": "Three streets pinch me, but I keep a green center inside a ring of stone. Find the small refuge.",
+      "hints": [
+        "Search where Greenwich, Edgar, and Trinity Place define the edges.",
+        "Find the grass-filled center wrapped by a stone walkway and benches."
+      ],
+      "reveal_concept": "The answer turns leftover road geometry into a compact, intentionally green civic room.",
+      "public_approach_safety_mobility": "Enter only through designated plaza entrances and use signalized crossings. Verify construction impacts, gate status, step-free entry, and current lawn condition.",
+      "durability_risk": "Medium: the layout is durable, but turf, plantings, entrances, and nearby construction can change.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-018",
+      "title": "The Street Without Through Traffic",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/stone-street-lower-manhattan"
+      },
+      "match_status": "new_source_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Stone Street pedestrian block",
+      "area": "Financial District",
+      "category": "shop_market",
+      "observable_target": "A curved, cobblestoned, narrow restaurant corridor without through traffic or parked cars, with bluestone sidewalks and bollards.",
+      "source_url": "https://downtownny.com/news/stone-street-lower-manhattan/",
+      "source_quote": "“The curved, cobblestoned alleyway lined with restaurants and shops... [is] a rare street in Manhattan lacking both through traffic or parked cars... installing bluestone sidewalks... bollards...”",
+      "riddle": "I curve between shops, wear cobbles underfoot, and make no room for parked cars. Find the street that became a dining room.",
+      "hints": [
+        "Search the narrow historic corridor east of Broad Street.",
+        "Match the cobbled curve, bluestone sidewalks, and bollards—not any single restaurant sign."
+      ],
+      "reveal_concept": "The whole streetscape, not a plaque or purchase, is the durable commercial-neighborhood target.",
+      "public_approach_safety_mobility": "Use pedestrian areas but stay alert for deliveries, outdoor dining furniture, uneven paving, and crowding. Verify current open-street rules and a mobility-friendly edge route.",
+      "durability_risk": "Medium: street geometry and paving are durable, but restaurant turnover, dining sheds, maintenance, and delivery access vary.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-019",
+      "title": "Seven Black Shadows",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/reconstruction-of-louise-nevelson-plaza"
+      },
+      "match_status": "new_source_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Louise Nevelson Plaza / Shadows and Flags",
+      "area": "Financial District",
+      "category": "public_art",
+      "observable_target": "A group of seven restored sculptures by Louise Nevelson occupying the small plaza.",
+      "source_url": "https://downtownny.com/news/reconstruction-of-louise-nevelson-plaza/",
+      "source_quote": "“The plaza will be decorated with seven fully-restored sculptures by Louise Nevelson that previously resided in the park.”",
+      "riddle": "Seven dark constructions gather in a plaza named for their maker. Find the shadows that became a park.",
+      "hints": [
+        "Look near Liberty Street for Manhattan’s plaza named after an artist.",
+        "Find the group of seven restored Nevelson sculptures, not a sign or plaque."
+      ],
+      "reveal_concept": "Multiple abstract works make the plaza itself feel like a walk-through sculptural composition.",
+      "public_approach_safety_mobility": "Observe from public paths without entering planting beds or touching works. Because the source discusses a 2010 reconstruction, verify current count, color, visibility, and access.",
+      "durability_risk": "Medium: the group is intended as permanent, but the cited source is historical and individual works may undergo conservation or relocation.",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-FD-020",
+      "title": "Sunlight Sent Underground",
+      "source_identity": {
+        "provider": "Downtown Alliance",
+        "external_id": "news/developing-lower-manhattan-fulton-center"
+      },
+      "match_status": "new_source_identity",
+      "matched_catalog_name": null,
+      "canonical_place": "Fulton Center oculus and parasols",
+      "area": "Financial District",
+      "category": "infrastructure",
+      "observable_target": "The oculus parasols designed to direct daylight down to Fulton Center’s lowest levels.",
+      "source_url": "https://downtownny.com/news/developing-lower-manhattan-fulton-center/",
+      "source_quote": "“The installation of the parasols at the top of the Fulton Center oculus, which will be used to direct sunlight down to the lowest levels... [was] completed.”",
+      "riddle": "My net catches no fish; it catches daylight and sends it down toward the trains. Find the bright eye.",
+      "hints": [
+        "Enter the public Fulton Center concourse during open hours.",
+        "Look up into the oculus and trace how its overhead system redirects daylight downward."
+      ],
+      "reveal_concept": "Transit infrastructure becomes a daylight instrument linking the roof and underground concourse.",
+      "public_approach_safety_mobility": "Use the public concourse without crossing fare gates or blocking circulation. Interior access hours, security, escalator or elevator routes, and whether daylight is legible in poor weather need field verification.",
+      "durability_risk": "Medium: installed infrastructure is durable, but lighting conditions, maintenance, construction, or access hours affect the experience.",
+      "needs_field_verification": true
+    }
+  ],
+  "rejects": [
+    {
+      "candidate": "East Coast Memorial eagle",
+      "decision": "reject_for_launch",
+      "reason": "The memorial setting risks turning the task toward names or text; a clean authoritative current-access check was not completed."
+    },
+    {
+      "candidate": "The Immigrants sculpture",
+      "decision": "defer",
+      "reason": "Potentially strong figurative target, but current exact placement and an unobstructed public viewpoint were not established from an accessible operator source."
+    },
+    {
+      "candidate": "Resonating Bodies",
+      "decision": "reject_for_now",
+      "reason": "The BPCA source places it at Robert F. Wagner Jr. Park, an area affected by major resiliency reconstruction; current display and access are too uncertain."
+    },
+    {
+      "candidate": "Battery Maritime Building Great Hall",
+      "decision": "reject_as_clue_target",
+      "reason": "The reviewed source emphasizes rehabilitation and an interior public-use plan; this could create paid, interior, or hours dependency, and the source is dated 2012."
+    },
+    {
+      "candidate": "Teardrop Park children’s slide",
+      "decision": "reject_in_favor_of_geologic_sections",
+      "reason": "A slide quest could interfere with children at play; the integrated rock formations offer a passive observation target instead."
+    },
+    {
+      "candidate": "9/11 Memorial inscriptions and small text",
+      "decision": "reject",
+      "reason": "This conflicts with the prohibition on memorial text-reading and can create crowding and sensitivity concerns."
+    }
+  ],
+  "summary": {
+    "records_researched": 20,
+    "existing_candidate_duplicates": 0,
+    "approved_poi_matches_or_associations": 3,
+    "category_counts": {
+      "public_art": 9,
+      "park_garden": 6,
+      "infrastructure": 2,
+      "other": 2,
+      "shop_market": 1
+    },
+    "primarily_architecture_count": 0,
+    "history_led_count": 0,
+    "all_need_field_verification": true,
+    "files_created_or_modified": [],
+    "issues": [
+      "Several otherwise promising concepts were deferred because current access or construction conditions could not be established from source review.",
+      "Downtown Alliance pages were Cloudflare-protected during direct retrieval; their public content was retrieved read-only through a text extraction endpoint, with original source URLs retained."
+    ]
+  }
+}
