@@ -25,6 +25,7 @@ test("dynamic Expo config is the only app config and keeps committed map keys bl
   assert.equal(config.orientation, "portrait");
   assert.equal(config.ios.supportsTablet, false);
   assert.equal(config.ios.buildNumber, "1");
+  assert.equal(config.ios.infoPlist.ITSAppUsesNonExemptEncryption, false);
   assert.equal(config.extra.GOOGLE_MAPS_API_KEY, "");
   assert.equal(config.ios.config.googleMapsApiKey, "");
   assert.equal(config.android.config.googleMaps.apiKey, "");

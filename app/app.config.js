@@ -54,6 +54,9 @@ module.exports = {
     bundleIdentifier: "com.akoke18.dayquest",
     buildNumber: "1",
     usesAppleSignIn: true,
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+    },
     config: {
       googleMapsApiKey,
     },
