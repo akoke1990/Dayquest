@@ -158,3 +158,18 @@ provider consoles.
 
 The unconfigured (anonymous) path is the default and bundles/runs without any of
 the above.
+
+---
+
+## 4. Account deletion (required before App Store submission)
+
+The reviewed implementation lives in:
+
+- `../supabase/migrations/202607220001_account_deletion.sql`
+- `../supabase/functions/delete-account/index.ts`
+- `../supabase/functions/delete-account/README.md`
+
+Do not paste a client-side `delete` policy onto `profiles` as a substitute. The
+authenticated Edge Function revokes Apple credentials, runs a fail-closed,
+transactional data contract with service-role privilege, and deletes the auth
+identity last. No migration/function deployment was performed by this change.

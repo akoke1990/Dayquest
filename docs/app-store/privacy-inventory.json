@@ -1,0 +1,139 @@
+{
+  "schema_version": 1,
+  "generated_from_commit": "07ece04",
+  "status": "draft_requires_owner_and_legal_review",
+  "apple_reference_urls": [
+    "https://developer.apple.com/support/offering-account-deletion-in-your-app/",
+    "https://developer.apple.com/app-store/app-privacy-details/"
+  ],
+  "tracking": {
+    "present_in_repository": false,
+    "basis": "No advertising SDK, data broker sharing, targeted advertising, or linkage to third-party data is represented. Owner must confirm production systems and contracts."
+  },
+  "data_types": [
+    {
+      "type": "Precise Location",
+      "apple_category": "Location > Precise Location",
+      "collected_off_device": true,
+      "linked_to_user": false,
+      "tracking": false,
+      "purposes": ["App Functionality", "Product Personalization"],
+      "destinations": ["DayQuest API", "configured place/geocoding processors"],
+      "notes": "Current coordinates are query parameters for quest generation. Live breadcrumb route is represented as local-only. Conservatively re-evaluate IP logs and signed-in correlation before submission."
+    },
+    {
+      "type": "Email Address",
+      "apple_category": "Contact Info > Email Address",
+      "collected_off_device": true,
+      "linked_to_user": true,
+      "tracking": false,
+      "purposes": ["App Functionality"],
+      "destinations": ["Apple or Google authentication", "Supabase Auth", "Supabase profiles"]
+    },
+    {
+      "type": "Name",
+      "apple_category": "Contact Info > Name",
+      "collected_off_device": true,
+      "linked_to_user": true,
+      "tracking": false,
+      "purposes": ["App Functionality"],
+      "destinations": ["Apple or Google authentication", "Supabase profiles/public_profiles"],
+      "notes": "Display name and avatar are visible in friends/leaderboards."
+    },
+    {
+      "type": "User ID",
+      "apple_category": "Identifiers > User ID",
+      "collected_off_device": true,
+      "linked_to_user": true,
+      "tracking": false,
+      "purposes": ["App Functionality"],
+      "destinations": ["Supabase Auth", "Supabase social/gameplay tables"],
+      "notes": "Friend invite deep links contain the account UUID."
+    },
+    {
+      "type": "Device ID",
+      "apple_category": "Identifiers > Device ID",
+      "collected_off_device": true,
+      "linked_to_user": false,
+      "tracking": false,
+      "purposes": ["Analytics", "App Functionality"],
+      "destinations": ["DayQuest API JSONL logs"],
+      "notes": "Random per-install ID, not IDFA. Sent with optional analytics, feedback, and score sink. Owner must conservatively revisit linked status because account and install can coexist on one device."
+    },
+    {
+      "type": "Product Interaction",
+      "apple_category": "Usage Data > Product Interaction",
+      "collected_off_device": true,
+      "linked_to_user": false,
+      "tracking": false,
+      "purposes": ["Analytics"],
+      "destinations": ["DayQuest API JSONL logs"],
+      "choice": "Future optional events can be disabled in Settings > Privacy & legal."
+    },
+    {
+      "type": "Gameplay Content",
+      "apple_category": "User Content > Gameplay Content",
+      "collected_off_device": true,
+      "linked_to_user": true,
+      "tracking": false,
+      "purposes": ["App Functionality"],
+      "destinations": ["Supabase profiles", "Supabase hunt_results", "Supabase shared_hunts"],
+      "notes": "Points/streak/profile and signed-in shared-hunt result. Routes, photos, visited places and full local quest history are not represented as uploads."
+    },
+    {
+      "type": "Other User Content",
+      "apple_category": "User Content > Other User Content",
+      "collected_off_device": true,
+      "linked_to_user": false,
+      "tracking": false,
+      "purposes": ["App Functionality", "Analytics"],
+      "destinations": ["DayQuest API JSONL feedback logs"],
+      "notes": "Optional feedback text, rating, stop flag/context with install ID. Revisit linked status together with Device ID."
+    },
+    {
+      "type": "Photos or Videos",
+      "apple_category": "User Content > Photos or Videos",
+      "collected_off_device": false,
+      "linked_to_user": false,
+      "tracking": false,
+      "purposes": ["App Functionality"],
+      "destinations": ["On-device app document directory", "user-selected system share destination"],
+      "notes": "Not an App Store 'collected' data type in the represented build because the app does not transmit it off-device. Re-evaluate if photo verification/upload is implemented."
+    }
+  ],
+  "local_only_data": [
+    "Active quest and progress",
+    "GPS breadcrumb route and timestamps",
+    "Quest photos",
+    "Completed quest history",
+    "Places visited and collections",
+    "Local score, streak and personal bests",
+    "Quest preferences",
+    "Planned-hunt reminder metadata",
+    "Analytics choice"
+  ],
+  "processors_to_confirm": [
+    "Supabase",
+    "Render or actual DayQuest API host",
+    "Anthropic",
+    "Google Maps/Places/Geocoding/Auth",
+    "Apple Sign in with Apple/Maps",
+    "OpenStreetMap service endpoints",
+    "Wikipedia/Wikimedia",
+    "Expo/EAS production services"
+  ],
+  "release_blockers": [
+    "LEGAL_ENTITY_NAME",
+    "SUPPORT_CONTACT",
+    "PRIVACY_POLICY_URL",
+    "TERMS_URL",
+    "SUPPORT_URL",
+    "RETENTION_SCHEDULE",
+    "PROCESSOR_AND_TRANSFER_DETAILS",
+    "INSTALL_ID_AND_BACKUP_DELETION_PROCESS",
+    "OPEN_DATA_ATTRIBUTION_TEXT_AND_LINKS",
+    "JURISDICTION_SPECIFIC_RIGHTS_AND_LEGAL_BASES",
+    "LIVE_SCHEMA_AND_STORAGE_PREFLIGHT",
+    "APPLE_DELETION_SECRETS_AND_LIVE_TEST"
+  ]
+}

@@ -35,11 +35,22 @@ import * as Sharing from "expo-sharing";
 // ImagePicker cache — which iOS evicts — into the persistent document dir.
 import { File, Directory, Paths } from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { API_BASE, APP_SCHEME } from "./config";
+import {
+  API_BASE,
+  APP_SCHEME,
+  PRIVACY_POLICY_URL,
+  TERMS_URL,
+  SUPPORT_URL,
+} from "./config";
 // Optional, anonymous-first auth layer. `authConfigured` is false by default
 // (empty Supabase keys), in which case every auth helper is a safe no-op and the
 // sign-in UI is hidden — the app runs exactly as it does today.
-import { authConfigured } from "./lib/supabase";
+import { authConfigured, supabase } from "./lib/supabase";
+import {
+  clearLocalDayQuestData,
+  deleteAccountRemotely,
+  registerAppleRevocationToken,
+} from "./lib/accountDeletion";
 // Social layer (friends, shared-hunt results, leaderboard) — Supabase-direct,
 // RLS-protected. Every helper is a safe no-op when unconfigured or signed out,
 // so the solo/guest flow is untouched.
@@ -217,6 +228,7 @@ const HELP_SEEN_KEY = "dayquest.helpSeen.v1";
 // non-daily retention lever). { hunt_id, theme, area, scheduled_for (ISO date),
 // notif_id }. A social appointment: minted now, played on the day.
 const PLANNED_HUNT_KEY = "dayquest.plannedHunt.v1";
+const PRIVACY_KEY = "dayquest.privacy.v1"; // { analytics: boolean }
 
 // Show scheduled notifications as banners even if the app is foregrounded.
 Notifications.setNotificationHandler({
@@ -246,6 +258,9 @@ const PHOTO_DIR = "dayquest-photos";
 
 // One anonymous id per install, generated once. NO PII — just a random token.
 let _installId = null;
+// Fail privacy-closed during hydration; the saved/default choice is applied
+// before subsequent analytics events are accepted.
+let _analyticsEnabled = false;
 async function getInstallId() {
   if (_installId) return _installId;
   try {
@@ -264,6 +279,7 @@ async function getInstallId() {
 // Fire-and-forget analytics. A dead server must NEVER break the quest flow —
 // every failure is swallowed so check-in / photo / share keep working offline.
 function track(event, props = {}) {
+  if (!_analyticsEnabled) return;
   (async () => {
     try {
       const install_id = await getInstallId();
@@ -1304,6 +1320,9 @@ export default function App() {
   const [profile, setProfile] = useState(null); // row from the `profiles` table
   const [authBusy, setAuthBusy] = useState(false); // sign-in/out in flight
   const [authError, setAuthError] = useState(""); // last sign-in error, if any
+  const [dataActionBusy, setDataActionBusy] = useState(false);
+  const [dataActionError, setDataActionError] = useState("");
+  const [analyticsEnabled, setAnalyticsEnabled] = useState(true);
   const userRef = useRef(null); // latest user for the completion effect (avoids re-subscribing)
   userRef.current = user;
 
@@ -1348,6 +1367,13 @@ export default function App() {
   useEffect(() => {
     (async () => {
       getInstallId();
+      AsyncStorage.getItem(PRIVACY_KEY)
+        .then((raw) => {
+          const enabled = raw ? JSON.parse(raw)?.analytics !== false : true;
+          _analyticsEnabled = enabled;
+          setAnalyticsEnabled(enabled);
+        })
+        .catch(() => {});
       // Load lifetime score so Welcome can show the running total + streak.
       readScore().then(setScore).catch(() => {});
       // Load saved quest preferences (distance / length / type).
@@ -2882,6 +2908,14 @@ export default function App() {
         const p = await loadProfile(res.user.id);
         if (p) setProfile(p);
       }
+      if (provider === "apple" && res.appleAuthorizationCode) {
+        const registration = await registerAppleRevocationToken(supabase, res.appleAuthorizationCode);
+        if (!registration.registered) {
+          setAuthError(
+            "Signed in, but Apple revocation setup is incomplete. Account deletion is unavailable until the server configuration is fixed."
+          );
+        }
+      }
     } catch (e) {
       setAuthError(e?.message || "Sign-in failed. Please try again.");
     } finally {
@@ -2920,6 +2954,121 @@ export default function App() {
       setAuthBusy(false);
       track("sign_out");
     }
+  }
+
+  async function clearLocalData() {
+    const photoDirectory = new Directory(Paths.document, PHOTO_DIR);
+    await clearLocalDayQuestData({
+      storage: AsyncStorage,
+      photoDirectory,
+      cancelNotification: (id) => Notifications.cancelScheduledNotificationAsync(id),
+    });
+    _installId = null;
+    _analyticsEnabled = true;
+    setAnalyticsEnabled(true);
+    setQuest(null);
+    setProgress({});
+    routePathRef.current = [];
+    setRoutePath([]);
+    setSaved(null);
+    setHistory([]);
+    setVisited([]);
+    setCollections({});
+    setBests({});
+    setPlannedHunt(null);
+    setScore({ total: 0, quests_completed: 0, streak_weeks: 0 });
+  }
+
+  async function confirmAccountDeletion() {
+    if (!user || dataActionBusy) return;
+    setDataActionBusy(true);
+    setDataActionError("");
+    let remoteDeleted = false;
+    try {
+      // Apple requires the app to revoke Sign in with Apple tokens when an
+      // account is deleted. Re-authorize immediately before deletion so legacy
+      // users and earlier registration failures still have an in-app path.
+      const usesApple = (user.app_metadata?.providers || []).includes("apple");
+      if (usesApple && Platform.OS === "ios") {
+        let credential;
+        try {
+          credential = await AppleAuthentication.signInAsync({ requestedScopes: [] });
+        } catch (error) {
+          if (error?.code === "ERR_REQUEST_CANCELED") {
+            throw new Error("Apple authorization was canceled. Your account was not deleted.");
+          }
+          throw error;
+        }
+        const registration = await registerAppleRevocationToken(supabase, credential.authorizationCode);
+        if (!registration.registered) {
+          throw new Error(`Apple authorization could not be prepared for deletion: ${registration.reason}`);
+        }
+      }
+      // Server success is the gate: never remove local routes/photos/history on a
+      // timeout, rejection, or dependency blocker.
+      await deleteAccountRemotely(supabase);
+      remoteDeleted = true;
+      try {
+        await clearLocalData();
+      } finally {
+        // The server has deleted the auth identity. Always clear the stale local
+        // session even if device-file cleanup needs a separate retry.
+        await signOut();
+        setUser(null);
+        setProfile(null);
+        setScreen("signin");
+      }
+    } catch (e) {
+      const message = remoteDeleted
+        ? "Your account was deleted, but some data on this device could not be removed. Use Reset guest data in Settings to retry local cleanup."
+        : e?.message || "Account deletion did not complete. Nothing on this device was removed.";
+      setDataActionError(message);
+      if (remoteDeleted) Alert.alert("Account deleted", message);
+    } finally {
+      setDataActionBusy(false);
+    }
+  }
+
+  function requestAccountDeletion() {
+    Alert.alert(
+      "Delete your DayQuest account?",
+      "This permanently deletes your Supabase account, profile, friend connections, and shared-hunt results. After the server confirms, this device's saved quests, route history, photos, settings, and install ID are also removed. Historical server logs keyed only by install ID cannot currently be matched to your account. This cannot be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete account", style: "destructive", onPress: confirmAccountDeletion },
+      ]
+    );
+  }
+
+  async function confirmGuestDataReset() {
+    if (dataActionBusy) return;
+    setDataActionBusy(true);
+    setDataActionError("");
+    try {
+      await clearLocalData();
+      setScreen("signin");
+    } catch (e) {
+      setDataActionError(e?.message || "Local data could not be fully reset. Please try again.");
+    } finally {
+      setDataActionBusy(false);
+    }
+  }
+
+  function requestGuestDataReset() {
+    Alert.alert(
+      "Reset local DayQuest data?",
+      "This removes saved quests, route history, photos, points, settings, reminders, and the install ID from this device. It does not delete a signed-in account.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Reset guest data", style: "destructive", onPress: confirmGuestDataReset },
+      ]
+    );
+  }
+
+  async function updateAnalyticsChoice(enabled) {
+    _analyticsEnabled = enabled;
+    setAnalyticsEnabled(enabled);
+    await AsyncStorage.setItem(PRIVACY_KEY, JSON.stringify({ analytics: enabled })).catch(() => {});
   }
 
   async function shareRecap() {
@@ -3065,6 +3214,7 @@ export default function App() {
       { key: "visited", icon: "📍", label: "Places Visited", onPress: go(openVisited) },
       { key: "history", icon: "📜", label: "My Quests", onPress: go(openHistory) },
       { key: "settings", icon: "⚙️", label: "Settings", onPress: go(openSettings) },
+      { key: "privacy", icon: "🔐", label: "Privacy & legal", onPress: go(() => setScreen("privacy")) },
       { key: "help", icon: "❓", label: "How it works", onPress: go(openHelp) },
       user
         ? { key: "friends", icon: "👥", label: "Friends", onPress: go(openFriends) }
@@ -3415,6 +3565,21 @@ export default function App() {
             >
               <Text style={styles.buttonText}>Sign out</Text>
             </TouchableOpacity>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Permanently delete account"
+              accessibilityState={{ disabled: dataActionBusy }}
+              style={[styles.optRow, { borderColor: "#B42318", marginTop: 24 }]}
+              onPress={requestAccountDeletion}
+              disabled={dataActionBusy}
+            >
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.optTitle, { color: "#B42318" }]}>Delete account</Text>
+                <Text style={styles.optSub}>Permanently remove your Supabase identity, profile, friends and shared-hunt results.</Text>
+              </View>
+            </TouchableOpacity>
+            {dataActionBusy ? <ActivityIndicator color={ACCENT} accessibilityLabel="Deleting account" /> : null}
+            {dataActionError ? <Text accessibilityLiveRegion="polite" style={styles.error}>{dataActionError}</Text> : null}
           </>
         ) : (
           <>
@@ -3959,6 +4124,93 @@ export default function App() {
             </TouchableOpacity>
           );
         })}
+        <Text style={styles.settingLabel}>Privacy & data</Text>
+        <TouchableOpacity style={styles.optRow} onPress={() => setScreen("privacy")} accessibilityRole="button">
+          <View style={{ flex: 1 }}>
+            <Text style={styles.optTitle}>Privacy choices, legal & support</Text>
+            <Text style={styles.optSub}>Control analytics and review how DayQuest handles data.</Text>
+          </View>
+          <Text style={styles.listChevron}>›</Text>
+        </TouchableOpacity>
+        {!user ? (
+          <TouchableOpacity
+            style={[styles.optRow, { borderColor: "#B42318" }]}
+            onPress={requestGuestDataReset}
+            disabled={dataActionBusy}
+            accessibilityRole="button"
+            accessibilityLabel="Reset guest data on this device"
+            accessibilityState={{ disabled: dataActionBusy }}
+          >
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.optTitle, { color: "#B42318" }]}>Reset guest data</Text>
+              <Text style={styles.optSub}>Remove local quests, routes, photos, scores, settings and install ID.</Text>
+            </View>
+          </TouchableOpacity>
+        ) : null}
+        {dataActionBusy ? <ActivityIndicator color={ACCENT} /> : null}
+        {dataActionError ? <Text accessibilityLiveRegion="polite" style={styles.error}>{dataActionError}</Text> : null}
+        <View style={{ height: 40 }} />
+      </ScrollView>
+    );
+  }
+
+  if (screen === "privacy") {
+    const openReleaseUrl = (url) => {
+      if (url) Linking.openURL(url).catch(() => {});
+      else Alert.alert("Not published yet", "This public page is a release blocker and has not been configured in this build.");
+    };
+    return (
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
+        <StatusBar style="dark" />
+        <Text style={styles.backLink} onPress={() => setScreen("settings")}>← Settings</Text>
+        <Text style={styles.theme}>Privacy & legal</Text>
+        <Text style={styles.intro}>
+          Location is used while a quest is active to build the hunt, show your position, confirm finds, and record an on-device route. Quest photos and route history are stored on this device. Signed-in profiles, friend connections, and shared-hunt results use Supabase.
+        </Text>
+
+        <Text style={styles.settingLabel}>Optional usage analytics</Text>
+        <Text style={styles.optSub}>
+          When on, DayQuest sends product-interaction events with a random install ID to the DayQuest server. It does not send your account ID in those events. Turning this off stops future optional analytics; it does not erase earlier server logs.
+        </Text>
+        <View style={styles.chipRow}>
+          {[true, false].map((enabled) => (
+            <TouchableOpacity
+              key={String(enabled)}
+              style={[styles.chip, analyticsEnabled === enabled && styles.chipOn]}
+              onPress={() => updateAnalyticsChoice(enabled)}
+              accessibilityRole="radio"
+              accessibilityState={{ selected: analyticsEnabled === enabled }}
+            >
+              <Text style={[styles.chipText, analyticsEnabled === enabled && styles.chipTextOn]}>
+                {enabled ? "Share analytics" : "Don't share"}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <Text style={styles.settingLabel}>Your choices</Text>
+        <Text style={styles.intro}>
+          You can use DayQuest as a guest, deny camera access and collect without it, stop a quest to stop route recording, turn analytics off above, reset guest data in Settings, or delete a signed-in account from Profile.
+        </Text>
+        {[
+          ["Privacy policy", PRIVACY_POLICY_URL],
+          ["Terms & safety", TERMS_URL],
+          ["Help & support", SUPPORT_URL],
+        ].map(([label, url]) => (
+          <TouchableOpacity key={label} style={styles.optRow} onPress={() => openReleaseUrl(url)} accessibilityRole="link">
+            <Text style={styles.optTitle}>{label}</Text>
+            <Text style={styles.listChevron}>{url ? "↗" : "!"}</Text>
+          </TouchableOpacity>
+        ))}
+        {!PRIVACY_POLICY_URL || !TERMS_URL || !SUPPORT_URL ? (
+          <Text accessibilityLiveRegion="polite" style={styles.settingNote}>
+            One or more public legal/support URLs are not configured. This build is not ready for App Store submission.
+          </Text>
+        ) : null}
+        <Text style={styles.settingLabel}>Open data attribution</Text>
+        <Text style={styles.optSub}>
+          Place information can come from OpenStreetMap contributors (ODbL), Wikipedia/Wikimedia sources, and other source links shown on each stop. Map tiles and place services depend on the configured build and region.
+        </Text>
         <View style={{ height: 40 }} />
       </ScrollView>
     );

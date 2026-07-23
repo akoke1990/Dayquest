@@ -102,7 +102,10 @@ export async function signInWithAppleNative() {
       token,
     });
     if (error) return { error: error.message };
-    return { user: data?.user || null };
+    // The one-time authorization code is needed by our authenticated Edge
+    // Function to exchange and retain an Apple refresh token for later revocation
+    // if the user deletes the account. It is never persisted on-device.
+    return { user: data?.user || null, appleAuthorizationCode: credential.authorizationCode || null };
   } catch (e) {
     // User tapped Cancel on Apple's sheet — not an error, no toast.
     if (e?.code === "ERR_REQUEST_CANCELED") return { canceled: true };

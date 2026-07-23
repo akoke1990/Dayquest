@@ -2,6 +2,9 @@
 // Native Google Maps builds read their key from the selected EAS environment;
 // the committed/default value intentionally stays blank.
 const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || "";
+const privacyPolicyUrl = process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL || "";
+const termsUrl = process.env.EXPO_PUBLIC_TERMS_URL || "";
+const supportUrl = process.env.EXPO_PUBLIC_SUPPORT_URL || "";
 
 module.exports = {
   name: "DayQuest",
@@ -76,6 +79,9 @@ module.exports = {
     SUPABASE_ANON_KEY:
       "sb_publishable_oekh-4raDYaxlNsLqhOylQ_WwwF-AGE",
     GOOGLE_MAPS_API_KEY: googleMapsApiKey,
+    PRIVACY_POLICY_URL: privacyPolicyUrl,
+    TERMS_URL: termsUrl,
+    SUPPORT_URL: supportUrl,
     eas: {
       projectId: "d590e873-0a0e-4d25-a78f-32478af4a91f",
     },

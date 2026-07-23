@@ -45,3 +45,10 @@ export const SUPABASE_ANON_KEY =
 // `scheme`. In Expo Go the redirect is proxied, but the scheme is still
 // used to build the redirect URL.
 export const APP_SCHEME = "dayquest";
+
+// Public legal/support destinations are release variables, not invented URLs.
+// Empty values render an honest "not yet published" state in-app and are hard
+// blockers in docs/app-store/reviewer-checklist.md.
+export const PRIVACY_POLICY_URL = extra.PRIVACY_POLICY_URL || process.env.EXPO_PUBLIC_PRIVACY_POLICY_URL || "";
+export const TERMS_URL = extra.TERMS_URL || process.env.EXPO_PUBLIC_TERMS_URL || "";
+export const SUPPORT_URL = extra.SUPPORT_URL || process.env.EXPO_PUBLIC_SUPPORT_URL || "";
