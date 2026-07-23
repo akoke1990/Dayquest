@@ -155,6 +155,24 @@
         }
       }
     },
+    "delivery_control": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "canary_eligible",
+        "paused"
+      ],
+      "properties": {
+        "canary_eligible": {
+          "type": "boolean",
+          "description": "Explicit opt-in for field-verified canary delivery; never inferred from candidate state."
+        },
+        "paused": {
+          "type": "boolean",
+          "description": "Immediate delivery pause without changing immutable record identity."
+        }
+      }
+    },
     "source": {
       "type": "object",
       "additionalProperties": false,
@@ -351,6 +369,9 @@
         },
         "lifecycle": {
           "$ref": "#/$defs/lifecycle"
+        },
+        "delivery": {
+          "$ref": "#/$defs/delivery_control"
         },
         "name": {
           "type": "string",
@@ -556,6 +577,9 @@
         "lifecycle": {
           "$ref": "#/$defs/lifecycle"
         },
+        "delivery": {
+          "$ref": "#/$defs/delivery_control"
+        },
         "title": {
           "type": "string",
           "minLength": 1
@@ -613,6 +637,9 @@
         },
         "lifecycle": {
           "$ref": "#/$defs/lifecycle"
+        },
+        "delivery": {
+          "$ref": "#/$defs/delivery_control"
         },
         "place_id": {
           "type": "string"

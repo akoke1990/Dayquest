@@ -32,3 +32,12 @@ test("v1 schema contains no difficulty field", () => {
   });
   assert.equal(keys.includes("difficulty"), false);
 });
+
+test("v1 records support explicit canary and pause delivery controls", () => {
+  const schema = JSON.parse(readFileSync(schemaPath, "utf8"));
+  assert.deepEqual(schema.$defs.delivery_control.properties.canary_eligible.type, "boolean");
+  assert.deepEqual(schema.$defs.delivery_control.properties.paused.type, "boolean");
+  for (const kind of ["place", "hunt_idea", "clue_package"]) {
+    assert.equal(schema.$defs[kind].properties.delivery.$ref, "#/$defs/delivery_control");
+  }
+});
