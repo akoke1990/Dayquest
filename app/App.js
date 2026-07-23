@@ -89,6 +89,12 @@ import mapStyle from "./mapStyle";
 import QuestScanner from "./QuestScanner";
 import CameraCatch from "./CameraCatch";
 import { normalizeStopHints } from "./lib/hintFlow";
+import {
+  CONTENT_FAILURE_REASONS,
+  applyContentReplacement,
+  buildContentFailureRequest,
+  markContentFailure,
+} from "./lib/contentFailure";
 
 // True only when running inside Expo Go. In a real build `appOwnership` is
 // null/undefined, so this is false and Google + the custom style activate.
@@ -1203,6 +1209,10 @@ export default function App() {
   // Find guard: order indices whose find has already been triggered this quest,
   // so GPS jitter around the find radius can't re-fire the reveal. Reset per quest.
   const foundFiredRef = useRef(new Set());
+  // Synchronous safety/content-failure guard. React state updates are deferred,
+  // so a GPS tick arriving in the same frame as a report must still be unable to
+  // resolve or award the reported physical place.
+  const contentFailureBlockedPlacesRef = useRef(new Set());
   // Re-entry guard for completeCatch (the catch→advance handler). Prevents a
   // sprite-tap + skip-tap from double-firing the collect-fly/advance. Reset per
   // find in nextClue().
@@ -1241,6 +1251,9 @@ export default function App() {
   // enhancement on top. A "collapse to slim tab" power-user state is kept too.
   const [sheetExpanded, setSheetExpanded] = useState(false);
   const [sheetCollapsed, setSheetCollapsed] = useState(false); // tucked to a slim tab
+  const [reportOpen, setReportOpen] = useState(false);
+  const [contentFailureReason, setContentFailureReason] = useState(null);
+  const [contentFailureBusy, setContentFailureBusy] = useState(false);
   // Hide the bottom FABs while the clue sheet is EXPANDED (they occluded the
   // hint ladder — field-tester report). Computed from top-level state only:
   // "hunt in progress, no reveal/recap overlay, sheet visible and expanded".
@@ -2032,6 +2045,7 @@ export default function App() {
     setHeatCoords(null); // fresh quest → no gated fix → glow starts cold
     tintAnim.setValue(0); // fresh quest → edge-glow starts cold (blue)
     foundFiredRef.current = new Set();
+    contentFailureBlockedPlacesRef.current = new Set();
     try {
       let latitude, longitude;
       if (hasPlace) {
@@ -2248,6 +2262,11 @@ export default function App() {
     foundFiredRef.current = new Set(
       Object.keys(restored).filter((k) => restored[k]?.found).map((k) => Number(k))
     );
+    contentFailureBlockedPlacesRef.current = new Set(
+      Object.values(restored)
+        .map((entry) => entry?.contentFailure?.reported_place_id || entry?.contentFailureReport?.reported_place_id)
+        .filter(Boolean)
+    );
     // Re-derive the pre-quest discovered snapshot for the "+N new spots" delta:
     // the Area's discovered set MINUS this quest's own stops (so spots found this
     // quest still count as new even though collectItem already wrote them live).
@@ -2316,6 +2335,72 @@ export default function App() {
     setFeedbackSent(true);
   }
 
+  async function replaceFailedStop(stop, reason) {
+    if (!stop || contentFailureBusy) return;
+    let request;
+    try {
+      request = buildContentFailureRequest(quest, stop, reason);
+    } catch {
+      Alert.alert("Replacement unavailable", "This stop cannot be matched to curated replacement inventory.");
+      return;
+    }
+
+    setContentFailureBusy(true);
+    setReportOpen(false);
+    contentFailureBlockedPlacesRef.current.add(request.place_id);
+    const pendingProgress = markContentFailure(progress, stop.order_index, reason, request.place_id, "pending");
+    setProgress(pendingProgress);
+    AsyncStorage.setItem(
+      STORE_KEY,
+      JSON.stringify({ quest, progress: pendingProgress, startedAt: startedAtRef.current, routePath: routePathRef.current })
+    ).catch(() => {});
+
+    try {
+      const response = await fetch(`${API_BASE}/content-failure`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(request),
+      });
+      const data = await response.json();
+      if (!response.ok || !data.replacement) throw new Error(data.code || "REPLACEMENT_UNAVAILABLE");
+
+      const replaced = applyContentReplacement(quest, pendingProgress, stop.order_index, data.replacement);
+      setQuest(replaced.quest);
+      setProgress(replaced.progress);
+      setContentFailureReason(null);
+      setHintRung(0);
+      setGuideArmed(false);
+      setTrend(null);
+      prevHeatDistRef.current = null;
+      lastBandRef.current = null;
+      await AsyncStorage.setItem(
+        STORE_KEY,
+        JSON.stringify({ quest: replaced.quest, progress: replaced.progress, startedAt: startedAtRef.current, routePath: routePathRef.current })
+      );
+    } catch {
+      const unavailable = markContentFailure(pendingProgress, stop.order_index, reason, request.place_id, "unavailable");
+      setProgress(unavailable);
+      AsyncStorage.setItem(
+        STORE_KEY,
+        JSON.stringify({ quest, progress: unavailable, startedAt: startedAtRef.current, routePath: routePathRef.current })
+      ).catch(() => {});
+    } finally {
+      setContentFailureBusy(false);
+    }
+  }
+
+  function confirmContentFailure(stop, reason) {
+    if (!reason) return;
+    Alert.alert(
+      "Replace this stop?",
+      "We'll avoid this place now. You won't lose points or progress, and this does not count as a find.",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Report and replace", style: reason === "unsafe" ? "destructive" : "default", onPress: () => replaceFailedStop(stop, reason) },
+      ]
+    );
+  }
+
   // The single CHOKEPOINT for banking a FIND. Called by findStop() on every
   // in-geofence find path (GPS-triggered or "found it" tap). The find is
   // now the CORE earning event: it banks points immediately, marks the target
@@ -2329,12 +2414,17 @@ export default function App() {
     // the synchronous ref wins the sub-frame race two near-simultaneous triggers
     // (a GPS tick + the "found it" tap) could otherwise slip past, since we yield
     // at the first await before any re-render.
-    if (progress[orderIndex]?.found || awardedRef.current.has(orderIndex)) return;
+    const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
+    if (
+      progress[orderIndex]?.found
+      || progress[orderIndex]?.contentFailure
+      || contentFailureBlockedPlacesRef.current.has(stop?.place?.source_id)
+      || awardedRef.current.has(orderIndex)
+    ) return;
     awardedRef.current.add(orderIndex);
 
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
 
-    const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
     const area = quest?.origin?.label || "Your Area";
     const key = placeKey(stop?.place);
     const item = stop?.virtual_item || FALLBACK_ITEM;
@@ -2405,7 +2495,12 @@ export default function App() {
   // carries `itemless:true` so the reveal renders without the catch/collect step
   // and its dot never falsely shows the collected item.
   function findStop(orderIndex, { viaEscape = false, awardItem = true } = {}) {
-    if (foundFiredRef.current.has(orderIndex)) return;
+    const stop = quest?.stops?.find((s) => s.order_index === orderIndex);
+    if (
+      progress[orderIndex]?.contentFailure
+      || contentFailureBlockedPlacesRef.current.has(stop?.place?.source_id)
+      || foundFiredRef.current.has(orderIndex)
+    ) return;
     foundFiredRef.current.add(orderIndex);
     setSelectedStop(null); // close any open card so the reveal owns the screen
     setGuideArmed(false);
@@ -2505,7 +2600,7 @@ export default function App() {
 
   function activateGuidance(orderIndex) {
     const target = quest?.stops.find((s) => !progress[s.order_index]?.found);
-    if (!target?.place || target.order_index !== orderIndex) return;
+    if (!target?.place || target.order_index !== orderIndex || progress[orderIndex]?.contentFailure) return;
     setSelectedStop(null);
     setGuideArmed(true);
     const next = {
@@ -4440,12 +4535,13 @@ export default function App() {
   // The CURRENT target = first not-found stop in walking order. null once all
   // found (the hunt is complete). Its name/pin stay HIDDEN until found.
   const currentTarget = quest.stops.find((s) => !progress[s.order_index]?.found) || null;
+  const currentFailure = currentTarget ? progress[currentTarget.order_index]?.contentFailure : null;
   // Movement-gated distance to the current target + its proximity band
   // (warmer/colder). Reads `heatCoords` (advances only after ≥ HEAT_MOVE_M of
   // travel) rather than raw `coords`, so the band/label/edge-glow don't flicker
   // on GPS jitter. The ≤FIND_RADIUS_M find still fires off raw coords elsewhere.
   const targetDist =
-    heatCoords && currentTarget?.place
+    !currentFailure && heatCoords && currentTarget?.place
       ? distanceM(heatCoords.latitude, heatCoords.longitude, currentTarget.place.lat, currentTarget.place.lng)
       : null;
   const band = proximityBand(targetDist);
@@ -4458,7 +4554,11 @@ export default function App() {
   // back to the absolute band STATE — never asserting a direction we can't
   // support (GPS-noise caution). No fix yet → a "move a few steps" prompt.
   let directive;
-  if (!band) {
+  if (currentFailure) {
+    directive = currentFailure.status === "pending"
+      ? "Avoiding this place — finding a safe replacement…"
+      : "This place is being avoided. No safe replacement is available right now.";
+  } else if (!band) {
     directive = "📡 Finding your location…";
   } else if (band.id === "hot") {
     directive = "🔥🔥 Red hot — you're right on top of it!";
@@ -4490,6 +4590,7 @@ export default function App() {
   // (~50m) kept deliberately loose for noisy Manhattan GPS. The virtual item +
   // find-points are awarded only when this is true. null coords ⇒ not in zone.
   const inGeofence =
+    !currentFailure &&
     !!coords &&
     !!currentTarget?.place &&
     distanceM(coords.latitude, coords.longitude, currentTarget.place.lat, currentTarget.place.lng) <=
@@ -5117,9 +5218,57 @@ export default function App() {
                       "Somewhere in this circle hides your next discovery. Explore to find it!"}
                   </Text>
 
-                  <Text style={styles.ladderHeading}>HINT LADDER</Text>
+                  {reportOpen && !currentFailure ? (
+                    <View style={styles.reportPanel} accessibilityRole="summary">
+                      <Text style={styles.reportTitle}>Report a problem with this stop</Text>
+                      <Text style={styles.reportHelp}>Choose one reason. Please don't send text, photos, or location details.</Text>
+                      <View style={styles.reportReasons}>
+                        {CONTENT_FAILURE_REASONS.map((option) => (
+                          <TouchableOpacity
+                            key={option.value}
+                            style={[styles.reportReason, contentFailureReason === option.value && styles.reportReasonSelected]}
+                            onPress={() => setContentFailureReason(option.value)}
+                            accessibilityRole="radio"
+                            accessibilityState={{ selected: contentFailureReason === option.value }}
+                          >
+                            <Text style={styles.reportReasonText}>{option.label}</Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                      <View style={styles.reportButtons}>
+                        <TouchableOpacity style={styles.reportCancel} onPress={() => setReportOpen(false)}>
+                          <Text style={styles.reportCancelText}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.reportSubmit, !contentFailureReason && styles.foundItBtnDim]}
+                          disabled={!contentFailureReason || contentFailureBusy}
+                          onPress={() => confirmContentFailure(currentTarget, contentFailureReason)}
+                        >
+                          <Text style={styles.reportSubmitText}>Report and replace</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ) : null}
 
-                  {currentHints.length === 0 ? (
+                  {currentFailure ? (
+                    <View style={styles.reportPanel} accessibilityRole="alert">
+                      <Text style={styles.reportTitle}>This place is being avoided</Text>
+                      <Text style={styles.reportHelp}>{directive}</Text>
+                      {currentFailure.status === "unavailable" ? (
+                        <TouchableOpacity
+                          style={styles.reportSubmit}
+                          disabled={contentFailureBusy}
+                          onPress={() => confirmContentFailure(currentTarget, currentFailure.reason)}
+                        >
+                          <Text style={styles.reportSubmitText}>Try replacement again</Text>
+                        </TouchableOpacity>
+                      ) : <ActivityIndicator color={ACCENT} />}
+                    </View>
+                  ) : null}
+
+                  {!currentFailure ? <Text style={styles.ladderHeading}>HINT LADDER</Text> : null}
+
+                  {!currentFailure && (currentHints.length === 0 ? (
                     <Text style={styles.noHintsText}>No extra hints for this stop yet.</Text>
                   ) : (
                     currentHints.map((hint, idx) => {
@@ -5151,11 +5300,11 @@ export default function App() {
                         </TouchableOpacity>
                       );
                     })
-                  )}
+                  ))}
 
                   {/* Guide: exact unnamed marker only. It never resolves the stop;
                       GPS/geofence find still has to happen through findStop. */}
-                  {guideUnlocked ? (
+                  {!currentFailure && (guideUnlocked ? (
                     <TouchableOpacity
                       style={[styles.rungReveal, guidanceActive && styles.rungRevealActive]}
                       onPress={() => activateGuidance(currentTarget.order_index)}
@@ -5174,7 +5323,7 @@ export default function App() {
                           : "available after 45s"}
                       </Text>
                     </View>
-                  )}
+                  ))}
                 </ScrollView>
               ) : (
                 // PEEK: ~2 lines of clue + the directive micro-line.
@@ -5193,9 +5342,20 @@ export default function App() {
                   jumps the user to the expanded ladder at rung ≥1; [I found it!]
                   grants the item ONLY when physically in the geofence (out of
                   zone → friendly "get closer" nudge, never a grant). */}
+              {currentFailure?.status === "unavailable" ? (
+                <TouchableOpacity
+                  style={styles.reportRetry}
+                  disabled={contentFailureBusy}
+                  onPress={() => confirmContentFailure(currentTarget, currentFailure.reason)}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.reportRetryText}>No safe replacement is available right now. Try again.</Text>
+                </TouchableOpacity>
+              ) : null}
               <View style={styles.sheetActions}>
                 <TouchableOpacity
-                  style={styles.nudgeBtn}
+                  style={[styles.nudgeBtn, currentFailure && styles.foundItBtnDim]}
+                  disabled={!!currentFailure}
                   activeOpacity={0.8}
                   onPress={() => {
                     if (currentHints.length > 0) setHintRung((r) => Math.max(r, 1));
@@ -5205,7 +5365,8 @@ export default function App() {
                   <Text style={styles.nudgeBtnText}>💡 Hint</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  style={[styles.foundItBtn, !inGeofence && styles.foundItBtnDim]}
+                  style={[styles.foundItBtn, (!inGeofence || currentFailure) && styles.foundItBtnDim]}
+                  disabled={!!currentFailure}
                   activeOpacity={0.85}
                   onPress={() =>
                     inGeofence
@@ -5219,6 +5380,20 @@ export default function App() {
                   <Text style={styles.foundItBtnText}>I found it! →</Text>
                 </TouchableOpacity>
               </View>
+
+              {!currentFailure ? (
+                <TouchableOpacity
+                  style={styles.reportLink}
+                  onPress={() => {
+                    setReportOpen(true);
+                    setContentFailureReason(null);
+                    setSheetExpanded(true);
+                  }}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.reportLinkText}>Report a problem with this stop</Text>
+                </TouchableOpacity>
+              ) : null}
 
               {/* Tuck-away to a slim tab for a clean map (power-user). */}
               <TouchableOpacity
@@ -5655,6 +5830,22 @@ const styles = StyleSheet.create({
   },
   rungRevealActive: { backgroundColor: GREEN },
   rungRevealText: { fontSize: 15, fontWeight: "900", color: "#fff" },
+  reportPanel: { backgroundColor: TINT, borderRadius: 18, borderWidth: 3, borderColor: OUTLINE, padding: 14, marginVertical: 12 },
+  reportTitle: { fontSize: 17, fontWeight: "900", color: INK },
+  reportHelp: { fontSize: 14, fontWeight: "700", color: MUTE, lineHeight: 20, marginTop: 5 },
+  reportReasons: { marginTop: 10, gap: 8 },
+  reportReason: { minHeight: 44, justifyContent: "center", borderRadius: 14, borderWidth: 2, borderColor: OUTLINE, backgroundColor: CARD, paddingHorizontal: 12 },
+  reportReasonSelected: { backgroundColor: AMBER },
+  reportReasonText: { fontSize: 15, fontWeight: "800", color: INK },
+  reportButtons: { flexDirection: "row", gap: 10, marginTop: 12 },
+  reportCancel: { minHeight: 44, justifyContent: "center", paddingHorizontal: 14 },
+  reportCancelText: { fontSize: 15, fontWeight: "800", color: MUTE },
+  reportSubmit: { flex: 1, minHeight: 44, justifyContent: "center", alignItems: "center", borderRadius: 15, borderWidth: 3, borderColor: OUTLINE, backgroundColor: ACCENT, paddingHorizontal: 12 },
+  reportSubmitText: { fontSize: 15, fontWeight: "900", color: "#fff", textAlign: "center" },
+  reportRetry: { minHeight: 44, justifyContent: "center", backgroundColor: TINT, borderRadius: 14, borderWidth: 2, borderColor: OUTLINE, padding: 10, marginTop: 10 },
+  reportRetryText: { fontSize: 14, fontWeight: "800", color: INK, textAlign: "center" },
+  reportLink: { alignSelf: "center", minHeight: 44, justifyContent: "center", paddingHorizontal: 8 },
+  reportLinkText: { fontSize: 14, fontWeight: "800", color: ACCENT, textDecorationLine: "underline" },
   // Action row (both rest states)
   sheetActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14, gap: 12 },
   nudgeBtn: {
