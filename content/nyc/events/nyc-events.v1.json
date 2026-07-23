@@ -1,0 +1,1853 @@
+{
+  "artifact_version": "1.0.0",
+  "site_id": "nyc",
+  "dataset": "optional_time_limited_dayquest_event_candidates",
+  "generated_at": "2026-07-22T21:42:15-04:00",
+  "research_cutoff": "2026-07-22",
+  "timezone": "America/New_York",
+  "schema_notes": {
+    "purpose": "Separate expiring candidate layer for optional event-mode DayQuest experiences; not permanent places and not publication approval.",
+    "scope": "Current official-source desk research. Retention requires a future occurrence or documented recurrence after the cutoff.",
+    "five_launch_areas": [
+      "Greenwich Village",
+      "West Village",
+      "East Village",
+      "Chinatown",
+      "Financial District"
+    ],
+    "coordinate_policy": "NYC Parks event points are copied from official event-page microdata. Other points are named-feature centroids from OpenStreetMap Nominatim and are labeled contextual; none proves an entrance, route, access, availability, or safety.",
+    "access_policy": "Unknown means not established by reviewed sources. Source accessibility statements are not field verification.",
+    "availability_policy": "No record infers open capacity, safe conditions, ticket inventory, walk-up admission, or cancellation status. Recheck official source before use.",
+    "content_policy": "No copyrighted imagery is stored. Activity text is proposed editorial candidate material and avoids photographing strangers or disrupting events.",
+    "lifecycle_policy": "Every retained row is event_candidate; nothing is published or activated."
+  },
+  "counts": {
+    "retained": 26,
+    "rejected_or_deferred": 9,
+    "total_reviewed": 35
+  },
+  "balance_summary": {
+    "area": {
+      "Brooklyn Heights / Cobble Hill waterfront": 1,
+      "Chinatown / Civic Center edge": 1,
+      "Chinatown / Two Bridges edge": 1,
+      "DUMBO / Brooklyn Heights waterfront": 4,
+      "East Village": 1,
+      "Financial District–Chinatown–East Village corridor": 3,
+      "Greenpoint": 2,
+      "Greenwich Village": 6,
+      "Long Island City": 1,
+      "Prospect Heights / Crown Heights": 1,
+      "Tremont / Grand Concourse": 1,
+      "Tribeca": 2,
+      "West Brighton / Randall Manor": 1,
+      "West Village / Meatpacking edge": 1
+    },
+    "borough": {
+      "Bronx": 1,
+      "Brooklyn": 8,
+      "Manhattan": 15,
+      "Queens": 1,
+      "Staten Island": 1
+    },
+    "start_date": {
+      "2026-07-23": 8,
+      "2026-07-25": 4,
+      "2026-07-27": 2,
+      "2026-07-28": 4,
+      "2026-07-30": 1,
+      "2026-08-01": 1,
+      "2026-08-02": 1,
+      "2026-08-06": 1,
+      "2026-08-08": 1,
+      "2026-08-15": 1,
+      "2026-08-22": 2
+    },
+    "category": {
+      "arts_workshop": 1,
+      "astronomy": 1,
+      "community_run": 1,
+      "dance_fitness": 2,
+      "environmental_education": 2,
+      "family_arts": 1,
+      "family_storytime": 1,
+      "history_walk": 1,
+      "kayaking": 1,
+      "live_music": 1,
+      "nature_skill": 1,
+      "open_streets": 7,
+      "outdoor_film": 3,
+      "participatory_sport": 1,
+      "social_sport": 1,
+      "volunteer_nature": 1
+    },
+    "launch_area_notes": "Exact-area rows include Greenwich Village 6, West Village/Meatpacking edge 1, East Village 1, and two Chinatown-edge rows; three Manhattan Summer Streets rows traverse the Financial District–Chinatown–East Village corridor. Tribeca adds 2 walkable-nearby rows."
+  },
+  "validation": {
+    "validated_at": "2026-07-22T21:42:15-04:00",
+    "status": "pass",
+    "checks": {
+      "json_parse": true,
+      "retained_count_matches": true,
+      "rejected_or_deferred_count_matches": true,
+      "unique_event_ids": true,
+      "starts_before_ends": true,
+      "expires_after_occurrence_end": true,
+      "future_or_post_cutoff_recurrence": true,
+      "official_url_present": true,
+      "corroborating_url_present": true,
+      "coordinate_source_present": true,
+      "lifecycle_all_event_candidate": true,
+      "no_past_one_offs": true,
+      "official_url_live_check": "20 of 20 unique official URLs returned HTTP 200 or 206 at validation time."
+    },
+    "next_expiring": [
+      {
+        "event_id": "event:bbp:plankton-exploration-2026-07-23",
+        "expires_at": "2026-07-24T12:00:00-04:00"
+      },
+      {
+        "event_id": "event:bbp:kayaking-2026-07-23",
+        "expires_at": "2026-07-24T19:00:00-04:00"
+      },
+      {
+        "event_id": "event:nycparks:2026-07-23-on-a-limb-in-the-garden",
+        "expires_at": "2026-07-24T20:30:00-04:00"
+      },
+      {
+        "event_id": "event:bbp:movies-with-a-view-talented-mr-ripley-2026-07-23",
+        "expires_at": "2026-07-24T23:00:00-04:00"
+      },
+      {
+        "event_id": "event:nycdot:summer-streets-queens-2026-07-25",
+        "expires_at": "2026-07-25T23:59:59-04:00"
+      },
+      {
+        "event_id": "event:nycdot:summer-streets-staten-island-2026-07-25",
+        "expires_at": "2026-07-25T23:59:59-04:00"
+      }
+    ]
+  },
+  "events": [
+    {
+      "event_id": "event:bbp:environmental-education-center-open-hours-2026-07-23",
+      "title": "Open Hours at the Environmental Education Center – July 23",
+      "category": "environmental_education",
+      "official_organizer": "Brooklyn Bridge Park Conservancy",
+      "official_url": "https://brooklynbridgepark.org/event/open-hours-at-the-environmental-education-center-july-23/",
+      "corroborating_url": "https://brooklynbridgepark.org/places-to-see/environmental-education-center/",
+      "place": {
+        "name": "Brooklyn Bridge Park Environmental Education Center",
+        "identity": "Brooklyn Bridge Park Environmental Education Center",
+        "area": "DUMBO / Brooklyn Heights waterfront",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.7040827,
+          "longitude": -73.9892968,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=99%20Plymouth%20Street%20Brooklyn%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T15:00:00-04:00",
+        "ends_at": "2026-07-23T17:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TH,FR,SA,SU; organizer page notes different weekend hours and holiday closures",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; room capacity not stated."
+      },
+      "age_and_access_restrictions": "Drop-in public hours; no pets.",
+      "dependency": {
+        "setting": "interior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "partial",
+        "evidence": "Official event page identifies restrooms and the general accessibility page; no detailed exhibit-route statement.",
+        "source_url": "https://brooklynbridgepark.org/about/accessibility/"
+      },
+      "weather_and_cancellation_risk": "Mostly interior; organizer says event may change for weather or other extenuating circumstances.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Find the 10-foot park model and identify which fixed pier shape is longest; do not handle aquarium organisms or interrupt educators.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "indoor capacity unknown",
+        "holiday/operational changes"
+      ],
+      "expires_at": "2026-12-31T17:00:00-05:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T11:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://brooklynbridgepark.org/event/open-hours-at-the-environmental-education-center-july-23/"
+      }
+    },
+    {
+      "event_id": "event:bbp:kayaking-2026-07-23",
+      "title": "Kayaking – July 23",
+      "category": "kayaking",
+      "official_organizer": "Brooklyn Bridge Park Conservancy",
+      "official_url": "https://brooklynbridgepark.org/event/kayaking-july-23/",
+      "corroborating_url": "https://brooklynbridgepark.org/places-to-see/pier-2/",
+      "place": {
+        "name": "Pier 2, Brooklyn Bridge Park",
+        "identity": "Pier 2, Brooklyn Bridge Park",
+        "area": "DUMBO / Brooklyn Heights waterfront",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.69951,
+          "longitude": -73.9988963,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=Pier%202%20Brooklyn%20Bridge%20Park%20New%20York",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T17:00:00-04:00",
+        "ends_at": "2026-07-23T19:00:00-04:00",
+        "recurrence_rule": "Weekly summer/fall schedule stated; specific dates and holiday skips must be checked",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "recommended",
+        "capacity": "20-minute timed slots; advance registration highly recommended; walk-ups not guaranteed."
+      },
+      "age_and_access_restrictions": "Under 18 requires adult guardian; waiver required; organizer rules and life vest use mandatory.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "partial",
+        "evidence": "Official park accessibility page exists; event page does not guarantee adaptive kayaking or dock access.",
+        "source_url": "https://brooklynbridgepark.org/about/accessibility/"
+      },
+      "weather_and_cancellation_risk": "High weather/water dependency; organizer expressly allows change for weather/extenuating circumstances.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "From the promenade, identify the north-entrance floating-dock marker; never enter dock/queue or join without waiver and organizer acceptance.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "14_days",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "registration/waiver",
+        "water safety",
+        "weather",
+        "walk-up not guaranteed"
+      ],
+      "expires_at": "2026-07-24T19:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T12:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://brooklynbridgepark.org/event/kayaking-july-23/"
+      }
+    },
+    {
+      "event_id": "event:bbp:movies-with-a-view-talented-mr-ripley-2026-07-23",
+      "title": "Movies With A View: The Talented Mr. Ripley",
+      "category": "outdoor_film",
+      "official_organizer": "Brooklyn Bridge Park Conservancy",
+      "official_url": "https://brooklynbridgepark.org/event/movies-with-a-view-july-23/",
+      "corroborating_url": "https://brooklynbridgepark.org/places-to-see/harbor-view-lawn/",
+      "place": {
+        "name": "Harbor View Lawn, Brooklyn Bridge Park",
+        "identity": "Harbor View Lawn, Brooklyn Bridge Park",
+        "area": "DUMBO / Brooklyn Heights waterfront",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.7016973,
+          "longitude": -73.9973104,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=Harbor%20View%20Lawn%20Brooklyn%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T18:00:00-04:00",
+        "ends_at": "2026-07-23T23:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "First-come, first-served; lawn capacity not stated."
+      },
+      "age_and_access_restrictions": "Film rated R; organizer page says entry begins at 6 PM and is first-come, first-served.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "partial",
+        "evidence": "General park accessibility page available; lawn seating conditions are not detailed on event page.",
+        "source_url": "https://brooklynbridgepark.org/about/accessibility/"
+      },
+      "weather_and_cancellation_risk": "Outdoor lawn film; weather, crowding, and organizer alerts can affect screening.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Before the crowd builds, identify the fixed lawn name and skyline-facing direction; do not photograph attendees or record copyrighted film.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "rated R",
+        "first-come capacity",
+        "weather",
+        "copyrighted film must not be recorded"
+      ],
+      "expires_at": "2026-07-24T23:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T12:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://brooklynbridgepark.org/event/movies-with-a-view-july-23/"
+      }
+    },
+    {
+      "event_id": "event:bbp:plankton-exploration-2026-07-23",
+      "title": "Expert-Led Explorations: Plankton – July 23",
+      "category": "environmental_education",
+      "official_organizer": "Brooklyn Bridge Park Conservancy",
+      "official_url": "https://brooklynbridgepark.org/event/expert-led-explorations-plankton-july-23/",
+      "corroborating_url": "https://brooklynbridgepark.org/places-to-see/pier-5/",
+      "place": {
+        "name": "Pier 5, Brooklyn Bridge Park",
+        "identity": "Pier 5, Brooklyn Bridge Park",
+        "area": "DUMBO / Brooklyn Heights waterfront",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.6949,
+          "longitude": -74.0017393,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=Pier%205%20Brooklyn%20Bridge%20Park%20New%20York",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T10:30:00-04:00",
+        "ends_at": "2026-07-23T12:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "yes",
+        "capacity": "Registration required; capacity not stated and availability not inferred."
+      },
+      "age_and_access_restrictions": "Registration required; sampling/microscope work is organizer-led.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "supported",
+        "evidence": "Event page says pier paths are paved, picnic-table seating is available, and nearby bathrooms exist.",
+        "source_url": "https://brooklynbridgepark.org/about/accessibility/"
+      },
+      "weather_and_cancellation_risk": "Outdoor waterside workshop; weather/extenuating circumstances can change it.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Identify Pier 5 and the fixed picnic-table area from the path; microscopes, samples, and participant work are off-limits unless registered.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "7_days",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "registration",
+        "waterside",
+        "capacity unknown",
+        "weather"
+      ],
+      "expires_at": "2026-07-24T12:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T08:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://brooklynbridgepark.org/event/expert-led-explorations-plankton-july-23/"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-bronx-2026-08-22",
+      "title": "Summer Streets — Bronx Grand Concourse",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml#summerstreets-the-bronx",
+      "place": {
+        "name": "Bronx Grand Concourse",
+        "identity": "Bronx Grand Concourse",
+        "area": "Tremont / Grand Concourse",
+        "borough": "Bronx",
+        "coordinates": {
+          "latitude": 40.8498287,
+          "longitude": -73.9062095,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=East%20Tremont%20Avenue%20Grand%20Concourse%20Bronx%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-22T09:00:00-04:00",
+        "ends_at": "2026-08-22T17:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "At East Tremont Avenue, identify the Grand Concourse route marker and one endpoint.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "route changes",
+        "heat",
+        "crowds",
+        "limited activity capacity"
+      ],
+      "expires_at": "2026-08-22T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-08-15T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-brooklyn-2026-08-22",
+      "title": "Summer Streets — Brooklyn Eastern Parkway",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml#summerstreets-brooklyn",
+      "place": {
+        "name": "Brooklyn Eastern Parkway",
+        "identity": "Brooklyn Eastern Parkway",
+        "area": "Prospect Heights / Crown Heights",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.6762012,
+          "longitude": -73.9716715,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=Grand%20Army%20Plaza%20Brooklyn%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-22T09:00:00-04:00",
+        "ends_at": "2026-08-22T17:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "At Grand Army Plaza, identify the official Eastern Parkway route sign and one endpoint.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "route changes",
+        "heat",
+        "crowds",
+        "limited activity capacity"
+      ],
+      "expires_at": "2026-08-22T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-08-15T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-manhattan-2026-08-01",
+      "title": "Summer Streets — Manhattan Brooklyn Bridge to Dyckman route",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml#summerstreets-manhattan1",
+      "place": {
+        "name": "Manhattan Brooklyn Bridge to Dyckman route",
+        "identity": "Manhattan Brooklyn Bridge to Dyckman route",
+        "area": "Financial District–Chinatown–East Village corridor",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.714438,
+          "longitude": -74.0030793,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=Foley%20Square%20New%20York%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-01T07:00:00-04:00",
+        "ends_at": "2026-08-01T15:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "At Foley Square or another uncrowded official rest stop, identify one route segment name from NYC DOT signage; no full-route completion required.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "very long route",
+        "street crossings",
+        "heat",
+        "crowds",
+        "programming details may change"
+      ],
+      "expires_at": "2026-08-01T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-29T12:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-manhattan-2026-08-08",
+      "title": "Summer Streets — Manhattan Brooklyn Bridge to Dyckman route",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml#summerstreets-manhattan2",
+      "place": {
+        "name": "Manhattan Brooklyn Bridge to Dyckman route",
+        "identity": "Manhattan Brooklyn Bridge to Dyckman route",
+        "area": "Financial District–Chinatown–East Village corridor",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.714438,
+          "longitude": -74.0030793,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=Foley%20Square%20New%20York%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-08T07:00:00-04:00",
+        "ends_at": "2026-08-08T15:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "At Foley Square or another uncrowded official rest stop, identify one route segment name from NYC DOT signage; no full-route completion required.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "very long route",
+        "street crossings",
+        "heat",
+        "crowds",
+        "programming details may change"
+      ],
+      "expires_at": "2026-08-08T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-31T12:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-manhattan-2026-08-15",
+      "title": "Summer Streets — Manhattan Brooklyn Bridge to Dyckman route",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml#summerstreets-manhattan3",
+      "place": {
+        "name": "Manhattan Brooklyn Bridge to Dyckman route",
+        "identity": "Manhattan Brooklyn Bridge to Dyckman route",
+        "area": "Financial District–Chinatown–East Village corridor",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.714438,
+          "longitude": -74.0030793,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=Foley%20Square%20New%20York%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-15T07:00:00-04:00",
+        "ends_at": "2026-08-15T15:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "At Foley Square or another uncrowded official rest stop, identify one route segment name from NYC DOT signage; no full-route completion required.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "very long route",
+        "street crossings",
+        "heat",
+        "crowds",
+        "programming details may change"
+      ],
+      "expires_at": "2026-08-15T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-08-07T12:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-queens-2026-07-25",
+      "title": "Summer Streets — Queens Vernon Boulevard",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/downloads/pdf/summer-streets-queens-flyer-2026.pdf",
+      "place": {
+        "name": "Queens Vernon Boulevard",
+        "identity": "Queens Vernon Boulevard",
+        "area": "Long Island City",
+        "borough": "Queens",
+        "coordinates": {
+          "latitude": 40.7451564,
+          "longitude": -73.9532907,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=44-02%20Vernon%20Boulevard%20Queens%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-25T09:00:00-04:00",
+        "ends_at": "2026-07-25T17:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "At a quiet route edge, identify the official Vernon Boulevard rest-stop street pair; do not enter activity queues.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "route changes",
+        "heat",
+        "crowds",
+        "limited activity capacity"
+      ],
+      "expires_at": "2026-07-25T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-24T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycdot:summer-streets-staten-island-2026-07-25",
+      "title": "Summer Streets — Staten Island Broadway",
+      "category": "open_streets",
+      "official_organizer": "NYC Department of Transportation",
+      "official_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml",
+      "corroborating_url": "https://www.nyc.gov/html/dot/downloads/pdf/summer-streets-staten-island-flyer-2026.pdf",
+      "place": {
+        "name": "Staten Island Broadway",
+        "identity": "Staten Island Broadway",
+        "area": "West Brighton / Randall Manor",
+        "borough": "Staten Island",
+        "coordinates": {
+          "latitude": 40.6290328,
+          "longitude": -74.116077,
+          "source_url": "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=3&q=Forest%20Avenue%20Broadway%20Staten%20Island%20NY",
+          "precision": "sourced feature centroid; not an entrance or route guarantee"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-25T09:00:00-04:00",
+        "ends_at": "2026-07-25T17:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Open route; individual activities, giveaways, and rest stops can have finite capacity."
+      },
+      "age_and_access_restrictions": "All ages; street-closure rules, event operations, and any activity-specific restrictions apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official event page does not provide route-specific accessibility evidence; long distances and rest-stop conditions vary.",
+        "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      },
+      "weather_and_cancellation_risk": "Rain or shine, but NYC DOT directs users to official social channels for schedule changes; heat and air quality remain relevant.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Locate the Forest Avenue rest-stop marker and identify the two intersecting street names.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "route changes",
+        "heat",
+        "crowds",
+        "limited activity capacity"
+      ],
+      "expires_at": "2026-07-25T23:59:59-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-24T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nyc.gov/html/dot/html/pedestrians/summerstreets.shtml"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-23-art-meets-books",
+      "title": "Art Meets Books",
+      "category": "family_arts",
+      "official_organizer": "NYC Parks; Washington Square Park Conservancy with NYPL Hudson Park Library",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/23/art-meets-books",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M098",
+      "place": {
+        "name": "Large Kids Playground, Washington Square Park",
+        "identity": "Large Kids Playground, Washington Square Park",
+        "area": "Greenwich Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.730795465087,
+          "longitude": -73.996735811234,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/23/art-meets-books",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T15:00:00-04:00",
+        "ends_at": "2026-07-23T17:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TH;UNTIL=20260827T210000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; activity supplies/capacity not guaranteed."
+      },
+      "age_and_access_restrictions": "Designed for elementary-to-middle-school ages; adults should not displace children.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No route-specific accessibility evidence on event page.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/23/art-meets-books"
+      },
+      "weather_and_cancellation_risk": "Outdoor family program; weather and crowding can affect operation.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Spot the library/art collaboration sign from outside the activity area and answer which two disciplines are paired.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "age-targeted program",
+        "materials/capacity unknown",
+        "weather"
+      ],
+      "expires_at": "2026-08-28T17:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/23/art-meets-books"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-23-double-dutch1",
+      "title": "Double Dutch",
+      "category": "participatory_sport",
+      "official_organizer": "NYC Parks; program by Washington Square Park Conservancy and Double Dutch Aunties",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/23/double-dutch1",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M098",
+      "place": {
+        "name": "Garibaldi Plaza, Washington Square Park",
+        "identity": "Garibaldi Plaza, Washington Square Park",
+        "area": "Greenwich Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.730499267578125,
+          "longitude": -73.99700164794922,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/23/double-dutch1",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T17:30:00-04:00",
+        "ends_at": "2026-07-23T19:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TH;UNTIL=20261029T230000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; participation space and ropes may be limited."
+      },
+      "age_and_access_restrictions": "Official listing is best-for-kids; spectating from a distance is the DayQuest default.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/23/double-dutch1"
+      },
+      "weather_and_cancellation_risk": "Outdoor program; wet pavement, heat, or park operations may cancel.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "From outside the rope area, identify the monument/plaza named as the meeting point; no counting or recording people.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "active play zone",
+        "weather",
+        "crowds"
+      ],
+      "expires_at": "2026-10-30T19:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T12:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/23/double-dutch1"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-23-on-a-limb-in-the-garden",
+      "title": "On a Limb! In the Garden",
+      "category": "live_music",
+      "official_organizer": "NYC Parks GreenThumb / 61 Franklin Street Garden",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/23/on-a-limb-in-the-garden",
+      "corroborating_url": "https://www.nycgovparks.org/greenthumb",
+      "place": {
+        "name": "61 Franklin Street Garden",
+        "identity": "61 Franklin Street Garden",
+        "area": "Greenpoint",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.727572552669,
+          "longitude": -73.95740435582,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/23/on-a-limb-in-the-garden",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T18:30:00-04:00",
+        "ends_at": "2026-07-23T20:30:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Small garden; capacity and seating unknown."
+      },
+      "age_and_access_restrictions": "All welcome per official listing; garden rules apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Official listing does not state step-free entry or seating.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/23/on-a-limb-in-the-garden"
+      },
+      "weather_and_cancellation_risk": "Outdoor garden concert; rain, heat, capacity, or garden closure can affect access.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Before entering, find the garden name/number on public-facing signage; the performance and attendee observation are not the clue.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "medium",
+      "risks": [
+        "small venue",
+        "one-off",
+        "accessibility unknown",
+        "weather"
+      ],
+      "expires_at": "2026-07-24T20:30:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T10:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/23/on-a-limb-in-the-garden"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-23-park-open-studio",
+      "title": "Park Open Studio",
+      "category": "arts_workshop",
+      "official_organizer": "NYC Parks; program by Washington Square Park Conservancy",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/23/park-open-studio",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M098",
+      "place": {
+        "name": "Northwest Corner Seating Area, Washington Square Park",
+        "identity": "Northwest Corner Seating Area, Washington Square Park",
+        "area": "Greenwich Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.732021858331,
+          "longitude": -73.998527526855,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/23/park-open-studio",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-23T13:00:00-04:00",
+        "ends_at": "2026-07-23T15:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TH,FR,SA;UNTIL=20261031T190000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; materials may be finite; no guaranteed place."
+      },
+      "age_and_access_restrictions": "All ages indicated by official category; hands-on materials are organizer-controlled.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Event page gives no route-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/23/park-open-studio"
+      },
+      "weather_and_cancellation_risk": "Outdoor shade program; rain, heat, air quality, or park operations can alter/cancel.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "From the edge, identify the day’s organizer-provided medium or a posted medium word; never inspect participant work.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "materials can run out",
+        "weather",
+        "crowds"
+      ],
+      "expires_at": "2026-11-01T15:00:00-05:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-23T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/23/park-open-studio"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-25-city-of-water-day-saltwater-fishing",
+      "title": "City of Water Day: Saltwater Fishing",
+      "category": "nature_skill",
+      "official_organizer": "NYC Parks Urban Park Rangers",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/25/city-of-water-day-saltwater-fishing",
+      "corroborating_url": "https://www.nycgovparks.org/parks/B385",
+      "place": {
+        "name": "West Street/Greenpoint Avenue entrance, WNYC Transmitter Park",
+        "identity": "West Street/Greenpoint Avenue entrance, WNYC Transmitter Park",
+        "area": "Greenpoint",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.729591612081,
+          "longitude": -73.960241913795,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/25/city-of-water-day-saltwater-fishing",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-25T11:00:00-04:00",
+        "ends_at": "2026-07-25T12:30:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "unclear",
+        "capacity": "Equipment and teaching capacity are limited/unknown; no availability inference."
+      },
+      "age_and_access_restrictions": "Recommended ages 8+; waterfront and hook safety rules apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/25/city-of-water-day-saltwater-fishing"
+      },
+      "weather_and_cancellation_risk": "Waterfront program; storms, heat, wind, water conditions, and air quality may cancel.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "From outside the casting area, identify the named park entrance and an official City of Water Day sign; never approach hooks or fishing lines.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "24_hours",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "hooks and lines",
+        "waterfront",
+        "capacity unknown",
+        "weather"
+      ],
+      "expires_at": "2026-07-26T12:30:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-24T11:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/25/city-of-water-day-saltwater-fishing"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-25-groove-glow",
+      "title": "Groove & Glow",
+      "category": "dance_fitness",
+      "official_organizer": "NYC Parks Shape Up NYC",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/25/groove-glow",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M088",
+      "place": {
+        "name": "East 10th Street recreation/program area near Tompkins Square Park",
+        "identity": "East 10th Street recreation/program area near Tompkins Square Park",
+        "area": "East Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.7273154,
+          "longitude": -73.9803838,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/25/groove-glow",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-25T11:00:00-04:00",
+        "ends_at": "2026-07-25T11:45:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "yes",
+        "capacity": "Capacity not stated; registration does not prove a spot."
+      },
+      "age_and_access_restrictions": "All levels welcome; organizer participation rules apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific accessibility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/25/groove-glow"
+      },
+      "weather_and_cancellation_risk": "Outdoor/park-context fitness; heat, rain, air quality, or instructor change can affect delivery.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Locate the public program check-in sign and identify one of the three music/movement styles named there; do not observe or film dancers.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "24_hours",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "registration",
+        "capacity unknown",
+        "weather"
+      ],
+      "expires_at": "2026-07-26T11:45:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-24T11:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/25/groove-glow"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-27-ptanque-in-the-park",
+      "title": "Pétanque in the Park",
+      "category": "social_sport",
+      "official_organizer": "NYC Parks; program by Washington Square Park Conservancy",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/27/ptanque-in-the-park",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M098",
+      "place": {
+        "name": "Pétanque Court, Washington Square Park",
+        "identity": "Pétanque Court, Washington Square Park",
+        "area": "Greenwich Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.730311274589,
+          "longitude": -73.997564613819,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/27/ptanque-in-the-park",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-27T13:00:00-04:00",
+        "ends_at": "2026-07-27T16:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=MO;UNTIL=20261027T200000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; equipment/court capacity may be limited."
+      },
+      "age_and_access_restrictions": "All are invited by listing; activity-area rules apply.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/27/ptanque-in-the-park"
+      },
+      "weather_and_cancellation_risk": "Outdoor court; rain, heat, crowding, or park operations can alter sessions.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "From outside the court, identify the court surface and the organizer sign; never enter a live throwing lane.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "projectile play area",
+        "weather",
+        "capacity unknown"
+      ],
+      "expires_at": "2026-10-28T16:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-27T09:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/27/ptanque-in-the-park"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-27-trees-count-at-washington-market-park",
+      "title": "Trees Count at Washington Market Park",
+      "category": "volunteer_nature",
+      "official_organizer": "NYC Parks Trees Count",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/27/trees-count-at-washington-market-park",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M308",
+      "place": {
+        "name": "Washington Market Park",
+        "identity": "Washington Market Park",
+        "area": "Tribeca",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.717098236083984,
+          "longitude": -74.0115966796875,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/27/trees-count-at-washington-market-park",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-27T10:00:00-04:00",
+        "ends_at": "2026-07-27T12:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "yes",
+        "capacity": "Volunteer capacity not stated; supplies are controlled by organizer."
+      },
+      "age_and_access_restrictions": "Closed-toe shoes and water requested; participation requires official training/registration.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/27/trees-count-at-washington-market-park"
+      },
+      "weather_and_cancellation_risk": "Outdoor fieldwork; storms, extreme heat, and air quality can cancel.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Find the designated meeting-point sign and identify the park name only; do not submit tree data or handle census gear unless registered.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "3_days",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "registration",
+        "fieldwork safety",
+        "weather"
+      ],
+      "expires_at": "2026-07-28T12:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-24T10:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/27/trees-count-at-washington-market-park"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-28-bodyroll",
+      "title": "Bodyroll",
+      "category": "dance_fitness",
+      "official_organizer": "NYC Parks; program by Washington Square Park Conservancy",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/28/bodyroll",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M098",
+      "place": {
+        "name": "Garibaldi Plaza, Washington Square Park",
+        "identity": "Garibaldi Plaza, Washington Square Park",
+        "area": "Greenwich Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.730499267578125,
+          "longitude": -73.99700164794922,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/28/bodyroll",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-28T09:30:00-04:00",
+        "ends_at": "2026-07-28T10:30:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TU;UNTIL=20261028T143000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; participation capacity unknown."
+      },
+      "age_and_access_restrictions": "No experience needed; DayQuest mode does not require joining.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/28/bodyroll"
+      },
+      "weather_and_cancellation_risk": "Outdoor class; rain, heat, air quality, or park operations can change it.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Identify Garibaldi Plaza from fixed park signage before class; do not copy, rate, count, or photograph movements.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "active class",
+        "weather",
+        "capacity unknown"
+      ],
+      "expires_at": "2026-10-29T10:30:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-28T07:30:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/28/bodyroll"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-28-nypl-storytime-under-the-trees",
+      "title": "NYPL Storytime Under the Trees",
+      "category": "family_storytime",
+      "official_organizer": "NYC Parks; Washington Square Park Conservancy with NYPL Hudson Park Library",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/28/nypl-storytime-under-the-trees",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M098",
+      "place": {
+        "name": "East Alcove Seating Area, Washington Square Park",
+        "identity": "East Alcove Seating Area, Washington Square Park",
+        "area": "Greenwich Village",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.73097404185,
+          "longitude": -73.996320068836,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/28/nypl-storytime-under-the-trees",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-28T11:00:00-04:00",
+        "ends_at": "2026-07-28T11:30:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TU;UNTIL=20260929T153000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "Drop-in; seating/capacity unknown."
+      },
+      "age_and_access_restrictions": "Designed for young children; adults without children should not occupy program seating.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility statement.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/28/nypl-storytime-under-the-trees"
+      },
+      "weather_and_cancellation_risk": "Outdoor storytime; weather, noise, or crowding can alter/cancel.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Find the East Alcove or library program sign from the path and identify the library branch; do not observe or record children.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "children/privacy",
+        "capacity unknown",
+        "weather"
+      ],
+      "expires_at": "2026-09-30T11:30:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-28T08:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/28/nypl-storytime-under-the-trees"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-28-nyrr-open-run-brooklyn-bridge-park",
+      "title": "NYRR Open Run: Brooklyn Bridge Park",
+      "category": "community_run",
+      "official_organizer": "New York Road Runners; listed by NYC Parks",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/28/nyrr-open-run-brooklyn-bridge-park",
+      "corroborating_url": "https://www.nyrr.org/openrun/parks/brooklyn-bridge-park",
+      "place": {
+        "name": "Pier 6, Brooklyn Bridge Park",
+        "identity": "Pier 6, Brooklyn Bridge Park",
+        "area": "Brooklyn Heights / Cobble Hill waterfront",
+        "borough": "Brooklyn",
+        "coordinates": {
+          "latitude": 40.692914780123,
+          "longitude": -74.00262928009,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/28/nyrr-open-run-brooklyn-bridge-park",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-28T18:45:00-04:00",
+        "ends_at": "2026-07-28T20:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TU;UNTIL=20290301T045959Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "yes",
+        "capacity": "Registration required; course capacity not stated."
+      },
+      "age_and_access_restrictions": "Open to runners and walkers of all ages/abilities; registration is required by linked organizer.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "No event-specific mobility details; route is approximately 3 miles.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/28/nyrr-open-run-brooklyn-bridge-park"
+      },
+      "weather_and_cancellation_risk": "Outdoor run; heat, storms, air quality, course conditions, or organizer alerts can alter/cancel.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Find the Pier 6 meeting marker and identify the named pier without entering the start corral or route.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "3_days",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "registration",
+        "active route",
+        "weather"
+      ],
+      "expires_at": "2029-03-02T20:00:00-05:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-25T18:45:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/28/nyrr-open-run-brooklyn-bridge-park"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-28-stargazing-on-the-high-line",
+      "title": "Stargazing on the High Line",
+      "category": "astronomy",
+      "official_organizer": "The High Line with Amateur Astronomers Association; listed by NYC Parks",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/28/stargazing-on-the-high-line",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M360",
+      "place": {
+        "name": "High Line at 13th Street",
+        "identity": "High Line at 13th Street",
+        "area": "West Village / Meatpacking edge",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.740728921697,
+          "longitude": -74.008060974152,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/28/stargazing-on-the-high-line",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-28T20:15:00-04:00",
+        "ends_at": "2026-07-28T22:00:00-04:00",
+        "recurrence_rule": "FREQ=WEEKLY;BYDAY=TU;UNTIL=20261028T020000Z",
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "no",
+        "capacity": "No RSVP; telescope queues and usable viewing capacity vary."
+      },
+      "age_and_access_restrictions": "All ages; no RSVP; telescope use is organizer-managed.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Event page does not state event-specific step-free route; High Line entrances vary.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/28/stargazing-on-the-high-line"
+      },
+      "weather_and_cancellation_risk": "Explicitly subject to cancellation for cloud cover or inclement weather; organizer posts webpage alert.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Identify the fixed 13th Street location marker and one constellation direction from organizer signage; never touch telescopes or block queues.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "same_day",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "cloud cover",
+        "weather",
+        "nighttime",
+        "queues"
+      ],
+      "expires_at": "2026-10-29T22:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-28T17:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/28/stargazing-on-the-high-line"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-07-30-movies-under-the-stars-storks",
+      "title": "Movies Under the Stars: Storks",
+      "category": "outdoor_film",
+      "official_organizer": "NYC Parks and NYC Mayor’s Office of Media and Entertainment",
+      "official_url": "https://www.nycgovparks.org/events/2026/07/30/movies-under-the-stars-storks",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M308",
+      "place": {
+        "name": "Southeast Corner, Washington Market Park",
+        "identity": "Southeast Corner, Washington Market Park",
+        "area": "Tribeca",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.71659851074219,
+          "longitude": -74.01110076904297,
+          "source_url": "https://www.nycgovparks.org/events/2026/07/30/movies-under-the-stars-storks",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-07-30T20:30:00-04:00",
+        "ends_at": "2026-07-30T23:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "yes",
+        "capacity": "Lawn/seating capacity not stated; registration does not prove admission."
+      },
+      "age_and_access_restrictions": "Rated PG; glass and alcohol prohibited.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Listing supplies accessibility contact but no route-specific evidence.",
+        "source_url": "https://www.nycgovparks.org/events/2026/07/30/movies-under-the-stars-storks"
+      },
+      "weather_and_cancellation_risk": "Heavy rain or extreme weather may cancel; decision is posted before screening.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Arrive before seating fills and identify the fixed southeast-corner park feature shown on the meeting sign; the film and attendees are not clues.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "24_hours",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "weather cancellation",
+        "nighttime",
+        "capacity unknown",
+        "copyrighted film must not be recorded"
+      ],
+      "expires_at": "2026-07-31T23:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-29T20:30:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/07/30/movies-under-the-stars-storks"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-08-02-before-the-aqueduct-nycs-toxic-wells-and-lost-pond",
+      "title": "Before the Aqueduct: NYC’s Toxic Wells and Lost Pond",
+      "category": "history_walk",
+      "official_organizer": "NYC Parks Urban Park Rangers",
+      "official_url": "https://www.nycgovparks.org/events/2026/08/02/before-the-aqueduct-nycs-toxic-wells-and-lost-pond",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M242",
+      "place": {
+        "name": "Lafayette Street and Franklin Street, Collect Pond Park",
+        "identity": "Lafayette Street and Franklin Street, Collect Pond Park",
+        "area": "Chinatown / Civic Center edge",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.716723275948,
+          "longitude": -74.002035903085,
+          "source_url": "https://www.nycgovparks.org/events/2026/08/02/before-the-aqueduct-nycs-toxic-wells-and-lost-pond",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-02T13:00:00-04:00",
+        "ends_at": "2026-08-02T14:30:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "unclear",
+        "capacity": "Capacity not stated; event page does not establish walk-up availability."
+      },
+      "age_and_access_restrictions": "No age restriction stated; walking/standing demands not specified.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Event page provides no event-specific route or mobility details.",
+        "source_url": "https://www.nycgovparks.org/events/2026/08/02/before-the-aqueduct-nycs-toxic-wells-and-lost-pond"
+      },
+      "weather_and_cancellation_risk": "Outdoor ranger walk; heat, storms, air quality, or ranger operations can cancel.",
+      "dayquest_fit": {
+        "rating": "strong",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Before the group departs, find a fixed park feature that evokes water and answer only from the landscape; do not trail the group without a place.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "3_days",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "registration ambiguity",
+        "walking route unknown",
+        "weather"
+      ],
+      "expires_at": "2026-08-03T14:30:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-07-30T13:00:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/08/02/before-the-aqueduct-nycs-toxic-wells-and-lost-pond"
+      }
+    },
+    {
+      "event_id": "event:nycparks:2026-08-06-movies-under-the-stars-the-marvels-2023",
+      "title": "Movies Under the Stars: The Marvels (2023)",
+      "category": "outdoor_film",
+      "official_organizer": "NYC Parks and NYC Mayor’s Office of Media and Entertainment",
+      "official_url": "https://www.nycgovparks.org/events/2026/08/06/movies-under-the-stars-the-marvels-2023",
+      "corroborating_url": "https://www.nycgovparks.org/parks/M196",
+      "place": {
+        "name": "Basketball Courts, Playground One",
+        "identity": "Basketball Courts, Playground One",
+        "area": "Chinatown / Two Bridges edge",
+        "borough": "Manhattan",
+        "coordinates": {
+          "latitude": 40.712230663993,
+          "longitude": -73.997303946558,
+          "source_url": "https://www.nycgovparks.org/events/2026/08/06/movies-under-the-stars-the-marvels-2023",
+          "precision": "official event point"
+        }
+      },
+      "schedule": {
+        "starts_at": "2026-08-06T20:30:00-04:00",
+        "ends_at": "2026-08-06T22:00:00-04:00",
+        "recurrence_rule": null,
+        "timezone": "America/New_York"
+      },
+      "checked_at": "2026-07-22T21:42:15-04:00",
+      "admission": {
+        "ticket_or_free_status": "free",
+        "registration_required": "unclear",
+        "capacity": "Court capacity not stated; no guaranteed admission."
+      },
+      "age_and_access_restrictions": "Rated PG-13; glass and alcohol prohibited.",
+      "dependency": {
+        "setting": "exterior",
+        "public_dependency": "Attendance remains subject to the organizer’s current rules, hours, closures, and any registration or capacity limit; this record does not infer availability."
+      },
+      "accessibility": {
+        "status": "unknown",
+        "evidence": "Listing supplies accessibility contact but no route-specific evidence.",
+        "source_url": "https://www.nycgovparks.org/events/2026/08/06/movies-under-the-stars-the-marvels-2023"
+      },
+      "weather_and_cancellation_risk": "Heavy rain or extreme weather may cancel; decision is posted before screening.",
+      "dayquest_fit": {
+        "rating": "conditional",
+        "rationale": "Time-limited programming can add an optional layer to a nearby walk without becoming a permanent place record.",
+        "proposed_event_mode_activity": "Before dusk, identify the court color or fixed hoop count from outside the seating zone; do not photograph people or record the film.",
+        "non_interference": "Observe from a lawful public waiting/viewing area; do not block queues, equipment, staff, performers, participants, paths, or emergency access; do not photograph strangers; joining the event is never required unless explicitly registered."
+      },
+      "lead_time": "24_hours",
+      "lifecycle": "event_candidate",
+      "confidence": "high",
+      "risks": [
+        "weather cancellation",
+        "nighttime",
+        "capacity unknown",
+        "copyrighted film must not be recorded"
+      ],
+      "expires_at": "2026-08-07T22:00:00-04:00",
+      "recheck_schedule": {
+        "next_check_at": "2026-08-05T20:30:00-04:00",
+        "cadence": "Recheck at the stated time, again within 24 hours of use, and immediately after organizer alerts, severe-weather forecasts, or page changes.",
+        "source_of_truth": "https://www.nycgovparks.org/events/2026/08/06/movies-under-the-stars-the-marvels-2023"
+      }
+    }
+  ],
+  "rejected_or_deferred": [
+    {
+      "candidate": "Battery Park City Parks legacy calendar page",
+      "decision": "rejected",
+      "reason": "Retrieved official page resolved to a stale September 2019 calendar; no 2026 occurrence was established.",
+      "source_url": "https://bpcparks.org/events/",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "NYPL standalone calendar leads",
+      "decision": "deferred",
+      "reason": "NYPL calendar returned an automated access challenge; only events independently confirmed on current organizer pages were retained.",
+      "source_url": "https://www.nypl.org/events/calendar",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "Hudson River Park calendar leads",
+      "decision": "deferred",
+      "reason": "Calendar returned a Cloudflare block during this review; no unblocked official event detail was used.",
+      "source_url": "https://hudsonriverpark.org/visit/events/",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "The Public Theater Shakespeare in the Park",
+      "decision": "deferred",
+      "reason": "Official page could not be inspected because of an access challenge; no date or availability claim was made.",
+      "source_url": "https://publictheater.org/programs/shakespeare-in-the-park/",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "NYC Parks events dated July 22, 2026",
+      "decision": "rejected",
+      "reason": "Occurrence date was not after the research cutoff; excluded even where an evening start might not yet have passed.",
+      "source_url": "https://www.nycgovparks.org/events",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "Kids in Motion recurring playground sessions",
+      "decision": "deferred",
+      "reason": "Current dates existed, but child-focused active-play programming posed privacy/crowding concerns and weaker non-interfering DayQuest fit.",
+      "source_url": "https://www.nycgovparks.org/events",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "Hamilton Fish Pool lap swim and Learn to Swim sessions",
+      "decision": "rejected",
+      "reason": "Aquatic interior/deck access, registration, attire, safety, and capacity dependencies made these poor optional walk-layer candidates.",
+      "source_url": "https://www.nycgovparks.org/events",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "Aggregator-only street fair and festival leads",
+      "decision": "rejected",
+      "reason": "No candidate was retained without a current organizer/city/venue confirmation.",
+      "source_url": null,
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    },
+    {
+      "candidate": "Weekend Walks generic program page",
+      "decision": "deferred",
+      "reason": "A current, date-specific 2026 event list was not confirmed from an official page during this review.",
+      "source_url": "https://www.nyc.gov/html/dot/html/pedestrians/weekend-walks.shtml",
+      "checked_at": "2026-07-22T21:42:15-04:00"
+    }
+  ]
+}

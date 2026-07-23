@@ -1,0 +1,2658 @@
+{
+  "artifact_version": "1.0.0",
+  "artifact_id": "nyc-travel-discovery-leads-2026-07-22",
+  "site_id": "nyc",
+  "provenance": {
+    "research_date": "2026-07-22",
+    "field_verified": false,
+    "publication_claimed": false,
+    "method": "Travel/discovery pages were used only to discover leads. Every retained record has separate operator/city/institution evidence and an OpenStreetMap/Nominatim identity/coordinate source. Web research does not establish current safe conditions.",
+    "lead_policy": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied.",
+    "robots_terms_note": "No paywall bypass, authenticated/private API, article scraping, or image copying was used. Atlas pages that denied automated access were not circumvented."
+  },
+  "scope": {
+    "requested_retained_count": 30,
+    "retained_count": 30,
+    "launch_priority_interpretation": "Launch and launch-adjacent records prioritize SoHo/Tribeca, East Village, Greenwich Village, Chinatown, and Lower East Side; other boroughs are explicitly tagged borough-expansion.",
+    "category_caps": {
+      "architecture_max": 6,
+      "history_max": 4
+    }
+  },
+  "retained_candidates": [
+    {
+      "research_id": "DQ-NYC-TD-001",
+      "canonical_place": "The New York Earth Room",
+      "area": "SoHo",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "public_art",
+      "observable_target": "The waist-high field of dark earth filling a second-floor white loft from wall to wall.",
+      "satisfying_discovery": "An ordinary upstairs doorway opens onto an impossible indoor landscape.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/the-new-york-earth-room-new-york-new-york",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Dia Art Foundation",
+          "url": "https://www.diaart.org/visit/visit-our-locations-sites/walter-de-maria-the-new-york-earth-room-new-york-united-states",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "Dia identifies Walter De Maria’s 1977 interior earth sculpture at 141 Wooster Street and publishes visitor access information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7259792,
+        "lng": -73.9997541,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "9470799318",
+          "url": "https://www.openstreetmap.org/node/9470799318",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+New+York+Earth+Room%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Interior view during posted visitor hours; no exterior completion equivalent.",
+        "access_notes": "Entry rules and capacity are operator-controlled.",
+        "payment": "Free admission is listed by Dia; recheck before use.",
+        "hours": "Posted days/hours and seasonal closure apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Dia visitor information is the remote evidence; building entry is required.",
+        "unknowns": "Elevator/step-free route, doorway clearance, seating, sensory conditions, and queue procedure need direct confirmation.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Permanent installation, but opening schedule, closures, and sightline from the threshold can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Upstairs, a room has traded its floor for a field, yet no seed is asked to grow. Find the earth indoors.",
+        "hints": [
+          "Look for a Dia site on Wooster Street.",
+          "The answer is a loft filled wall to wall with dark soil."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-002",
+      "canonical_place": "The Broken Kilometer",
+      "area": "SoHo",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "public_art",
+      "observable_target": "Five hundred polished brass rods laid in five parallel rows, with spacing that increases toward the back.",
+      "satisfying_discovery": "The repeated rods turn a storefront-scale room into a perspective puzzle.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/the-broken-kilometer",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Dia Art Foundation",
+          "url": "https://www.diaart.org/visit/visit-our-locations-sites/walter-de-maria-the-broken-kilometer-new-york-united-states",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "Dia identifies Walter De Maria’s installation at 393 West Broadway as 500 brass rods arranged in five rows."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7240871,
+        "lng": -74.0021462,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "2547223676",
+          "url": "https://www.openstreetmap.org/node/2547223676",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+Broken+Kilometer%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Interior view during posted hours; remain behind operator barriers.",
+        "access_notes": "Entry and viewing position depend on staff rules.",
+        "payment": "Dia lists free admission; recheck.",
+        "hours": "Posted days/hours and seasonal closure apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Dia’s visitor page is the only remote accessibility evidence collected.",
+        "unknowns": "Step-free entry, glare, seating, and crowd clearance require confirmation.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low-medium",
+        "volatility": "Brass installation is permanent; polish, barriers, and operating hours vary."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I am a kilometer shattered into five hundred golden pieces, lined up without touching the street.",
+        "hints": [
+          "Search West Broadway for a Dia installation.",
+          "Count by description, not in person: five rows of brass rods."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-003",
+      "canonical_place": "Dream House",
+      "area": "Tribeca",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "sound_music",
+      "observable_target": "The magenta-lit sound-and-light environment created by sustained tones and colored illumination.",
+      "satisfying_discovery": "It rewards entering a room where color and sound feel like one continuous object.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/dream-house",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "MELA Foundation",
+          "url": "https://www.melafoundation.org/dream02.htm",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "MELA describes La Monte Young and Marian Zazeela’s Dream House as a sound-and-light environment at 275 Church Street and posts visiting sessions."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.718496,
+        "lng": -74.004836,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "12832739401",
+          "url": "https://www.openstreetmap.org/node/12832739401",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Dream+House%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Interior, session-dependent; quiet conduct and operator instructions required.",
+        "access_notes": "Timed/open sessions only; no exterior substitute.",
+        "payment": "Admission/donation policy must be checked with MELA.",
+        "hours": "Limited posted sessions; not a walk-up anytime target.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Primary site provides schedule but detailed mobility information was not found in this pass.",
+        "unknowns": "Stairs/elevator, low-light navigation, seating, hearing/sensory impact, and restroom access unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium-high",
+        "volatility": "Long-running work, but schedule, lighting, sound levels, and admission can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I am a house with no bed: one long tone paints the air magenta. Enter only when invited.",
+        "hints": [
+          "Look on Church Street for MELA Foundation.",
+          "The target combines sustained sound with colored light."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "high",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-004",
+      "canonical_place": "Mmuseumm",
+      "area": "Tribeca",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "playful_oddity",
+      "observable_target": "The tiny museum fitted inside a former freight elevator shaft on Cortlandt Alley, viewed through its doorway or street-facing windows.",
+      "satisfying_discovery": "The reveal is that a sliver of alley architecture is an entire museum.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/mmuseumm",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Mmuseumm",
+          "url": "https://www.mmuseumm.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The museum’s own site identifies its Cortlandt Alley location and publishes current viewing/open information for its small exhibition spaces."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.717363,
+        "lng": -74.002815,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "5640186350",
+          "url": "https://www.openstreetmap.org/node/5640186350",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Mmuseumm%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Alley exterior/window viewing may be possible; interior access is operator- and season-dependent.",
+        "access_notes": "Use the public alley without blocking doors or loading activity.",
+        "payment": "Check current admission before interior use; exterior observation should be the fallback.",
+        "hours": "Hours and seasonal status vary.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official site is the remote access source; the alley surface and threshold were not assessed.",
+        "unknowns": "Step-free sightline, narrow-alley passing width, doorway threshold, and visual-height access need scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Location is stable; displays, window availability, and openings rotate."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "An elevator forgot to travel and became a museum instead. Find the smallest doorway in the alley.",
+        "hints": [
+          "Turn into Cortlandt Alley.",
+          "Look for a museum occupying a former freight-elevator shaft."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-005",
+      "canonical_place": "Staple Street Skybridge",
+      "area": "Tribeca",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "architecture",
+      "observable_target": "The enclosed metal-and-glass bridge spanning narrow Staple Street between buildings at 9 Jay Street and 67 Hudson Street.",
+      "satisfying_discovery": "The tiny lane frames a bridge that feels suspended at domestic scale rather than city scale.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/staple-street-skybridge",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "NYC Landmarks Preservation Commission",
+          "url": "https://s-media.nyc.gov/agencies/lpc/lp/1713.pdf",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The Tribeca West Historic District designation report inventories the historic buildings on Staple/Jay/Hudson Streets and documents the connecting bridge in the district context."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7183436,
+        "lng": -74.0094133,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "10037902217",
+          "url": "https://www.openstreetmap.org/node/10037902217",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Staple+Street+Skybridge%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior public-street view only; the bridge and adjoining buildings are private.",
+        "access_notes": "Stay on sidewalks/roadway edges lawfully and do not enter private doors.",
+        "payment": "No payment for exterior view.",
+        "hours": "Street view has no attraction hours, but construction/loading may obstruct.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Public street mapping supports approach; no curb/surface audit was performed.",
+        "unknowns": "Cobblestones, curb cuts, vehicle/loading conflicts, and a step-free framing point require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low",
+        "volatility": "Bridge is durable; scaffolding, parked vehicles, and construction can obstruct it."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I cross a street too short for traffic lights and join two old walls without touching the ground.",
+        "hints": [
+          "Find the narrow Tribeca lane called Staple Street.",
+          "Look overhead for the enclosed skybridge."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-006",
+      "canonical_place": "Casey Rubber Stamps",
+      "area": "East Village",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "storefront_culture",
+      "observable_target": "The compact shopfront and window presenting hand-set rubber stamps and specimen impressions.",
+      "satisfying_discovery": "A tiny working storefront turns the alphabet into drawers of physical tools.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/casey-rubber-stamps",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Casey Rubber Stamps",
+          "url": "https://www.caseyrubberstamps.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The shop’s official site identifies its East 11th Street location and its custom hand-made rubber-stamp business."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7297777,
+        "lng": -73.9852287,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "7905929742",
+          "url": "https://www.openstreetmap.org/node/7905929742",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Casey+Rubber+Stamps%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Use exterior window/sign as completion; entry only during posted business hours.",
+        "access_notes": "Do not handle merchandise or photograph customers without permission.",
+        "payment": "Exterior free; purchases optional and never required.",
+        "hours": "Retail hours change; verify directly.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official business site is the access source; no mobility statement was located.",
+        "unknowns": "Threshold, aisle width, counter height, and window visibility from seated height unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Business identity is stable, but window arrangement, stock, and hours are volatile."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Letters wait here not on a screen but on little blocks, ready to leave the same mark again and again.",
+        "hints": [
+          "Search East 11th Street for a specialist shop.",
+          "The window belongs to a maker of rubber stamps."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-007",
+      "canonical_place": "Economy Candy",
+      "area": "Lower East Side",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch-adjacent",
+      "category": "food_storefront",
+      "observable_target": "The Rivington Street candy-store facade and densely stocked front window of packaged sweets.",
+      "satisfying_discovery": "The reward is recognizing a neighborhood shop where sheer candy variety becomes the spectacle.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/shopping/economy-candy",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Economy Candy",
+          "url": "https://economycandy.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The official store site identifies the family candy business and its Rivington Street shop, with current location and shopping information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7200524,
+        "lng": -73.9878956,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "3442228669",
+          "url": "https://www.openstreetmap.org/node/3442228669",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Economy+Candy%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior window/sign is sufficient; interior only during store hours.",
+        "access_notes": "Keep the narrow sidewalk and doorway clear.",
+        "payment": "Free to view; no purchase required.",
+        "hours": "Retail hours vary and must be checked.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Operator information confirms a public shop; detailed accessibility information was not found.",
+        "unknowns": "Threshold, aisle congestion, reach ranges, and sensory/allergen conditions require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Long-lived shop; inventory, displays, branding, and hours can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "My treasure is wrapped, striped, sour, and sweet; the window looks like a pantry won the lottery.",
+        "hints": [
+          "Go to Rivington Street on the Lower East Side.",
+          "Find the candy shop whose official name promises economy."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-008",
+      "canonical_place": "The Bitter End",
+      "area": "Greenwich Village",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "sound_music",
+      "observable_target": "The street-level venue facade with its long-standing red-brick setting and prominent venue name above the Bleecker Street entrance.",
+      "satisfying_discovery": "A modest storefront resolves into one of the Village’s still-operating live-music rooms.",
+      "lead_sources": [
+        {
+          "provider": "NYC Tourism",
+          "url": "https://www.nyctourism.com/nightlife/the-bitter-end/",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "The Bitter End",
+          "url": "https://bitterend.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The venue’s official site identifies 147 Bleecker Street and publishes its current live-music calendar and entry policies."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7283337,
+        "lng": -73.9992168,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "2550551548",
+          "url": "https://www.openstreetmap.org/node/2550551548",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+Bitter+End%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior sign/facade only for the quest; do not require entry or a performance.",
+        "access_notes": "Avoid queue interference and nighttime crowd assumptions.",
+        "payment": "No payment for exterior view; shows may be ticketed and are not required.",
+        "hours": "Facade is publicly viewable; event/box-office hours vary.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official site supplies venue identity, not a mobility audit.",
+        "unknowns": "Curb, doorway, interior stairs, seating, age restrictions, and crowd conditions remain unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Venue identity is durable; sign treatment, queues, and event operations can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "My name promises an ending, but music keeps beginning behind a Bleecker Street door.",
+        "hints": [
+          "Stay on Bleecker Street in Greenwich Village.",
+          "The answer is a live-music venue called The Bitter End."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-009",
+      "canonical_place": "Merchant's House Museum",
+      "area": "East Village/NoHo",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "architecture",
+      "observable_target": "The 1832 red-brick row house’s Greek Revival doorway and paired front windows; interior rooms are optional, hours-dependent context.",
+      "satisfying_discovery": "A single preserved domestic facade interrupts a block of later city layers.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/merchants-house-museum",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Merchant’s House Museum",
+          "url": "https://merchantshouse.org/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The museum identifies 29 East 4th Street as an 1832 late-Federal/Greek Revival home and publishes tours and access information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7276594,
+        "lng": -73.9923423,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "247838607",
+          "url": "https://www.openstreetmap.org/way/247838607",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Merchant%27s+House+Museum%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior facade from public sidewalk is sufficient; interior requires museum opening.",
+        "access_notes": "Do not use the residential-style stoop as a climbing or seating task.",
+        "payment": "Exterior free; museum admission may apply.",
+        "hours": "Exterior has no museum-hour dependency; tours do.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Museum access page is the primary remote evidence; facade is visible from sidewalk.",
+        "unknowns": "Curb/stoop-free viewing point, interior stair/elevator status, and sidewalk pinch points require confirmation.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low",
+        "volatility": "Landmarked house is durable; scaffolding and museum operations may affect visibility."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "One brick home kept its old front while the city changed clothes around it. Find the doorway from 1832.",
+        "hints": [
+          "Look on East 4th Street near Lafayette Street.",
+          "The target is the exterior of the Merchant’s House Museum."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "low-medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-010",
+      "canonical_place": "C.O. Bigelow Chemists",
+      "area": "Greenwich Village",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "storefront_culture",
+      "observable_target": "The Sixth Avenue apothecary storefront carrying the C.O. Bigelow name and its pharmacy identity.",
+      "satisfying_discovery": "The discovery is a contemporary shopfront still presenting itself as a neighborhood apothecary.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/shopping/c-o-bigelow",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "C.O. Bigelow",
+          "url": "https://bigelowchemists.com/pages/our-history",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The company history identifies the Greenwich Village apothecary and its continuing Sixth Avenue location."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7339069,
+        "lng": -73.9990967,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "5651930690",
+          "url": "https://www.openstreetmap.org/node/5651930690",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=C.O.+Bigelow+Chemists%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior facade/sign is sufficient; shop entry optional during business hours.",
+        "access_notes": "Do not block pharmacy access or photograph customers.",
+        "payment": "Free to view; purchases not required.",
+        "hours": "Retail/pharmacy hours vary.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Operator history establishes identity; no detailed accessibility statement collected.",
+        "unknowns": "Threshold, aisle width, service-counter accessibility, and seated-height sign visibility unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Business is established, but signs, awnings, displays, and hours can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I still call myself a chemist where lotions and remedies line the Village. Find the apothecary name above Sixth Avenue.",
+        "hints": [
+          "Search the west side of Sixth Avenue near West 9th Street.",
+          "Read only the large business name: C.O. Bigelow Chemists."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-011",
+      "canonical_place": "Chinatown Ice Cream Factory",
+      "area": "Chinatown",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "food_storefront",
+      "observable_target": "The Bayard Street storefront marked by the shop’s dragon-and-ice-cream identity.",
+      "satisfying_discovery": "A playful dragon makes a small dessert shop easy to recognize without requiring a purchase.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/restaurants/chinatown-ice-cream-factory",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Chinatown Ice Cream Factory",
+          "url": "https://www.chinatownicecreamfactory.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The family business’s official site identifies the original Bayard Street Chinatown location and current shop information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7154164,
+        "lng": -73.9981579,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "4775571738",
+          "url": "https://www.openstreetmap.org/node/4775571738",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Chinatown+Ice+Cream+Factory%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior branding is sufficient; interior queue or purchase is not required.",
+        "access_notes": "Keep Bayard Street sidewalk and doorway clear.",
+        "payment": "Free exterior view; purchase optional.",
+        "hours": "Retail hours vary; exterior branding may be obscured by shutters.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Operator site confirms location; no accessibility detail collected.",
+        "unknowns": "Threshold, queue configuration, counter height, and allergen/sensory conditions unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Business identity is stable; graphics, awning, shutters, and hours can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "A dragon guards frozen treasure on Bayard Street, but you need not taste a scoop to meet it.",
+        "hints": [
+          "Look for a dessert shop in Chinatown.",
+          "The original Chinatown Ice Cream Factory is the destination."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-012",
+      "canonical_place": "Essex Market",
+      "area": "Lower East Side",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch-adjacent",
+      "category": "food_storefront",
+      "observable_target": "The large ESSEX MARKET identity on the modern market building and the public food-hall entrance.",
+      "satisfying_discovery": "A municipal market announces itself at building scale while sheltering many small vendors.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/shopping/essex-market",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Essex Market / NYC Economic Development Corporation",
+          "url": "https://www.essexmarket.nyc/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The official market site identifies 88 Essex Street, its public-market mission, vendors, hours, and visitor information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7179242,
+        "lng": -73.9880515,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "690624940",
+          "url": "https://www.openstreetmap.org/way/690624940",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Essex+Market%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior building name is sufficient; interior is hours-dependent.",
+        "access_notes": "Use plaza/sidewalk and avoid delivery zones.",
+        "payment": "No fee to enter the market; purchases optional.",
+        "hours": "Market and individual vendor hours differ.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official visitor information is available, but exact route/door conditions need confirmation.",
+        "unknowns": "Accessible entrance, elevator availability, seating, restroom, and crowd pinch points should be verified.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low-medium",
+        "volatility": "Public market is stable; tenant mix, entrances, signs, and hours can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Many kitchens share one roof, and the building spells the neighborhood market in letters too large for a stall.",
+        "hints": [
+          "Go to 88 Essex Street.",
+          "Find the main ESSEX MARKET building identity."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "low-medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-013",
+      "canonical_place": "New York Marble Cemetery",
+      "area": "East Village",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "history",
+      "observable_target": "The small walled lawn with marble burial plaques set into surrounding masonry rather than rows of standing headstones.",
+      "satisfying_discovery": "The unusual placement flips the visual language of a cemetery from ground markers to wall panels.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/new-york-marble-cemetery",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "New York Marble Cemetery",
+          "url": "https://www.marblecemetery.org/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The cemetery’s official site identifies the Second Avenue site and explains that family vault tablets are mounted in the enclosing walls; it publishes limited open dates."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7256175,
+        "lng": -73.9909554,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "62212952",
+          "url": "https://www.openstreetmap.org/way/62212952",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=New+York+Marble+Cemetery%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Interior garden only on announced open days; otherwise gate/facade view may not reveal the target.",
+        "access_notes": "Do not trespass or use burial names/text as the completion requirement.",
+        "payment": "Open-day entry policy should be checked; no purchase task.",
+        "hours": "Very limited openings make this a scheduled candidate.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official site supplies open-day information; route and surfaces were not audited.",
+        "unknowns": "Gate width, grass/gravel surfaces, seating, restroom access, and step-free route unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium-high",
+        "volatility": "Cemetery is durable; public access is rare and vegetation can obscure wall tablets."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "My markers do not rise from the grass; they wait in the walls around a hidden lawn.",
+        "hints": [
+          "This East Village cemetery opens only on selected dates.",
+          "Look for marble vault tablets set into the perimeter walls."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "high",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-014",
+      "canonical_place": "The Creative Little Garden",
+      "area": "East Village",
+      "borough": "Manhattan",
+      "launch_area_priority": "launch",
+      "category": "park_garden",
+      "observable_target": "The narrow community garden corridor with a vine-covered entry, winding path, dense plantings, and small seating pockets.",
+      "satisfying_discovery": "A standard city lot unfolds as a long green room with more depth than its street frontage suggests.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/attractions/creative-little-garden",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "NYC Parks GreenThumb",
+          "url": "https://www.nycgovparks.org/greenthumb/community-gardens/the-creative-little-garden",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "GreenThumb identifies the registered community garden at 530 East 6th Street; the garden/operator posts public open periods separately."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7246865,
+        "lng": -73.9825556,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "237532025",
+          "url": "https://www.openstreetmap.org/way/237532025",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+Creative+Little+Garden%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Garden entry only when volunteers open the gate; gate view is the fallback.",
+        "access_notes": "Respect volunteer operations, plants, and neighbors; no picking or private-area entry.",
+        "payment": "Free public garden; no purchase.",
+        "hours": "Volunteer hours and seasonal opening are variable.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "GreenThumb registration establishes identity; detailed access conditions were not available remotely.",
+        "unknowns": "Gate/threshold, path width and surface, seating, and turning space require field verification.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium-high",
+        "volatility": "Garden identity is stable; foliage, objects, visibility, and opening times are highly seasonal."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I am only one lot wide, yet my path keeps finding another green room. Enter only when my gate says yes.",
+        "hints": [
+          "Find 530 East 6th Street.",
+          "The target is a narrow GreenThumb community garden."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "high",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-015",
+      "canonical_place": "Grand Central Whispering Gallery",
+      "area": "Midtown",
+      "borough": "Manhattan",
+      "launch_area_priority": "borough-expansion",
+      "category": "sound_music",
+      "observable_target": "The diagonal pair of tiled arch corners outside the Oyster Bar where a quiet voice can carry across the vault.",
+      "satisfying_discovery": "The payoff is an architectural space that behaves like an invisible telephone.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/grand-central-terminal-whispering-gallery",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Metropolitan Transportation Authority / Grand Central Terminal",
+          "url": "https://www.grandcentralterminal.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The official terminal visitor materials identify the lower-level tiled whispering gallery beside the Oyster Bar and publish terminal access information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7526944,
+        "lng": -73.977253,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "265947358",
+          "url": "https://www.openstreetmap.org/way/265947358",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Grand+Central+Whispering+Gallery%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Public terminal interior; do not require speaking if crowded and do not obstruct passage.",
+        "access_notes": "Transit/security rules and closures control access.",
+        "payment": "No separate gallery fee; transit fare is not required to enter the terminal concourse.",
+        "hours": "Terminal hours and area closures apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official terminal access information is available; exact acoustic position is not an accessibility guarantee.",
+        "unknowns": "Elevator route to lower level, ambient-noise impact, hearing access, and clear corner space need scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Vault is permanent; acoustics can be defeated by noise, barriers, events, or construction."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Two tiled corners face away, yet a whisper at one can arrive at the other.",
+        "hints": [
+          "Go downstairs near Grand Central’s Oyster Bar.",
+          "Find the diagonal corners under the tiled arches."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-016",
+      "canonical_place": "Times Square by Max Neuhaus",
+      "area": "Times Square",
+      "borough": "Manhattan",
+      "launch_area_priority": "borough-expansion",
+      "category": "sound_music",
+      "observable_target": "The continuous resonant tone heard from a pedestrian grate on the Broadway island between West 45th and 46th Streets.",
+      "satisfying_discovery": "A seemingly ordinary street grate becomes an unsigned artwork discovered by listening.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/times-square-sound-installation",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Times Square Arts / Times Square Alliance",
+          "url": "https://www.timessquarenyc.org/artists/max-neuhaus",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "Times Square Arts identifies Max Neuhaus’s permanent sound work as emanating from a subway ventilation chamber beneath the pedestrian island at Broadway and 45th–46th Streets."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7570095,
+        "lng": -73.9859724,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "relation",
+          "osm_id": "14942838",
+          "url": "https://www.openstreetmap.org/relation/14942838",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Times+Square+by+Max+Neuhaus%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Outdoor pedestrian island; listening is optional and must not require standing on a grate in crowds.",
+        "access_notes": "Use designated pedestrian space and avoid blocking flows.",
+        "payment": "Free.",
+        "hours": "Continuous in concept, but maintenance, events, and street noise can mask it.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official project location is primary evidence; no quiet or safe listening position is guaranteed.",
+        "unknowns": "Crowd density, hearing differences, ambient noise, cane/wheel hazards, and grate placement require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium-high",
+        "volatility": "Permanent commission; audible result is weather-, noise-, and maintenance-dependent."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I have no sign and no melody, only a deep note rising through the busiest square.",
+        "hints": [
+          "Stand on the Broadway pedestrian island between 45th and 46th Streets.",
+          "Listen near a subway ventilation grate; hearing the tone must remain optional."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "high",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-017",
+      "canonical_place": "Unisphere",
+      "area": "Flushing Meadows–Corona Park",
+      "borough": "Queens",
+      "launch_area_priority": "borough-expansion",
+      "category": "infrastructure",
+      "observable_target": "The stainless-steel globe encircled by three orbital rings above its circular fountain basin.",
+      "satisfying_discovery": "Its giant familiar shape is transformed by the delicate rings and seasonal mirror of water.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/unisphere",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "NYC Parks",
+          "url": "https://www.nycgovparks.org/parks/flushing-meadows-corona-park/highlights/12761",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "NYC Parks identifies the Unisphere as the 1964–65 World’s Fair stainless-steel globe with three orbital rings in Flushing Meadows–Corona Park."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7463838,
+        "lng": -73.8450748,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "596273458",
+          "url": "https://www.openstreetmap.org/way/596273458",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Unisphere%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Outdoor park/plaza view; fountain operation is not required.",
+        "access_notes": "Stay outside basin and maintenance barriers.",
+        "payment": "Free.",
+        "hours": "Park hours apply; fountain and lighting are seasonal/operational.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Paved plaza is mapped, but current surface and accessible route were not checked.",
+        "unknowns": "Long distances, shade, seating, surface joints, and restroom access need verification.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low",
+        "volatility": "Globe and rings are durable; fountain, reflections, and open plaza access can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Three paths circle my steel world, though no satellite ever moves. Find the globe above a round sea.",
+        "hints": [
+          "Search Flushing Meadows–Corona Park.",
+          "The answer is the stainless-steel globe with three orbital rings."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "low-medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-018",
+      "canonical_place": "Newtown Creek Nature Walk",
+      "area": "Greenpoint",
+      "borough": "Brooklyn",
+      "launch_area_priority": "borough-expansion",
+      "category": "nature",
+      "observable_target": "The waterfront walk’s sculptural stone vessels, native plantings, and framed views toward Newtown Creek and the wastewater plant’s digester eggs.",
+      "satisfying_discovery": "Industrial infrastructure and a designed shoreline unexpectedly share one contemplative path.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/newtown-creek-nature-walk",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "NYC Department of Environmental Protection",
+          "url": "https://www.nyc.gov/site/dep/water/newtown-creek.page",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "NYC DEP identifies the public Nature Walk at the Newtown Creek Wastewater Resource Recovery Facility and describes its landscape, creek interpretation, and access."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7346026,
+        "lng": -73.9459349,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "relation",
+          "osm_id": "14523417",
+          "url": "https://www.openstreetmap.org/relation/14523417",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Newtown+Creek+Nature+Walk%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Public waterfront walk subject to posted gates and facility/security restrictions.",
+        "access_notes": "Remain on paths and behind railings; never approach water or plant operations.",
+        "payment": "Free.",
+        "hours": "Posted park/facility hours and closures apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "DEP presents it as public access, but current gates and path conditions were not inspected.",
+        "unknowns": "Route length, gate widths, surfaces, seating, shade, odors, and restroom access require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Built landscape is durable; tides, vegetation, odors, maintenance, and facility work vary."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Stone boats face a working creek while silver eggs rise behind a garden. Find where industry learned to make a shoreline path.",
+        "hints": [
+          "Go to the DEP nature walk in Greenpoint.",
+          "Look for sculptural stone forms with views of the digester eggs."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-019",
+      "canonical_place": "Pepsi-Cola Sign",
+      "area": "Long Island City",
+      "borough": "Queens",
+      "launch_area_priority": "borough-expansion",
+      "category": "view_reflection",
+      "observable_target": "The giant red script Pepsi-Cola sign facing the East River from Gantry Plaza State Park.",
+      "satisfying_discovery": "The sign reads like a piece of skyline rather than an advertisement at storefront scale.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/pepsi-cola-sign",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "New York State Parks",
+          "url": "https://parks.ny.gov/visit/state-parks/gantry-plaza-state-park",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The state park page identifies Gantry Plaza State Park on the East River; the landmark sign occupies the park waterfront and is separately protected by NYC landmark designation."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7474741,
+        "lng": -73.9576955,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "238974585",
+          "url": "https://www.openstreetmap.org/way/238974585",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Pepsi-Cola+Sign%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Outdoor park view; no need to approach the sign base or waterfront edge.",
+        "access_notes": "Stay on paths and behind railings.",
+        "payment": "Free.",
+        "hours": "State park hours apply; lighting is not guaranteed.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "State park information supports public access; exact step-free framing point was not assessed.",
+        "unknowns": "Distance from transit, pier surfaces, seating, glare, and low-vision legibility need scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low",
+        "volatility": "Large landmark sign is durable; lighting, construction, trees, and events can alter views."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "A soda name grew large enough to join the skyline, written in red beside the East River.",
+        "hints": [
+          "Look from Gantry Plaza State Park.",
+          "Find the giant red Pepsi-Cola script."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "low",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-020",
+      "canonical_place": "Brooklyn Superhero Supply Co.",
+      "area": "Park Slope",
+      "borough": "Brooklyn",
+      "launch_area_priority": "borough-expansion",
+      "category": "playful_oddity",
+      "observable_target": "The storefront presented as a superhero outfitter, with themed supply branding and a concealed literacy nonprofit beyond the shop.",
+      "satisfying_discovery": "The joke works from the sidewalk, then deepens when a fantasy store reveals a civic purpose.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/brooklyn-superhero-supply-co",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "826NYC",
+          "url": "https://www.826nyc.org/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "826NYC identifies its 372 Fifth Avenue home and the Brooklyn Superhero Supply Co. storefront that supports its youth writing programs."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.6713816,
+        "lng": -73.9846683,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "4216612694",
+          "url": "https://www.openstreetmap.org/node/4216612694",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Brooklyn+Superhero+Supply+Co.%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior storefront is sufficient; interior only during posted shop/program hours.",
+        "access_notes": "Do not interrupt youth programs or photograph children.",
+        "payment": "Free exterior view; purchases optional and support the nonprofit.",
+        "hours": "Shop/program hours vary.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Nonprofit site confirms address and mission; detailed storefront accessibility not collected.",
+        "unknowns": "Threshold, aisle width, sensory features, and separation from youth-program areas require confirmation.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Nonprofit/store identity is stable; window props, branding, and open hours rotate."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Capes and secret identities seem to be for sale, but the real power hidden here is writing.",
+        "hints": [
+          "Search Fifth Avenue in Park Slope.",
+          "Find 826NYC’s superhero-themed storefront."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-021",
+      "canonical_place": "The City Reliquary",
+      "area": "Williamsburg",
+      "borough": "Brooklyn",
+      "launch_area_priority": "borough-expansion",
+      "category": "playful_oddity",
+      "observable_target": "The small storefront museum and street-facing community display windows filled with New York ephemera.",
+      "satisfying_discovery": "A neighborhood shop window turns humble city leftovers into civic treasure.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/city-reliquary",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "The City Reliquary",
+          "url": "https://www.cityreliquary.org/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The museum’s official site identifies its Metropolitan Avenue storefront, community-collection mission, exhibits, and visiting information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7139536,
+        "lng": -73.9557409,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "8132573640",
+          "url": "https://www.openstreetmap.org/node/8132573640",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+City+Reliquary%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior windows are the default target; interior museum only when open.",
+        "access_notes": "Keep sidewalk and entrance clear.",
+        "payment": "Window viewing free; museum admission policy must be checked.",
+        "hours": "Museum hours and displays change.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official visit information is available; detailed accessibility statement was not located.",
+        "unknowns": "Threshold, tight interior circulation, object-label access, seating, and restroom availability unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Institution is established; window objects, exhibitions, hours, and glazing visibility change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Bottle caps, signs, and city scraps become relics behind a neighborhood window. Find New York’s tiny cabinet of memory.",
+        "hints": [
+          "Go to Metropolitan Avenue in Williamsburg.",
+          "Look for The City Reliquary storefront museum."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-022",
+      "canonical_place": "Green-Wood Cemetery Monk Parakeet Nests",
+      "area": "Green-Wood Cemetery",
+      "borough": "Brooklyn",
+      "launch_area_priority": "borough-expansion",
+      "category": "nature",
+      "observable_target": "The large stick nests built by monk parakeets in the Gothic entrance-gate towers; birds themselves are not required for completion.",
+      "satisfying_discovery": "Tropical-looking communal nests on a monumental stone gate create a surprising urban-wildlife reveal.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/greenwood-cemetery-parrots",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "The Green-Wood Cemetery",
+          "url": "https://www.green-wood.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "Green-Wood’s official visitor/nature materials acknowledge the monk parakeet colony associated with the main Gothic gate and publish cemetery access rules."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.652203,
+        "lng": -73.9910769,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "relation",
+          "osm_id": "10213172",
+          "url": "https://www.openstreetmap.org/relation/10213172",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Green-Wood+Cemetery+Monk+Parakeet+Nests%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Observe gate towers from permitted cemetery/public approach; do not require birds to appear.",
+        "access_notes": "Respect funerals, wildlife, closing time, and cemetery rules; no playback or feeding.",
+        "payment": "Free general grounds access unless a special program states otherwise.",
+        "hours": "Cemetery gate hours apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official visitor rules establish access; OSM coordinate is cemetery centroid, so main-gate target alignment needs scouting.",
+        "unknowns": "Main-gate route, grades, distance, binocular need, and low-vision viewing conditions unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "high",
+        "volatility": "Gate is durable; nests can be rebuilt, pruned, storm-damaged, or absent, and birds are inherently unpredictable."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "A flock built twig apartment houses high on a Gothic gate. Find the nests; the green tenants need not be home.",
+        "hints": [
+          "Use Green-Wood’s main monumental entrance.",
+          "Inspect the gate towers for large communal stick nests, not for guaranteed birds."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "high",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-023",
+      "canonical_place": "Deno's Wonder Wheel",
+      "area": "Coney Island",
+      "borough": "Brooklyn",
+      "launch_area_priority": "borough-expansion",
+      "category": "infrastructure",
+      "observable_target": "The giant wheel’s mix of stationary cars and cars that slide along curved interior tracks.",
+      "satisfying_discovery": "It looks like a Ferris wheel until the inner cars visibly travel toward and away from the hub.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/attractions/denos-wonder-wheel-amusement-park",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Deno’s Wonder Wheel Amusement Park",
+          "url": "https://www.denoswonderwheel.com/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The operator identifies the 1920 Wonder Wheel and explains its stationary and swinging/sliding passenger-car arrangement, with current season information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.5740414,
+        "lng": -73.979145,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "4080306783",
+          "url": "https://www.openstreetmap.org/node/4080306783",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Deno%27s+Wonder+Wheel%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior visual target from lawful public/amusement-park approaches; riding is never required.",
+        "access_notes": "Do not stand in ride queues or operational zones solely for observation.",
+        "payment": "Exterior distant view may be free; park/ride charges and boundaries must be checked.",
+        "hours": "Strongly seasonal; operating motion is not required.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Operator provides park information but an exact free, step-free sightline needs confirmation.",
+        "unknowns": "Boardwalk/park route, gate boundaries, seating, sensory load, and accessible viewing position unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Wheel is landmark-scale and durable; access, motion, cars, signage, and season vary."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Some of my cars circle politely; others slide inward and outward while the whole wheel turns.",
+        "hints": [
+          "Look above Coney Island.",
+          "Find the wheel with cars on curved interior tracks."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-024",
+      "canonical_place": "Panorama of the City of New York",
+      "area": "Flushing Meadows–Corona Park",
+      "borough": "Queens",
+      "launch_area_priority": "borough-expansion",
+      "category": "playful_oddity",
+      "observable_target": "The vast room-size model of New York City’s five boroughs, viewed from the raised perimeter walkway.",
+      "satisfying_discovery": "Visitors can recognize a whole city and then hunt for a single familiar block at miniature scale.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/panorama-of-the-city-of-new-york",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Queens Museum",
+          "url": "https://queensmuseum.org/exhibition/panorama-of-the-city-of-new-york/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "Queens Museum identifies the Panorama as a scale model of all five boroughs built for the 1964 World’s Fair and provides museum access information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.745869,
+        "lng": -73.8467413,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "284856409",
+          "url": "https://www.openstreetmap.org/way/284856409",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Panorama+of+the+City+of+New+York%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Interior museum target during opening hours.",
+        "access_notes": "Follow museum barriers; no touching the model.",
+        "payment": "Museum admission policy is suggested/donation-based or may change; verify.",
+        "hours": "Museum days/hours and gallery closures apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Museum visitor information is the remote source; model is viewed from a walkway.",
+        "unknowns": "Elevator route, ramp grade, railing sightlines from seated height, lighting, and sensory/crowd conditions require confirmation.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low-medium",
+        "volatility": "Model is a permanent collection anchor; building updates and exhibit closures can intervene."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Five boroughs fit in one room, and millions of roofs become small enough to circle on foot.",
+        "hints": [
+          "Enter the Queens Museum in Flushing Meadows.",
+          "Look for the room-size city model viewed from a perimeter walkway."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-025",
+      "canonical_place": "The Noguchi Museum Sculpture Garden",
+      "area": "Long Island City/Astoria",
+      "borough": "Queens",
+      "launch_area_priority": "borough-expansion",
+      "category": "park_garden",
+      "observable_target": "The open-air garden of large stone sculptures arranged among gravel, brick walls, trees, and changing light.",
+      "satisfying_discovery": "Massive carved stones feel both geological and carefully placed, rewarding slow spatial comparison.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/museums/the-noguchi-museum",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "The Noguchi Museum",
+          "url": "https://www.noguchi.org/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The museum’s official site identifies its indoor-outdoor galleries and sculpture garden at 9-01 33rd Road and publishes visitor/access details."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7669901,
+        "lng": -73.9376072,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "383689939",
+          "url": "https://www.openstreetmap.org/way/383689939",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+Noguchi+Museum+Sculpture+Garden%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Interior museum garden during posted hours; do not touch unless explicitly permitted.",
+        "access_notes": "Weather and events can close the garden.",
+        "payment": "Museum admission applies unless a free program is confirmed.",
+        "hours": "Museum hours and seasonal garden access apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official visitor information includes accessibility resources, but the exact clue sightline was not tested.",
+        "unknowns": "Gravel/brick surfaces, seating, thresholds, weather exposure, and low-vision contrast need confirmation.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low-medium",
+        "volatility": "Garden and major stones are durable; individual works, paths, weather access, and events change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Stones stand like a quiet crowd under open sky, arranged in a museum room with no roof.",
+        "hints": [
+          "Go to the Noguchi Museum in Queens.",
+          "The target is its outdoor sculpture garden, not one named artwork."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-026",
+      "canonical_place": "Hall of Fame for Great Americans",
+      "area": "University Heights",
+      "borough": "Bronx",
+      "launch_area_priority": "borough-expansion",
+      "category": "history",
+      "observable_target": "The semicircular open-air colonnade lined with bronze portrait busts overlooking the Harlem River valley.",
+      "satisfying_discovery": "The space reads as both a long outdoor gallery and a curved architectural promenade.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/hall-of-fame-for-great-americans",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Bronx Community College, CUNY",
+          "url": "https://www.bcc.cuny.edu/about-bcc/history-architecture/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "Bronx Community College identifies the Hall of Fame on its landmark campus as an open-air colonnade containing bronze busts and provides campus visitor/security information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.8587621,
+        "lng": -73.9143063,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "276273847",
+          "url": "https://www.openstreetmap.org/way/276273847",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Hall+of+Fame+for+Great+Americans%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Campus access is controlled; do not assume walk-in public entry.",
+        "access_notes": "Follow CUNY security, event, and photography rules.",
+        "payment": "No fee claim; visitor permission requirements must be checked.",
+        "hours": "Campus/building hours and closures apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "College access information is primary evidence; public route was not verified.",
+        "unknowns": "Security check, step-free campus route, colonnade surfaces, grades, seating, and restroom access unknown.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Landmarked colonnade/busts are durable; campus access and restoration can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "A curved outdoor corridor gathers bronze faces, all looking across one Bronx campus.",
+        "hints": [
+          "The site is on Bronx Community College grounds.",
+          "Find the semicircular colonnade lined with portrait busts."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "high",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-027",
+      "canonical_place": "The Little Red Lighthouse",
+      "area": "Fort Washington Park",
+      "borough": "Manhattan",
+      "launch_area_priority": "borough-expansion",
+      "category": "architecture",
+      "observable_target": "The short red lighthouse directly beneath the immense gray George Washington Bridge.",
+      "satisfying_discovery": "The dramatic scale contrast turns two pieces of infrastructure into a visual punch line.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/jeffreys-hook-lighthouse",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "NYC Parks",
+          "url": "https://www.nycgovparks.org/parks/fort-washington-park/highlights/11044",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "NYC Parks identifies Jeffrey’s Hook Lighthouse, popularly called the Little Red Lighthouse, beneath the George Washington Bridge in Fort Washington Park."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.8502575,
+        "lng": -73.9469631,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "397678729",
+          "url": "https://www.openstreetmap.org/way/397678729",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=The+Little+Red+Lighthouse%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Outdoor park view; tower interior only during announced programs.",
+        "access_notes": "Use signed park routes; waterfront, rail, and bridge infrastructure are off-limits.",
+        "payment": "Free exterior view.",
+        "hours": "Park hours apply; interior events are occasional and unnecessary.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "NYC Parks maps public setting, but approach grade and closures were not checked.",
+        "unknowns": "Long/steep approach, path surface, stairs, seating, and restroom access require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low",
+        "volatility": "Lighthouse/bridge are durable; shoreline work and path closures can affect access."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "I am the small red keeper standing in the shadow of a bridge too large to need my light.",
+        "hints": [
+          "Follow Fort Washington Park to Jeffrey’s Hook.",
+          "Find the red lighthouse directly beneath the George Washington Bridge."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-028",
+      "canonical_place": "Septuagesimo Uno Park",
+      "area": "Upper West Side",
+      "borough": "Manhattan",
+      "launch_area_priority": "borough-expansion",
+      "category": "spatial_feature",
+      "observable_target": "The extremely narrow mid-block park, a slim passage with benches and plantings between West 70th and 71st Streets.",
+      "satisfying_discovery": "Its width makes the whole park feel like a secret corridor rather than a conventional square.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/septuagesimo-uno",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "NYC Parks",
+          "url": "https://www.nycgovparks.org/parks/septuagesimo-uno",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "NYC Parks identifies Septuagesimo Uno as a very small public park on West 71st Street and provides park hours/features."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7786693,
+        "lng": -73.98431,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "node",
+          "osm_id": "12184198115",
+          "url": "https://www.openstreetmap.org/node/12184198115",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Septuagesimo+Uno+Park%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Outdoor park during posted hours.",
+        "access_notes": "Do not block the narrow path or adjacent residences.",
+        "payment": "Free.",
+        "hours": "NYC Parks hours apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official park page establishes public status; current width/clearance was not measured.",
+        "unknowns": "Narrow passing/turning space, entrance lip, benches, and crowd capacity need scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "low",
+        "volatility": "Park footprint is durable; gate status, plantings, furniture, and construction can change."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "My name is long, my park is thin, and one city lot is nearly all the world I need.",
+        "hints": [
+          "Search West 71st Street near Amsterdam Avenue.",
+          "The destination is the tiny park called Septuagesimo Uno."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "low-medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-029",
+      "canonical_place": "Greenacre Park",
+      "area": "Midtown East",
+      "borough": "Manhattan",
+      "launch_area_priority": "borough-expansion",
+      "category": "nature",
+      "observable_target": "The tall water wall at the back of the pocket park, faced by tiered seating and honey-locust shade.",
+      "satisfying_discovery": "A narrow Midtown opening suddenly ends in a loud vertical sheet of water.",
+      "lead_sources": [
+        {
+          "provider": "Time Out New York",
+          "url": "https://www.timeout.com/newyork/attractions/greenacre-park",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Greenacre Foundation",
+          "url": "https://greenacrepark.org/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "The park’s official site identifies the publicly accessible East 51st Street pocket park and its waterfall, terraces, rules, and posted opening information."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.756264,
+        "lng": -73.9692851,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "86338375",
+          "url": "https://www.openstreetmap.org/way/86338375",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Greenacre+Park%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Privately owned public park during posted hours; waterfall operation is not guaranteed.",
+        "access_notes": "Use designated seating/paths and obey posted rules.",
+        "payment": "Free.",
+        "hours": "Gates and seasonal/daily hours apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Official site publishes park information; exact accessible route and waterfall noise impact need review.",
+        "unknowns": "Entrance grade, level changes/lift or ramp availability, seating, spray, noise, and crowding require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Park/water wall are durable; water operation, gates, weather, and maintenance vary."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "Midtown opens a narrow door to a wall that falls all day without moving an inch.",
+        "hints": [
+          "Enter the pocket park on East 51st Street.",
+          "Look for the tall waterfall at the rear."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    },
+    {
+      "research_id": "DQ-NYC-TD-030",
+      "canonical_place": "Renwick Smallpox Hospital Ruin",
+      "area": "Roosevelt Island",
+      "borough": "Manhattan",
+      "launch_area_priority": "borough-expansion",
+      "category": "architecture",
+      "observable_target": "The roofless Gothic Revival stone shell with pointed-arch windows, viewed from outside its protective fence.",
+      "satisfying_discovery": "The ruin looks like a miniature castle while remaining clearly framed as a preserved hospital shell.",
+      "lead_sources": [
+        {
+          "provider": "Atlas Obscura",
+          "url": "https://www.atlasobscura.com/places/renwick-smallpox-hospital-ruins",
+          "checked_at": "2026-07-22",
+          "use": "Discovery lead only; no article prose, ranking, riddle, image, or proprietary description copied."
+        }
+      ],
+      "independent_primary_sources": [
+        {
+          "provider": "Roosevelt Island Operating Corporation",
+          "url": "https://www.rioc.ny.gov/",
+          "source_date": null,
+          "checked_at": "2026-07-22",
+          "factual_evidence": "RIOC visitor and landmark materials identify the stabilized Renwick ruin on Southpoint Park; the fenced interior is closed to public entry."
+        }
+      ],
+      "stable_coordinates": {
+        "lat": 40.7515889,
+        "lng": -73.959612,
+        "source": {
+          "provider": "OpenStreetMap/Nominatim",
+          "osm_type": "way",
+          "osm_id": "29185374",
+          "url": "https://www.openstreetmap.org/way/29185374",
+          "query_url": "https://nominatim.openstreetmap.org/search?q=Renwick+Smallpox+Hospital+Ruin%2C+New+York%2C+NY&format=jsonv2&limit=3",
+          "checked_at": "2026-07-22"
+        },
+        "target_alignment": "feature centroid or address point; exact safe clue viewpoint remains unverified"
+      },
+      "public_view_access_payment_hours": {
+        "public_view": "Exterior fence-line view only; never enter the ruin or cross barriers.",
+        "access_notes": "Check Southpoint Park closures and keep off work zones.",
+        "payment": "Free park exterior view.",
+        "hours": "Park hours and stabilization/construction closures apply.",
+        "remote_status_only": true
+      },
+      "accessibility": {
+        "evidence": "Public park setting is documented, but current fence, route, and viewpoint were not inspected.",
+        "unknowns": "Path grade/surface, fence sightline, seating, distance, and construction detours require scouting.",
+        "field_verified": false
+      },
+      "durability_volatility": {
+        "durability": "medium",
+        "volatility": "Stone shell is landmarked/stabilized, but preservation work and fencing can change visibility."
+      },
+      "duplicate_check": {
+        "checked_against": [
+          "content/nyc/source-candidates.v2.json (100 retained candidates)",
+          "content/nyc/source-candidates.v2.json rejected_candidates",
+          "content/nyc/remote-verification/downtown.remote-v1.json",
+          "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+          "content/nyc/remote-verification/villages.remote-v1.json"
+        ],
+        "result": "no matching research_id, place_id, canonical name, or exact observable target found",
+        "notes": "Normalized canonical names and targets were compared; nearby places were retained only when the identity and completion target are distinct."
+      },
+      "clue_package": {
+        "riddle": "My roof is gone, my pointed windows hold only sky, and a fence keeps this stone hospital in the past.",
+        "hints": [
+          "Go to Southpoint Park on Roosevelt Island.",
+          "View the Gothic ruin only from outside its protective fence."
+        ],
+        "originality_note": "Original DayQuest research wording based only on supported visible or operator-stated facts."
+      },
+      "rights_provenance": {
+        "lead_use": "Discovery only. No proprietary article prose, ranking, riddle, photograph, or description copied.",
+        "evidence_use": "Short factual paraphrase from primary/official source with URL and check date.",
+        "media_rights": "No media copied or licensed by this artifact.",
+        "publication_claimed": false,
+        "field_verification_claimed": false
+      },
+      "risk_tier": "medium",
+      "needs_field_verification": true
+    }
+  ],
+  "rejected_or_deferred_leads": [
+    {
+      "lead": "Village Vanguard triangular basement",
+      "decision": "rejected",
+      "reason": "Already rejected in the existing bank: proving the triangular room requires paid/private interior access; no robust exterior target was retained."
+    },
+    {
+      "lead": "First Street Green current mural lineup",
+      "decision": "rejected",
+      "reason": "Already rejected in the existing bank: current mural identity was not authoritatively established and rotates."
+    },
+    {
+      "lead": "City Hall loop station",
+      "decision": "deferred",
+      "reason": "A passing-train glimpse is fare-, service-, lighting-, and operational-rule-dependent; no stationary public viewpoint."
+    },
+    {
+      "lead": "Arthur Kill ship graveyard",
+      "decision": "rejected",
+      "reason": "Common viewpoints invite trespass or unsafe shoreline access; no clearly lawful accessible target viewpoint established."
+    },
+    {
+      "lead": "Berlin Wall segments formerly at 520 Madison Avenue",
+      "decision": "rejected",
+      "reason": "Placement/history has changed and a current, freely accessible exterior target was not established."
+    },
+    {
+      "lead": "Toynbee tiles",
+      "decision": "rejected",
+      "reason": "Individual pavement tiles are vulnerable to resurfacing and traffic; current exact targets lacked primary corroboration."
+    },
+    {
+      "lead": "Hua Mei Bird Garden activity",
+      "decision": "rejected",
+      "reason": "Existing bank already defers it; depends on people and birds being present and risks treating community members as targets."
+    },
+    {
+      "lead": "Old Atlantic Avenue tunnel",
+      "decision": "deferred",
+      "reason": "Access is tour/permission dependent and current public operations were not established."
+    },
+    {
+      "lead": "Freedom Tunnel graffiti",
+      "decision": "rejected",
+      "reason": "Would invite railroad trespass and unsafe infrastructure access."
+    },
+    {
+      "lead": "Roosevelt Island cat sanctuary",
+      "decision": "rejected",
+      "reason": "Animals are inherently unpredictable and should not become a required observable target; no durable fixed clue substituted."
+    },
+    {
+      "lead": "Freeman Alley current street-art wall",
+      "decision": "deferred",
+      "reason": "Artwork changes rapidly; no stable artist/operator-backed exact current target established."
+    },
+    {
+      "lead": "Chinatown Fair dancing/tic-tac-toe chicken",
+      "decision": "rejected",
+      "reason": "Existing bank documents that the famous chicken is not a defensible current observable target."
+    }
+  ],
+  "validation_summary": {
+    "retained_count": 30,
+    "unique_research_ids": 30,
+    "unique_observable_targets": 30,
+    "architecture_count": 4,
+    "history_count": 2,
+    "rejected_or_deferred_count": 12,
+    "area_counts": {
+      "Chinatown": 1,
+      "Coney Island": 1,
+      "East Village": 3,
+      "East Village/NoHo": 1,
+      "Flushing Meadows–Corona Park": 2,
+      "Fort Washington Park": 1,
+      "Green-Wood Cemetery": 1,
+      "Greenpoint": 1,
+      "Greenwich Village": 2,
+      "Long Island City": 1,
+      "Long Island City/Astoria": 1,
+      "Lower East Side": 2,
+      "Midtown": 1,
+      "Midtown East": 1,
+      "Park Slope": 1,
+      "Roosevelt Island": 1,
+      "SoHo": 2,
+      "Times Square": 1,
+      "Tribeca": 3,
+      "University Heights": 1,
+      "Upper West Side": 1,
+      "Williamsburg": 1
+    },
+    "category_counts": {
+      "architecture": 4,
+      "food_storefront": 3,
+      "history": 2,
+      "infrastructure": 2,
+      "nature": 3,
+      "park_garden": 2,
+      "playful_oddity": 4,
+      "public_art": 2,
+      "sound_music": 4,
+      "spatial_feature": 1,
+      "storefront_culture": 2,
+      "view_reflection": 1
+    },
+    "lead_provider_counts": {
+      "Atlas Obscura": 21,
+      "NYC Tourism": 1,
+      "Time Out New York": 8
+    },
+    "all_need_field_verification": true
+  }
+}
