@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "generated_from_commit": "07ece04",
-  "status": "draft_requires_owner_and_legal_review",
+  "generated_from_commit": "e4100243d976d7b16a0d379014ca19daaef0fb1c",
+  "status": "draft_requires_shipping_binary_owner_and_legal_review",
   "apple_reference_urls": [
     "https://developer.apple.com/support/offering-account-deletion-in-your-app/",
     "https://developer.apple.com/app-store/app-privacy-details/"
@@ -15,11 +15,17 @@
       "type": "Precise Location",
       "apple_category": "Location > Precise Location",
       "collected_off_device": true,
-      "linked_to_user": false,
+      "linked_to_user": true,
       "tracking": false,
-      "purposes": ["App Functionality", "Product Personalization"],
-      "destinations": ["DayQuest API", "configured place/geocoding processors"],
-      "notes": "Current coordinates are query parameters for quest generation. Live breadcrumb route is represented as local-only. Conservatively re-evaluate IP logs and signed-in correlation before submission."
+      "purposes": [
+        "App Functionality",
+        "Product Personalization"
+      ],
+      "destinations": [
+        "DayQuest API",
+        "configured place/geocoding processors"
+      ],
+      "notes": "Current coordinates are query parameters for quest generation. Live breadcrumb route is represented as local-only. Linked is the conservative submission draft pending production IP-log, processor, and signed-in-correlation review."
     },
     {
       "type": "Email Address",
@@ -27,8 +33,14 @@
       "collected_off_device": true,
       "linked_to_user": true,
       "tracking": false,
-      "purposes": ["App Functionality"],
-      "destinations": ["Apple or Google authentication", "Supabase Auth", "Supabase profiles"]
+      "purposes": [
+        "App Functionality"
+      ],
+      "destinations": [
+        "Apple or Google authentication",
+        "Supabase Auth",
+        "Supabase profiles"
+      ]
     },
     {
       "type": "Name",
@@ -36,8 +48,13 @@
       "collected_off_device": true,
       "linked_to_user": true,
       "tracking": false,
-      "purposes": ["App Functionality"],
-      "destinations": ["Apple or Google authentication", "Supabase profiles/public_profiles"],
+      "purposes": [
+        "App Functionality"
+      ],
+      "destinations": [
+        "Apple or Google authentication",
+        "Supabase profiles/public_profiles"
+      ],
       "notes": "Display name and avatar are visible in friends/leaderboards."
     },
     {
@@ -46,28 +63,42 @@
       "collected_off_device": true,
       "linked_to_user": true,
       "tracking": false,
-      "purposes": ["App Functionality"],
-      "destinations": ["Supabase Auth", "Supabase social/gameplay tables"],
+      "purposes": [
+        "App Functionality"
+      ],
+      "destinations": [
+        "Supabase Auth",
+        "Supabase social/gameplay tables"
+      ],
       "notes": "Friend invite deep links contain the account UUID."
     },
     {
       "type": "Device ID",
       "apple_category": "Identifiers > Device ID",
       "collected_off_device": true,
-      "linked_to_user": false,
+      "linked_to_user": true,
       "tracking": false,
-      "purposes": ["Analytics", "App Functionality"],
-      "destinations": ["DayQuest API JSONL logs"],
-      "notes": "Random per-install ID, not IDFA. Sent with optional analytics, feedback, and score sink. Owner must conservatively revisit linked status because account and install can coexist on one device."
+      "purposes": [
+        "Analytics",
+        "App Functionality"
+      ],
+      "destinations": [
+        "DayQuest API JSONL logs"
+      ],
+      "notes": "Random per-install ID, not IDFA. Sent with optional analytics, feedback, and score sink. Linked is the conservative submission draft because account and install can coexist on one device; change only with production evidence."
     },
     {
       "type": "Product Interaction",
       "apple_category": "Usage Data > Product Interaction",
       "collected_off_device": true,
-      "linked_to_user": false,
+      "linked_to_user": true,
       "tracking": false,
-      "purposes": ["Analytics"],
-      "destinations": ["DayQuest API JSONL logs"],
+      "purposes": [
+        "Analytics"
+      ],
+      "destinations": [
+        "DayQuest API JSONL logs"
+      ],
       "choice": "Future optional events can be disabled in Settings > Privacy & legal."
     },
     {
@@ -76,19 +107,30 @@
       "collected_off_device": true,
       "linked_to_user": true,
       "tracking": false,
-      "purposes": ["App Functionality"],
-      "destinations": ["Supabase profiles", "Supabase hunt_results", "Supabase shared_hunts"],
+      "purposes": [
+        "App Functionality"
+      ],
+      "destinations": [
+        "Supabase profiles",
+        "Supabase hunt_results",
+        "Supabase shared_hunts"
+      ],
       "notes": "Points/streak/profile and signed-in shared-hunt result. Routes, photos, visited places and full local quest history are not represented as uploads."
     },
     {
       "type": "Other User Content",
       "apple_category": "User Content > Other User Content",
       "collected_off_device": true,
-      "linked_to_user": false,
+      "linked_to_user": true,
       "tracking": false,
-      "purposes": ["App Functionality", "Analytics"],
-      "destinations": ["DayQuest API JSONL feedback logs"],
-      "notes": "Optional feedback text, rating, stop flag/context with install ID. Revisit linked status together with Device ID."
+      "purposes": [
+        "App Functionality",
+        "Analytics"
+      ],
+      "destinations": [
+        "DayQuest API JSONL feedback logs"
+      ],
+      "notes": "Optional feedback text, rating, stop flag/context with install ID. Linked follows the conservative Device ID treatment pending production evidence."
     },
     {
       "type": "Photos or Videos",
@@ -96,8 +138,13 @@
       "collected_off_device": false,
       "linked_to_user": false,
       "tracking": false,
-      "purposes": ["App Functionality"],
-      "destinations": ["On-device app document directory", "user-selected system share destination"],
+      "purposes": [
+        "App Functionality"
+      ],
+      "destinations": [
+        "On-device app document directory",
+        "user-selected system share destination"
+      ],
       "notes": "Not an App Store 'collected' data type in the represented build because the app does not transmit it off-device. Re-evaluate if photo verification/upload is implemented."
     }
   ],
