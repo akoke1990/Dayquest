@@ -17,7 +17,7 @@ import {
 } from "react-native";
 // expo-linking: parse incoming deep links (dayquest://friend?uid= and
 // dayquest://join?hunt=) into { hostname, queryParams }. Autolinked — needs no
-// app.json plugin entry. The OAuth redirect also rides the dayquest:// scheme,
+// app.config.js plugin entry. The OAuth redirect also rides the dayquest:// scheme,
 // so the handler filters STRICTLY on hostname ("friend"/"join") and ignores the
 // rest (the OAuth redirect has no such host), keeping sign-in untouched.
 import * as ExpoLinking from "expo-linking";

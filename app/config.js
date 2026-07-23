@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 // no laptop, no same-Wi-Fi requirement, no `npm run serve`. This is the default.
 //
 // To point at a LOCAL dev server instead (e.g. testing server changes on your
-// laptop over Wi-Fi), set `extra.API_URL` in app.json to your machine, e.g.
+// laptop over Wi-Fi), set `extra.API_URL` in app.config.js to your machine, e.g.
 // "http://192.168.1.x:8787". When unset, we use the hosted server below.
 const HOSTED_API = "https://dayquest.onrender.com";
 const extraCfg = Constants.expoConfig?.extra || Constants.manifest?.extra || {};
@@ -30,7 +30,7 @@ export const TEASER = {
 // the auth layer stays dormant and the app runs exactly as it does today —
 // nothing is constructed, nothing can crash.
 //
-// Wire real values via `app.json` → `expo.extra` (or an env var at build time).
+// Wire real values via `app.config.js` → `extra` (or an env var at build time).
 // We read from Expo's `extra` first, then fall back to process.env so a CI/EAS
 // build can inject them, then to an empty string so the unconfigured path is
 // the safe default. NEVER hardcode the keys here.
@@ -41,7 +41,7 @@ export const SUPABASE_URL =
 export const SUPABASE_ANON_KEY =
   extra.SUPABASE_ANON_KEY || process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
 
-// The custom URL scheme the OAuth redirect comes back to. Mirrors app.json's
-// `expo.scheme`. In Expo Go the redirect is proxied, but the scheme is still
+// The custom URL scheme the OAuth redirect comes back to. Mirrors app.config.js's
+// `scheme`. In Expo Go the redirect is proxied, but the scheme is still
 // used to build the redirect URL.
 export const APP_SCHEME = "dayquest";

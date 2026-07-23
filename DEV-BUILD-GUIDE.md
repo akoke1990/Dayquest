@@ -10,10 +10,12 @@ time (plus cloud build wait). Do steps in order; if anything errors, stop & ask.
 - [ ] **Google key:** Maps SDK for iOS **and** Maps SDK for Android enabled on your key
       (console.cloud.google.com → APIs & Services → Library → Enable each)
 
-## 1. Put your Google key in the app config
-Open `app/app.json`, find `expo.extra.GOOGLE_MAPS_API_KEY` and paste your real key:
-```json
-"GOOGLE_MAPS_API_KEY": "AIza...your key..."
+## 1. Put your Google key in the EAS environment
+Do not edit `app/app.config.js` or commit a key. Create `GOOGLE_MAPS_API_KEY` in
+the EAS `development` environment (see `app/RELEASE_CONFIG.md`), or provide it
+only to a local config/prebuild command:
+```bash
+GOOGLE_MAPS_API_KEY='AIza...your key...' npx expo config --type public
 ```
 🔒 **Restrict this key in Google Cloud** (Credentials → your key): under *Application
 restrictions* you'll later add the iOS bundle id; under *API restrictions* keep it to
@@ -31,8 +33,8 @@ eas login            # use your expo.dev account
 ```bash
 eas build:configure
 ```
-Pick **iOS** (or All). This creates/links an EAS project id. If it offers to edit
-app.json, let it.
+The project is already linked by the `extra.eas.projectId` in `app.config.js`.
+Do not let this command create a second static app config.
 
 ## 4. Build the dev app (cloud build — takes ~10–20 min)
 ```bash

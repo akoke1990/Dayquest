@@ -105,18 +105,13 @@ provider consoles.
 ### a. Project URL + anon key → app config
 - Dashboard → **Project Settings → API**. Copy the **Project URL** and the
   **anon / public** key.
-- Put them in `app/app.json` under `expo.extra`:
-  ```json
-  "extra": {
-    "SUPABASE_URL": "https://YOUR-REF.supabase.co",
-    "SUPABASE_ANON_KEY": "eyJhbGci..."
-  }
-  ```
+- Put the public values in `app/app.config.js` under `extra`, or inject the
+  environment variables below at build time.
   (Or inject `EXPO_PUBLIC_SUPABASE_URL` / `EXPO_PUBLIC_SUPABASE_ANON_KEY` as env
   vars at build time — `config.js` reads `extra` first, then `process.env`.)
 - The anon key is safe to ship in the client; RLS is what protects the data.
 - As soon as both are non-empty, `authConfigured` flips to `true` and the
-  sign-in UI appears. Restart Metro after changing `app.json`.
+  sign-in UI appears. Restart Metro after changing `app.config.js`.
 
 ### b. Enable the Google provider
 - Dashboard → **Authentication → Providers → Google → enable**.
@@ -141,7 +136,7 @@ provider consoles.
   `AuthSession.makeRedirectUri({ scheme: 'dayquest' })` (see `getRedirectTo()` in
   `app/lib/auth.js`). With expo-auth-session 7.x there is **no** `auth.expo.io`
   proxy — `makeRedirectUri` returns a real URL for the current runtime:
-  - **Standalone / dev build:** `dayquest://` (the app `scheme` from `app.json`).
+  - **Standalone / dev build:** `dayquest://` (the app `scheme` from `app.config.js`).
     Add `dayquest://` (and `dayquest://*` if your dashboard wants a path wildcard).
   - **Expo Go:** a dev URL like `exp://127.0.0.1:8081/--/` (the host/IP is your
     Metro address and changes per machine/session), so it is awkward to

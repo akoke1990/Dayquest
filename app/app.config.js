@@ -1,50 +1,83 @@
-// Dynamic Expo config.
-//
-// app.json stays the single source of truth for everything; this file only
-// LAYERS ON the native Google Maps API key slots that a real build needs,
-// reading the value from `expo.extra.GOOGLE_MAPS_API_KEY` (which lives in
-// app.json, default ""). JSON can't interpolate or carry comments, hence this
-// small dynamic config. Fully reversible: delete this file and Expo falls back
-// to app.json exactly as before.
-//
-// Expo-Go-safe: dynamic config doesn't touch the JS bundle, and the keys below
-// are only consumed by a native prebuild/standalone build — Expo Go ignores them.
-//
-// NOTE: the BUILT app needs the Google Maps key to have BOTH "Maps SDK for iOS"
-// and "Maps SDK for Android" enabled in Google Cloud. Put the real key in
-// app.json -> expo.extra.GOOGLE_MAPS_API_KEY (do NOT commit a real key).
-const appJson = require("./app.json");
-
-const expo = appJson.expo;
-// Key resolution order: EAS env var first (set as a project env variable on
-// expo.dev — injected on EAS build servers, so cloud builds get the real key
-// without it ever living in git), then the app.json extra slot (the original
-// laptop-local flow), then "".
-const googleMapsApiKey =
-  process.env.GOOGLE_MAPS_API_KEY ||
-  (expo.extra && expo.extra.GOOGLE_MAPS_API_KEY) ||
-  "";
+// This dynamic file is the single source of truth for Expo application config.
+// Native Google Maps builds read their key from the selected EAS environment;
+// the committed/default value intentionally stays blank.
+const googleMapsApiKey = process.env.GOOGLE_MAPS_API_KEY || "";
 
 module.exports = {
-  ...expo,
-  // LAST in the chain so it runs after expo-notifications' autolinked plugin:
-  // strips the remote-push entitlement our provisioning profile doesn't carry
-  // (we only schedule LOCAL notifications — see the plugin header).
-  plugins: [...(expo.plugins || []), "./plugins/with-local-notifications-only"],
+  name: "DayQuest",
+  slug: "dayquest",
+  version: "1.0.0",
+  scheme: "dayquest",
+  orientation: "portrait",
+  icon: "./assets/icon.png",
+  userInterfaceStyle: "light",
+  plugins: [
+    [
+      "expo-location",
+      {
+        locationWhenInUsePermission:
+          "DayQuest uses your location to find a scavenger hunt nearby.",
+        locationAlwaysPermission: false,
+        locationAlwaysAndWhenInUsePermission: false,
+      },
+    ],
+    [
+      "expo-image-picker",
+      {
+        cameraPermission:
+          "DayQuest uses your camera so you can photograph each stop on your quest.",
+        photosPermission:
+          "DayQuest accesses your photos so you can pick an image for a stop.",
+        microphonePermission: false,
+      },
+    ],
+    [
+      "expo-camera",
+      {
+        cameraPermission:
+          "DayQuest uses your camera so you can catch the collectible waiting at each place you discover.",
+        microphonePermission: false,
+        recordAudioAndroid: false,
+      },
+    ],
+    "expo-web-browser",
+    "expo-apple-authentication",
+    // Keep this last: expo-notifications autolinking may add aps-environment,
+    // but DayQuest only schedules local notifications.
+    "./plugins/with-local-notifications-only",
+  ],
   ios: {
-    ...expo.ios,
+    supportsTablet: false,
+    bundleIdentifier: "com.akoke18.dayquest",
+    buildNumber: "1",
+    usesAppleSignIn: true,
     config: {
-      ...(expo.ios && expo.ios.config),
       googleMapsApiKey,
     },
   },
   android: {
-    ...expo.android,
+    adaptiveIcon: {
+      backgroundColor: "#E6F4FE",
+      foregroundImage: "./assets/android-icon-foreground.png",
+      backgroundImage: "./assets/android-icon-background.png",
+      monochromeImage: "./assets/android-icon-monochrome.png",
+    },
     config: {
-      ...(expo.android && expo.android.config),
       googleMaps: {
         apiKey: googleMapsApiKey,
       },
+    },
+  },
+  web: {
+    favicon: "./assets/favicon.png",
+  },
+  extra: {
+    SUPABASE_URL: "https://xoonknhsurzwwahfhnjy.supabase.co",
+    SUPABASE_ANON_KEY:
+      "sb_publishable_oekh-4raDYaxlNsLqhOylQ_WwwF-AGE",
+    GOOGLE_MAPS_API_KEY: googleMapsApiKey,
+    eas: {
+      projectId: "d590e873-0a0e-4d25-a78f-32478af4a91f",
     },
   },
 };
