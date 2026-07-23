@@ -1,0 +1,34 @@
+import assert from "node:assert/strict";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { spawnSync } from "node:child_process";
+import test from "node:test";
+
+const root = new URL("..", import.meta.url).pathname;
+
+function run(script, args = []) {
+  return spawnSync(process.execPath, [script, ...args], { cwd: root, encoding: "utf8" });
+}
+
+test("importer CLI writes deterministic validated content", () => {
+  const dir = mkdtempSync(join(tmpdir(), "dayquest-bank-"));
+  const output = join(dir, "bank.json");
+  const args = ["scripts/import-nyc-content-bank.js", "--out", output];
+  const first = run(...[args[0], args.slice(1)]);
+  assert.equal(first.status, 0, first.stderr);
+  const bytes = readFileSync(output, "utf8");
+  const second = run(...[args[0], args.slice(1)]);
+  assert.equal(second.status, 0, second.stderr);
+  assert.equal(readFileSync(output, "utf8"), bytes);
+  assert.match(first.stdout, /206 places; 0 hunt ideas; 0 clue packages/);
+});
+
+test("validator CLI exits nonzero for invalid content", () => {
+  const dir = mkdtempSync(join(tmpdir(), "dayquest-bank-invalid-"));
+  const input = join(dir, "invalid.json");
+  writeFileSync(input, JSON.stringify({ schema_version: "1.0.0", site_id: "nyc", places: [], hunt_ideas: [], clue_packages: [], difficulty: "hard" }));
+  const result = run("scripts/validate-content-bank.js", [input]);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /difficulty is not part of content-bank v1/);
+});

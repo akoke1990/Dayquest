@@ -11,7 +11,10 @@
     "ingest:pois": "node scripts/ingest-pois.js",
     "pull:nyc": "node scripts/pull-nyc.js",
     "label:pois": "node scripts/label-pois.js",
-    "compile:haunted": "node scripts/compile-haunted.js"
+    "compile:haunted": "node scripts/compile-haunted.js",
+    "content:import:nyc": "node scripts/import-nyc-content-bank.js",
+    "content:validate": "node scripts/validate-content-bank.js",
+    "test": "node --test"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.104.2",
