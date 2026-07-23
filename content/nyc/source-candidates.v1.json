@@ -1,0 +1,1674 @@
+{
+  "artifact_version": "1.0.0",
+  "site_id": "nyc",
+  "provenance": {
+    "report": "NYC DayQuest — first tranche of 40 hunt ideas",
+    "research_date": "2026-07-22",
+    "field_verified": false,
+    "publication_claimed": false
+  },
+  "candidates": [
+    {
+      "research_id": "DQ-NYC-001",
+      "title": "The Cube on One Toe",
+      "matched_catalog_name": "Alamo (sculpture)",
+      "place_id": "place:wikipedia:768472",
+      "canonical_place": "*Alamo* / Astor Place Cube",
+      "neighborhood_category": "East Village · public art / playful oddity",
+      "observable_target": "The eight-foot black cube balanced on one corner, with visibly uneven faces.",
+      "satisfying_reason": "The riddle’s impossible-sounding geometry resolves into a large, unmistakable object.",
+      "access_safety_mobility": "Public outdoor plaza; view without touching or entering the roadway. Crowds and skaters may require patience; step-free approach.",
+      "durability_risk": "**Low**; permanent sculpture, though temporary maintenance barriers are possible.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "768472",
+        "url": "https://en.wikipedia.org/?curid=768472",
+        "excerpt": "“It is a black cube, 8 feet (2.4 m) long on each side, mounted on a corner.” Also: “The faces of the cube are not flat but have various indentations, protrusions, and ledges.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The eight-foot black cube balanced on one corner, with visibly uneven faces.",
+          "observable_target": "artwork",
+          "viewpoint": "Public outdoor plaza; view without touching or entering the roadway. Crowds and skaters may require patience; step-free approach.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent sculpture, though temporary maintenance barriers are possible."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The eight-foot black cube balanced on one corner, with visibly uneven faces. The riddle’s impossible-sounding geometry resolves into a large, unmistakable object."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I weigh nearly a ton, yet balance on one toe. My six dark faces refuse to lie flat. Find me.",
+        "hints": [
+          "Look for geometry where the Village meets Astor Place.",
+          "You need the large black cube mounted on a corner."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-002",
+      "title": "A Clock That Refuses to Read Normally",
+      "matched_catalog_name": "Metronome (public artwork)",
+      "place_id": "place:wikipedia:4683905",
+      "canonical_place": "*Metronome*",
+      "neighborhood_category": "Union Square · public art / urban timekeeping",
+      "observable_target": "The orange LED clock paired with the concentric brick-wave wall and circular void.",
+      "satisfying_reason": "Players first see an apparently indecipherable number, then recognize an artwork about time.",
+      "access_safety_mobility": "View from public sidewalk/plaza; heavy pedestrian and bicycle traffic. No need to cross outside signals.",
+      "durability_risk": "**Medium**; clock/display programming can change. Do not base the answer on steam, which the source describes only in the past tense.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "4683905",
+        "url": "https://en.wikipedia.org/?curid=4683905",
+        "excerpt": "the work includes “a round circular void … and a clock made of large orange LED digits”; its brick wall forms “a wave pattern like ripples on still water.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The orange LED clock paired with the concentric brick-wave wall and circular void.",
+          "observable_target": "artwork",
+          "viewpoint": "View from public sidewalk/plaza; heavy pedestrian and bicycle traffic. No need to cross outside signals.",
+          "stability": "volatile",
+          "seasonality": "**Medium**; clock/display programming can change. Do not base the answer on steam, which the source describes only in the past tense."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The orange LED clock paired with the concentric brick-wave wall and circular void. Players first see an apparently indecipherable number, then recognize an artwork about time."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My orange numbers race in two directions while a stone ripple waits beside them. What time am I trying to tell?",
+        "hints": [
+          "Search the south side of Union Square, above eye level.",
+          "Find the orange LED digits beside a circular void in a rippling brick wall."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-003",
+      "title": "Manhattan Before Manhattan",
+      "matched_catalog_name": "Time Landscape",
+      "place_id": "place:wikipedia:24851322",
+      "canonical_place": "*Time Landscape*",
+      "neighborhood_category": "SoHo · nature / landscape art",
+      "observable_target": "The small rectangular plot of native vegetation representing stages of forest growth.",
+      "satisfying_reason": "An apparently untended patch becomes a living time machine amid hard-edged city blocks.",
+      "access_safety_mobility": "Observe from the surrounding public sidewalk; do not enter or disturb vegetation. Sidewalk viewing is generally step-free.",
+      "durability_risk": "**Medium-high**; seasonal appearance, pruning, plant loss, and restoration can obscure the three-stage idea.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "24851322",
+        "url": "https://en.wikipedia.org/?curid=24851322",
+        "excerpt": "it “consists of plants that were native to the New York City area in pre-colonial times”; NYC Parks describes “three stages of forest growth from grasses to saplings to grown trees.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The small rectangular plot of native vegetation representing stages of forest growth.",
+          "observable_target": "landscape",
+          "viewpoint": "Observe from the surrounding public sidewalk; do not enter or disturb vegetation. Sidewalk viewing is generally step-free.",
+          "stability": "seasonal",
+          "seasonality": "**Medium-high**; seasonal appearance, pruning, plant loss, and restoration can obscure the three-stage idea."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The small rectangular plot of native vegetation representing stages of forest growth. An apparently untended patch becomes a living time machine amid hard-edged city blocks."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "No cabin, no road, no skyline: I rehearse this island before the city arrived, one forest age at a time.",
+        "hints": [
+          "Look for an artwork that grows rather than hangs.",
+          "Find the native-plant plot at University Village."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-004",
+      "title": "Six Stories, No Rooms",
+      "matched_catalog_name": "Woman with Bicycle",
+      "place_id": "place:wikipedia:18935597",
+      "canonical_place": "*Woman with Bicycle*",
+      "neighborhood_category": "SoHo · mural / public art",
+      "observable_target": "Knox Martin’s six-story wall painting.",
+      "satisfying_reason": "“Six stories” misdirects toward a building interior before resolving into the scale of a painted wall.",
+      "access_safety_mobility": "Exterior sidewalk view; choose a safe angle without stepping into traffic or blocking entrances.",
+      "durability_risk": "**Medium**; murals can be obscured, repainted, scaffolded, or partly hidden by construction.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "18935597",
+        "url": "https://en.wikipedia.org/?curid=18935597",
+        "excerpt": "“Woman with Bicycle is a six-story wall painting created by … Knox Martin in 1979.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Knox Martin’s six-story wall painting.",
+          "observable_target": "artwork",
+          "viewpoint": "Exterior sidewalk view; choose a safe angle without stepping into traffic or blocking entrances.",
+          "stability": "volatile",
+          "seasonality": "**Medium**; murals can be obscured, repainted, scaffolded, or partly hidden by construction."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Knox Martin’s six-story wall painting. “Six stories” misdirects toward a building interior before resolving into the scale of a painted wall."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I rise six stories but contain no rooms. A woman and her wheels travel without moving.",
+        "hints": [
+          "Your answer is painted, not built.",
+          "Look for Knox Martin’s towering wall work."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-005",
+      "title": "The Elder at the Park’s Corner",
+      "matched_catalog_name": "Hangman's Elm",
+      "place_id": "place:wikipedia:5028262",
+      "canonical_place": "Hangman’s Elm",
+      "neighborhood_category": "Greenwich Village · nature / notable tree",
+      "observable_target": "The mature English elm in the northwest portion of Washington Square Park.",
+      "satisfying_reason": "Players must distinguish one living landmark from an entire canopy.",
+      "access_safety_mobility": "Public park during posted hours; remain on paths and outside any tree-protection fencing. Generally step-free.",
+      "durability_risk": "**Medium**; living trees can be pruned, fenced, storm-damaged, or eventually lost.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "5028262",
+        "url": "https://en.wikipedia.org/?curid=5028262",
+        "excerpt": "“Hangman’s Elm … is an English elm located at the northwest corner in Washington Square Park”; NYC Parks revised its age to “more than 300 years old.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The mature English elm in the northwest portion of Washington Square Park.",
+          "observable_target": "landscape",
+          "viewpoint": "Public park during posted hours; remain on paths and outside any tree-protection fencing. Generally step-free.",
+          "stability": "seasonal",
+          "seasonality": "**Medium**; living trees can be pruned, fenced, storm-damaged, or eventually lost."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The mature English elm in the northwest portion of Washington Square Park. Players must distinguish one living landmark from an entire canopy."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Stone arches arrived after me, and generations passed beneath my limbs. Find Manhattan’s elder Englishman.",
+        "hints": [
+          "The answer is alive and rooted in Washington Square.",
+          "Seek the English elm in the park’s northwest corner."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-006",
+      "title": "Marble at the End of the Avenue",
+      "matched_catalog_name": "Washington Square Arch",
+      "place_id": "place:wikipedia:1364440",
+      "canonical_place": "Washington Square Arch",
+      "neighborhood_category": "Greenwich Village · architecture / monument",
+      "observable_target": "The white marble triumphal arch terminating Fifth Avenue.",
+      "satisfying_reason": "Direction, material, and Roman form converge on one strong silhouette.",
+      "access_safety_mobility": "Public park paths; do not climb the monument. Step-free views available, with crowd congestion likely.",
+      "durability_risk": "**Low**; permanent landmark, with occasional restoration/scaffolding.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "1364440",
+        "url": "https://en.wikipedia.org/?curid=1364440",
+        "excerpt": "“The Washington Square Arch … is a marble memorial arch”; it “forms the southern terminus of Fifth Avenue.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The white marble triumphal arch terminating Fifth Avenue.",
+          "observable_target": "facade",
+          "viewpoint": "Public park paths; do not climb the monument. Step-free views available, with crowd congestion likely.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent landmark, with occasional restoration/scaffolding."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The white marble triumphal arch terminating Fifth Avenue. Direction, material, and Roman form converge on one strong silhouette."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "An avenue ends where Rome appears in white stone, built for a president who never walked beneath it.",
+        "hints": [
+          "Follow Fifth Avenue south to its ceremonial full stop.",
+          "Find Stanford White’s marble arch in Washington Square."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-007",
+      "title": "Judgment by Shakespeare",
+      "matched_catalog_name": "Jefferson Market Library",
+      "place_id": "place:wikipedia:2021948",
+      "canonical_place": "Jefferson Market Library",
+      "neighborhood_category": "Greenwich Village · architectural detail",
+      "observable_target": "The courthouse-like clock tower and tympanum depicting a scene from *The Merchant of Venice*.",
+      "satisfying_reason": "A church-shaped building offers a secular “judgment” scene hidden in its ornament.",
+      "access_safety_mobility": "Exterior target is sidewalk-visible. Use the library only during posted hours; entrance accessibility should be field-checked.",
+      "durability_risk": "**Low**; carved architectural detail, though foliage or scaffolding may affect visibility.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "2021948",
+        "url": "https://en.wikipedia.org/?curid=2021948",
+        "excerpt": "the architect added “church-like touches with non-religious content,” including “the tympanum which shows a scene from The Merchant of Venice.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The courthouse-like clock tower and tympanum depicting a scene from *The Merchant of Venice*.",
+          "observable_target": "facade",
+          "viewpoint": "Exterior target is sidewalk-visible. Use the library only during posted hours; entrance accessibility should be field-checked.",
+          "stability": "stable",
+          "seasonality": "**Low**; carved architectural detail, though foliage or scaffolding may affect visibility."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The courthouse-like clock tower and tympanum depicting a scene from *The Merchant of Venice*. A church-shaped building offers a secular “judgment” scene hidden in its ornament."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I wear a church’s tower, but over my door Shakespeare—not scripture—sits in judgment.",
+        "hints": [
+          "Look at the former courthouse now filled with books.",
+          "Inspect the tympanum for a scene from *The Merchant of Venice*."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-008",
+      "title": "A Street Behind a Gate",
+      "matched_catalog_name": "Patchin Place",
+      "place_id": "place:wikipedia:11927283",
+      "canonical_place": "Patchin Place",
+      "neighborhood_category": "Greenwich Village · hidden street / architecture",
+      "observable_target": "The gated cul-de-sac and its ten three-story brick row houses.",
+      "satisfying_reason": "A whole street hides behind what can look like a private doorway.",
+      "access_safety_mobility": "**View only from the public sidewalk. Do not enter the gated lane or disturb residents.** Visibility and curb cuts require field checking.",
+      "durability_risk": "**Low-medium**; buildings endure, but gate closure, foliage, or resident privacy measures can block sightlines.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "11927283",
+        "url": "https://en.wikipedia.org/?curid=11927283",
+        "excerpt": "“Patchin Place is a gated cul-de-sac”; it contains “ten 3-story brick row houses.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The gated cul-de-sac and its ten three-story brick row houses.",
+          "observable_target": "streetscape",
+          "viewpoint": "**View only from the public sidewalk. Do not enter the gated lane or disturb residents.** Visibility and curb cuts require field checking.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; buildings endure, but gate closure, foliage, or resident privacy measures can block sightlines."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The gated cul-de-sac and its ten three-story brick row houses. A whole street hides behind what can look like a private doorway."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Ten brick siblings share a street that goes nowhere. Their smallest traffic jam is a locked gate.",
+        "hints": [
+          "Look for a cul-de-sac tucked off a Village cross street.",
+          "Find the gate through which ten three-story brick row houses are visible."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-009",
+      "title": "Where the Horses Left",
+      "matched_catalog_name": "Washington Mews",
+      "place_id": "place:wikipedia:6133057",
+      "canonical_place": "Washington Mews",
+      "neighborhood_category": "Greenwich Village · adaptive reuse / hidden street",
+      "observable_target": "Former stable buildings along the private gated mews.",
+      "satisfying_reason": "Players identify the equestrian origin of a lane now embedded in NYU’s urban campus.",
+      "access_safety_mobility": "Observe only from public space unless signage explicitly permits entry; never tailgate through a private gate. Sidewalk view may be partially obstructed.",
+      "durability_risk": "**Low-medium**; lane and buildings are durable, but public visibility/access rules can change.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "6133057",
+        "url": "https://en.wikipedia.org/?curid=6133057",
+        "excerpt": "“Washington Mews is a private gated street”; it “was first developed as a mews (row of stables).”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Former stable buildings along the private gated mews.",
+          "observable_target": "streetscape",
+          "viewpoint": "Observe only from public space unless signage explicitly permits entry; never tailgate through a private gate. Sidewalk view may be partially obstructed.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; lane and buildings are durable, but public visibility/access rules can change."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Former stable buildings along the private gated mews. Players identify the equestrian origin of a lane now embedded in NYU’s urban campus."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "The horses moved out, the scholars moved in, and the little street kept its stable name.",
+        "hints": [
+          "A mews was built to serve horses.",
+          "Look through the gate just north of Washington Square."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-010",
+      "title": "The Court Called a Cage",
+      "matched_catalog_name": "West Fourth Street Courts",
+      "place_id": "place:wikipedia:1607875",
+      "canonical_place": "West Fourth Street Courts",
+      "neighborhood_category": "Greenwich Village · recreation / neighborhood life",
+      "observable_target": "The unusually compact basketball court enclosed by fencing.",
+      "satisfying_reason": "The nickname is readable in the court’s physical proportions rather than on a plaque.",
+      "access_safety_mobility": "Public recreation site; do not interrupt games or photograph identifiable players without consent. View from outside fence; nearby sidewalks are step-free.",
+      "durability_risk": "**Low**; court identity is durable, though resurfacing and events can limit access.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "1607875",
+        "url": "https://en.wikipedia.org/?curid=1607875",
+        "excerpt": "the courts are “also known as ‘The Cage’” and are “noted for [their] non-regulation size.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The unusually compact basketball court enclosed by fencing.",
+          "observable_target": "spatial_relationship",
+          "viewpoint": "Public recreation site; do not interrupt games or photograph identifiable players without consent. View from outside fence; nearby sidewalks are step-free.",
+          "stability": "stable",
+          "seasonality": "**Low**; court identity is durable, though resurfacing and events can limit access."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The unusually compact basketball court enclosed by fencing. The nickname is readable in the court’s physical proportions rather than on a plaque."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My hoops are famous, my boundaries are cramped, and my nickname belongs to something built to keep you in.",
+        "hints": [
+          "Listen for bouncing beneath a web of Village fencing.",
+          "Find the non-regulation streetball courts known as The Cage."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-011",
+      "title": "The Brass Ancestor of Cappuccino",
+      "matched_catalog_name": "Caffe Reggio",
+      "place_id": "place:wikipedia:27621733",
+      "canonical_place": "Caffe Reggio",
+      "neighborhood_category": "Greenwich Village · food culture / mechanical artifact",
+      "observable_target": "The 1902 espresso machine against the café’s back wall.",
+      "satisfying_reason": "An ornate machine becomes a café treasure hunt with a precise date and location.",
+      "access_safety_mobility": "Private business during posted hours; patronize respectfully, ask before photography, and never obstruct staff. Interior route and restroom accessibility require field verification.",
+      "durability_risk": "**Medium-low**; artifact is longstanding but interior placement, hours, or photo policy may change.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "27621733",
+        "url": "https://en.wikipedia.org/?curid=27621733",
+        "excerpt": "“Inside the cafe, against the back wall, is the original espresso machine, made in 1902.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The 1902 espresso machine against the café’s back wall.",
+          "observable_target": "object",
+          "viewpoint": "Private business during posted hours; patronize respectfully, ask before photography, and never obstruct staff. Interior route and restroom accessibility require field verification.",
+          "stability": "stable",
+          "seasonality": "**Medium-low**; artifact is longstanding but interior placement, hours, or photo policy may change."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The 1902 espresso machine against the café’s back wall. An ornate machine becomes a café treasure hunt with a precise date and location."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Long before countertop pods, this brass elder helped teach America to drink a cloud of milk over coffee.",
+        "hints": [
+          "Your answer is inside a longstanding MacDougal Street café.",
+          "Look against the back wall for the espresso machine made in 1902."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-012",
+      "title": "The Pink Palazzo",
+      "matched_catalog_name": "Palazzo Chupi",
+      "place_id": "place:wikipedia:28352081",
+      "canonical_place": "Palazzo Chupi",
+      "neighborhood_category": "West Village · architecture / colorful oddity",
+      "observable_target": "The bold pink Venetian-palazzo-style building above a former stable.",
+      "satisfying_reason": "The building is deliberately theatrical and radically unlike its neighbors.",
+      "access_safety_mobility": "Exterior-only sidewalk observation; respect residential privacy and do not photograph into windows.",
+      "durability_risk": "**Low**; distinctive permanent architecture, though repainting/scaffolding is possible.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "28352081",
+        "url": "https://en.wikipedia.org/?curid=28352081",
+        "excerpt": "the building is designed “in the style of a Venetian palazzo” and “is easy to spot because of its singular style and bold pink color.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The bold pink Venetian-palazzo-style building above a former stable.",
+          "observable_target": "facade",
+          "viewpoint": "Exterior-only sidewalk observation; respect residential privacy and do not photograph into windows.",
+          "stability": "stable",
+          "seasonality": "**Low**; distinctive permanent architecture, though repainting/scaffolding is possible."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The bold pink Venetian-palazzo-style building above a former stable. The building is deliberately theatrical and radically unlike its neighbors."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Venice sailed to the Village, landed on a horse stable, and blushed bright pink.",
+        "hints": [
+          "Look for a palazzo where no canal runs.",
+          "Find Julian Schnabel’s bold pink building."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-013",
+      "title": "Half an Address, Half a House",
+      "matched_catalog_name": "75½ Bedford Street",
+      "place_id": "place:wikipedia:32319261",
+      "canonical_place": "75½ Bedford Street",
+      "neighborhood_category": "West Village · architecture / scale oddity",
+      "observable_target": "The exceptionally narrow townhouse and its half-number address.",
+      "satisfying_reason": "The fractional address becomes a fair clue to the building’s squeezed dimensions.",
+      "access_safety_mobility": "Public sidewalk only; private residence, so avoid windows, doorways, and lingering crowds.",
+      "durability_risk": "**Low**; landmark-district building, although facade work can obscure it.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "32319261",
+        "url": "https://en.wikipedia.org/?curid=32319261",
+        "excerpt": "the house “is only 9 feet 6 inches (2.9 meters) wide” and is “often described as the narrowest house in New York.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The exceptionally narrow townhouse and its half-number address.",
+          "observable_target": "shape",
+          "viewpoint": "Public sidewalk only; private residence, so avoid windows, doorways, and lingering crowds.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark-district building, although facade work can obscure it."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The exceptionally narrow townhouse and its half-number address. The fractional address becomes a fair clue to the building’s squeezed dimensions."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My address needed half a number because my house received barely a whole share of the street.",
+        "hints": [
+          "Search Bedford Street for a fraction.",
+          "Find the townhouse documented as only 9 feet 6 inches wide."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-014",
+      "title": "Houses Stacked in the Sky",
+      "matched_catalog_name": "56 Leonard Street",
+      "place_id": "place:wikipedia:17564567",
+      "canonical_place": "56 Leonard Street",
+      "neighborhood_category": "Tribeca · architecture / skyline form",
+      "observable_target": "The tower’s irregular, cantilevered stack of floors—the “Jenga” silhouette.",
+      "satisfying_reason": "A tabletop game metaphor becomes obvious only when players look up.",
+      "access_safety_mobility": "View from a sufficiently wide public sidewalk; watch cyclists and avoid leaning into the street.",
+      "durability_risk": "**Low**; permanent skyline form, with temporary construction obstructions possible.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "17564567",
+        "url": "https://en.wikipedia.org/?curid=17564567",
+        "excerpt": "the “Jenga Building” was described by Herzog & de Meuron as “houses stacked in the sky.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The tower’s irregular, cantilevered stack of floors—the “Jenga” silhouette.",
+          "observable_target": "shape",
+          "viewpoint": "View from a sufficiently wide public sidewalk; watch cyclists and avoid leaning into the street.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent skyline form, with temporary construction obstructions possible."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The tower’s irregular, cantilevered stack of floors—the “Jenga” silhouette. A tabletop game metaphor becomes obvious only when players look up."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "A giant began a game of blocks, then walked away before the tower could fall.",
+        "hints": [
+          "Look above Tribeca for deliberately uneven stacking.",
+          "Find the skyscraper nicknamed the Jenga Building."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-015",
+      "title": "The Skyscraper That Cannot Look Out",
+      "matched_catalog_name": "33 Thomas Street",
+      "place_id": "place:wikipedia:11495361",
+      "canonical_place": "33 Thomas Street",
+      "neighborhood_category": "Tribeca · infrastructure / Brutalism",
+      "observable_target": "The tall, largely windowless telecommunications building.",
+      "satisfying_reason": "A familiar skyscraper expectation—thousands of windows—is completely inverted.",
+      "access_safety_mobility": "Exterior observation from public sidewalk only. It is critical infrastructure: no entry, tailgating, equipment photography, or security interference.",
+      "durability_risk": "**Low**; major infrastructure building.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "11495361",
+        "url": "https://en.wikipedia.org/?curid=11495361",
+        "excerpt": "“33 Thomas Street … is a 550-foot-tall … windowless skyscraper” and a telephone exchange/wire center."
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The tall, largely windowless telecommunications building.",
+          "observable_target": "facade",
+          "viewpoint": "Exterior observation from public sidewalk only. It is critical infrastructure: no entry, tailgating, equipment photography, or security interference.",
+          "stability": "stable",
+          "seasonality": "**Low**; major infrastructure building."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The tall, largely windowless telecommunications building. A familiar skyscraper expectation—thousands of windows—is completely inverted."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I stand taller than many buildings that watch the city, yet I have almost no eyes.",
+        "hints": [
+          "Search for telecommunications architecture, not apartments.",
+          "Find Tribeca’s 550-foot windowless skyscraper."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-016",
+      "title": "A Gothic Giant in Terracotta",
+      "matched_catalog_name": "Woolworth Building",
+      "place_id": "place:wikipedia:269156",
+      "canonical_place": "Woolworth Building",
+      "neighborhood_category": "Tribeca · architecture / materials",
+      "observable_target": "The Neo-Gothic tower whose exterior is largely architectural terracotta over a limestone base.",
+      "satisfying_reason": "What reads as carved stone at skyline scale is revealed as a different material.",
+      "access_safety_mobility": "Exterior clue; use park/sidewalk viewpoints rather than stopping in crosswalks. Lobby access is not required.",
+      "durability_risk": "**Low**; landmark facade, subject to periodic restoration netting.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "269156",
+        "url": "https://en.wikipedia.org/?curid=269156",
+        "excerpt": "“Its facade is mostly clad with architectural terracotta, though the lower portions are limestone.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The Neo-Gothic tower whose exterior is largely architectural terracotta over a limestone base.",
+          "observable_target": "material",
+          "viewpoint": "Exterior clue; use park/sidewalk viewpoints rather than stopping in crosswalks. Lobby access is not required.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark facade, subject to periodic restoration netting."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The Neo-Gothic tower whose exterior is largely architectural terracotta over a limestone base. What reads as carved stone at skyline scale is revealed as a different material."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I dressed a modern steel giant like a Gothic cathedral, mostly in fired earth instead of carved stone.",
+        "hints": [
+          "Look toward the early skyscraper once tallest in the world.",
+          "Inspect the Woolworth Building’s terracotta facade above its limestone base."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-017",
+      "title": "Fame Above City Hall",
+      "matched_catalog_name": "Manhattan Municipal Building",
+      "place_id": "place:wikipedia:4282471",
+      "canonical_place": "David N. Dinkins Municipal Building",
+      "neighborhood_category": "Tribeca/Civic Center · architecture / rooftop figure",
+      "observable_target": "The gilded *Civic Fame* statue at the building’s summit.",
+      "satisfying_reason": "Players must find a small golden figure at enormous scale rather than another street-level monument.",
+      "access_safety_mobility": "Observe from public plaza or sidewalk; do not stand in bridge or vehicle approaches. Step-free viewpoints exist but must be field-selected.",
+      "durability_risk": "**Low**; permanent statue, though distance, glare, fog, and scaffolding affect playability.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "4282471",
+        "url": "https://en.wikipedia.org/?curid=4282471",
+        "excerpt": "“The base incorporates a subway station, while the top includes the gilded Civic Fame statue.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The gilded *Civic Fame* statue at the building’s summit.",
+          "observable_target": "object",
+          "viewpoint": "Observe from public plaza or sidewalk; do not stand in bridge or vehicle approaches. Step-free viewpoints exist but must be field-selected.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent statue, though distance, glare, fog, and scaffolding affect playability."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The gilded *Civic Fame* statue at the building’s summit. Players must find a small golden figure at enormous scale rather than another street-level monument."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Fame stands on the city’s shoulders, dressed in gold and too high to hear applause.",
+        "hints": [
+          "Look above a building whose base contains a subway station.",
+          "Find the gilded figure named *Civic Fame*."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-018",
+      "title": "A Piece of Ireland on a Manhattan Roof",
+      "matched_catalog_name": "Irish Hunger Memorial",
+      "place_id": "place:wikipedia:1453080",
+      "canonical_place": "Irish Hunger Memorial",
+      "neighborhood_category": "Tribeca/Battery Park City · landscape / memorial",
+      "observable_target": "Irish stones, native vegetation, and the reconstructed cottage integrated into the sloping memorial.",
+      "satisfying_reason": "The reveal is a transported landscape rather than a conventional statue or plaque.",
+      "access_safety_mobility": "Public site subject to posted hours/closures. Sloped and uneven surfaces may challenge some users; provide a ground-level alternative viewpoint after field audit.",
+      "durability_risk": "**Medium**; vegetation is seasonal and weather/maintenance can close the upper path.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "1453080",
+        "url": "https://en.wikipedia.org/?curid=1453080",
+        "excerpt": "it is landscaped with “stones, soil, and native vegetation transported from the western coast of Ireland—with stones from every Irish county”; the site incorporates “an authentic Irish cottage.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Irish stones, native vegetation, and the reconstructed cottage integrated into the sloping memorial.",
+          "observable_target": "landscape",
+          "viewpoint": "Public site subject to posted hours/closures. Sloped and uneven surfaces may challenge some users; provide a ground-level alternative viewpoint after field audit.",
+          "stability": "seasonal",
+          "seasonality": "**Medium**; vegetation is seasonal and weather/maintenance can close the upper path."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Irish stones, native vegetation, and the reconstructed cottage integrated into the sloping memorial. The reveal is a transported landscape rather than a conventional statue or plaque."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Every county sent a stone, the western coast sent its green, and an abandoned cottage crossed an ocean.",
+        "hints": [
+          "Look for a memorial designed as terrain.",
+          "Find the Irish cottage among soil, stones, and native vegetation."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-019",
+      "title": "A Loire Château for Fire Engines",
+      "matched_catalog_name": "Firehouse, Engine Company 31",
+      "place_id": "place:wikipedia:22521183",
+      "canonical_place": "Engine Company 31 Firehouse",
+      "neighborhood_category": "Chinatown/Civic Center · architecture / adaptive reuse",
+      "observable_target": "The former firehouse styled after an early-sixteenth-century Loire Valley château.",
+      "satisfying_reason": "The building type and its aristocratic visual costume are charmingly mismatched.",
+      "access_safety_mobility": "Exterior sidewalk view; do not block doors or enter the current community facility without permission.",
+      "durability_risk": "**Low**; landmark architecture.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "22521183",
+        "url": "https://en.wikipedia.org/?curid=22521183",
+        "excerpt": "architects Napoleon LeBrun & Sons “styled it after early-16th-century chateaux in the Loire Valley of France.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The former firehouse styled after an early-sixteenth-century Loire Valley château.",
+          "observable_target": "facade",
+          "viewpoint": "Exterior sidewalk view; do not block doors or enter the current community facility without permission.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark architecture."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The former firehouse styled after an early-sixteenth-century Loire Valley château. The building type and its aristocratic visual costume are charmingly mismatched."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My doors once welcomed engines, but my architects dressed me for a French noble beside the Loire.",
+        "hints": [
+          "This château was built for firefighters, not royalty.",
+          "Find former Engine Company 31."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-020",
+      "title": "The Street That Changes Its Mind",
+      "matched_catalog_name": "Doyers Street",
+      "place_id": "place:wikipedia:9809645",
+      "canonical_place": "Doyers Street",
+      "neighborhood_category": "Chinatown · street geometry / neighborhood life",
+      "observable_target": "The one-block street’s sharp central bend.",
+      "satisfying_reason": "The answer is a street’s physical shape, not a building or sign.",
+      "access_safety_mobility": "Remain on sidewalk/pedestrianized areas and respect businesses. Pavement, curb cuts, deliveries, and crowding require field audit.",
+      "durability_risk": "**Low** for geometry; **medium** for paving/paint treatments.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "9809645",
+        "url": "https://en.wikipedia.org/?curid=9809645",
+        "excerpt": "“It is one block long with a sharp bend in the middle.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The one-block street’s sharp central bend.",
+          "observable_target": "shape",
+          "viewpoint": "Remain on sidewalk/pedestrianized areas and respect businesses. Pavement, curb cuts, deliveries, and crowding require field audit.",
+          "stability": "stable",
+          "seasonality": "**Low** for geometry; **medium** for paving/paint treatments."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The one-block street’s sharp central bend. The answer is a street’s physical shape, not a building or sign."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I am only one block long, yet halfway through I abruptly change my mind.",
+        "hints": [
+          "Follow a Chinatown lane too short for a gentle curve.",
+          "Find the sharp bend in Doyers Street."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-021",
+      "title": "A Rose Between Two Towers",
+      "matched_catalog_name": "Eldridge Street Synagogue",
+      "place_id": "place:wikipedia:2976321",
+      "canonical_place": "Eldridge Street Synagogue / Museum at Eldridge Street",
+      "neighborhood_category": "Chinatown · architectural detail / sacred architecture",
+      "observable_target": "The facade’s rose window framed by two stair towers and arched openings.",
+      "satisfying_reason": "“Rose” is a fair visual metaphor whose architectural meaning becomes clear at arrival.",
+      "access_safety_mobility": "Facade is public-sidewalk view. Interior museum admission/hours must not be required; avoid photographing worshippers.",
+      "durability_risk": "**Low**; restored facade, with possible event or restoration obstructions.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "2976321",
+        "url": "https://en.wikipedia.org/?curid=2976321",
+        "excerpt": "“The Eldridge Street facade includes a rose window, two stair towers, and arched openings.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The facade’s rose window framed by two stair towers and arched openings.",
+          "observable_target": "facade",
+          "viewpoint": "Facade is public-sidewalk view. Interior museum admission/hours must not be required; avoid photographing worshippers.",
+          "stability": "stable",
+          "seasonality": "**Low**; restored facade, with possible event or restoration obstructions."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The facade’s rose window framed by two stair towers and arched openings. “Rose” is a fair visual metaphor whose architectural meaning becomes clear at arrival."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "A glass rose blooms between twin stair towers, watered only by city light.",
+        "hints": [
+          "The flower is circular architecture, not a plant.",
+          "Find the rose window on the Eldridge Street facade."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-022",
+      "title": "The Bank’s Returned Crown",
+      "matched_catalog_name": "Jarmulowsky Bank Building",
+      "place_id": "place:wikipedia:22408670",
+      "canonical_place": "Jarmulowsky Bank Building / Nine Orchard",
+      "neighborhood_category": "Chinatown · rooftop architecture / restoration",
+      "observable_target": "The reconstructed rooftop tempietto and dome.",
+      "satisfying_reason": "The target is a classical “little temple” that disappeared and later returned.",
+      "access_safety_mobility": "Exterior view only. Select a safe sidewalk sightline; no private hotel access is needed.",
+      "durability_risk": "**Low** structurally; visibility depends on angle, weather, and nearby construction.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "22408670",
+        "url": "https://en.wikipedia.org/?curid=22408670",
+        "excerpt": "“In 2014, the New York City Landmarks Preservation Commission approved a replica tempietto, which was completed by the beginning of 2020.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The reconstructed rooftop tempietto and dome.",
+          "observable_target": "object",
+          "viewpoint": "Exterior view only. Select a safe sidewalk sightline; no private hotel access is needed.",
+          "stability": "stable",
+          "seasonality": "**Low** structurally; visibility depends on angle, weather, and nearby construction."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The reconstructed rooftop tempietto and dome. The target is a classical “little temple” that disappeared and later returned."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "A tiny temple lost its perch for thirty years, then climbed back onto a banker’s roof.",
+        "hints": [
+          "Look above a former Lower East Side bank.",
+          "Find the replica tempietto completed around 2020."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-023",
+      "title": "The Odd Roof Out",
+      "matched_catalog_name": "Odd Fellows Hall (New York City)",
+      "place_id": "place:wikipedia:28435530",
+      "canonical_place": "Odd Fellows Hall",
+      "neighborhood_category": "Chinatown/Little Italy · architecture / roofline",
+      "observable_target": "The later mansard roof sitting above the earlier Italianate building.",
+      "satisfying_reason": "Players identify an architectural “hat” added decades after the body beneath it.",
+      "access_safety_mobility": "Public sidewalk view; crossing may improve sightline but must use signals.",
+      "durability_risk": "**Low**; durable roof form, occasionally obscured by scaffolding.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "28435530",
+        "url": "https://en.wikipedia.org/?curid=28435530",
+        "excerpt": "“The mansard roof was an addition … built in 1881–1882”; the original building was Italianate."
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The later mansard roof sitting above the earlier Italianate building.",
+          "observable_target": "shape",
+          "viewpoint": "Public sidewalk view; crossing may improve sightline but must use signals.",
+          "stability": "stable",
+          "seasonality": "**Low**; durable roof form, occasionally obscured by scaffolding."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The later mansard roof sitting above the earlier Italianate building. Players identify an architectural “hat” added decades after the body beneath it."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I was born Italianate, then decades later received a steep French hat.",
+        "hints": [
+          "The answer’s hat is younger than the building.",
+          "Find the mansard roof added to Odd Fellows Hall."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-024",
+      "title": "The Memorial at Eight Roads",
+      "matched_catalog_name": "Chatham Square",
+      "place_id": "place:wikipedia:3134198",
+      "canonical_place": "Kimlau War Memorial at Chatham Square",
+      "neighborhood_category": "Chinatown · monument / urban intersection",
+      "observable_target": "The Kimlau memorial arch amid Chatham Square’s unusually complex street convergence.",
+      "satisfying_reason": "The calm stone arch contrasts with a knot of moving streets.",
+      "access_safety_mobility": "Busy, multi-leg intersection. Use only marked crossings and an accessible plaza approach; construction is a significant possibility.",
+      "durability_risk": "**Medium-high**; a major Kimlau Square redesign has been announced, so layout and access must be checked immediately before publication.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "3134198",
+        "url": "https://en.wikipedia.org/?curid=3134198",
+        "excerpt": "Chatham Square lies at “the confluence of eight streets”; “The Kimlau War Memorial was erected … to honor United States service members of Chinese ancestry.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The Kimlau memorial arch amid Chatham Square’s unusually complex street convergence.",
+          "observable_target": "spatial_relationship",
+          "viewpoint": "Busy, multi-leg intersection. Use only marked crossings and an accessible plaza approach; construction is a significant possibility.",
+          "stability": "stable",
+          "seasonality": "**Medium-high**; a major Kimlau Square redesign has been announced, so layout and access must be checked immediately before publication."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The Kimlau memorial arch amid Chatham Square’s unusually complex street convergence. The calm stone arch contrasts with a knot of moving streets."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Eight roads argue around me while I quietly remember Chinese American service members.",
+        "hints": [
+          "Find the Chinatown square where many streets converge.",
+          "Your target is the Kimlau memorial arch."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-025",
+      "title": "A Wall That Opens Like a Deck of Cards",
+      "matched_catalog_name": "Storefront for Art and Architecture",
+      "place_id": "place:wikipedia:3638870",
+      "canonical_place": "Storefront for Art and Architecture",
+      "neighborhood_category": "SoHo · interactive architecture / gallery",
+      "observable_target": "The facade’s differently oriented rotating panels.",
+      "satisfying_reason": "A building edge appears neither fully wall nor fully door.",
+      "access_safety_mobility": "Observe from sidewalk. Do not rotate panels unless staff explicitly invite it; respect gallery hours and doorway clearance.",
+      "durability_risk": "**Medium**; panels are permanent but configuration, closure, and maintenance vary.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "3638870",
+        "url": "https://en.wikipedia.org/?curid=3638870",
+        "excerpt": "the redesign placed “rotating panels of various orientation along the length of the gallery’s facade.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The facade’s differently oriented rotating panels.",
+          "observable_target": "movement",
+          "viewpoint": "Observe from sidewalk. Do not rotate panels unless staff explicitly invite it; respect gallery hours and doorway clearance.",
+          "stability": "stable",
+          "seasonality": "**Medium**; panels are permanent but configuration, closure, and maintenance vary."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The facade’s differently oriented rotating panels. A building edge appears neither fully wall nor fully door."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My wall is a hand of mismatched cards; turn the pieces and the street enters the gallery.",
+        "hints": [
+          "Look for architecture designed to blur inside and outside.",
+          "Find the row of rotating facade panels at Storefront."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-026",
+      "title": "Iron on Two Faces",
+      "matched_catalog_name": "E. V. Haughwout Building",
+      "place_id": "place:wikipedia:12341870",
+      "canonical_place": "E. V. Haughwout Building",
+      "neighborhood_category": "SoHo · cast-iron architecture / corner condition",
+      "observable_target": "Cast-iron facades wrapping two street fronts.",
+      "satisfying_reason": "The corner reveals that an industrial material is masquerading as a classical masonry facade.",
+      "access_safety_mobility": "Sidewalk-only; use signalized crossings for a two-face view.",
+      "durability_risk": "**Low**; landmark facade, with periodic retail signage and scaffolding.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "12341870",
+        "url": "https://en.wikipedia.org/?curid=12341870",
+        "excerpt": "the building has “cast-iron facades for two street-fronts provided by Daniel D. Badger’s Architectural Iron Works.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Cast-iron facades wrapping two street fronts.",
+          "observable_target": "material",
+          "viewpoint": "Sidewalk-only; use signalized crossings for a two-face view.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark facade, with periodic retail signage and scaffolding."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Cast-iron facades wrapping two street fronts. The corner reveals that an industrial material is masquerading as a classical masonry facade."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My stone-looking columns came from an ironworks, and I wear the disguise on two faces.",
+        "hints": [
+          "Stand where Broadway meets Broome and study the corner.",
+          "Find the Haughwout Building’s twin cast-iron facades."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-027",
+      "title": "The Police Palace",
+      "matched_catalog_name": "240 Centre Street",
+      "place_id": "place:wikipedia:19502719",
+      "canonical_place": "240 Centre Street / former Police Headquarters",
+      "neighborhood_category": "Chinatown/Little Italy · architecture / civic reuse",
+      "observable_target": "The central portico topped by a clocked cupola and gilded dome.",
+      "satisfying_reason": "A former police headquarters looks more like an ornate palace.",
+      "access_safety_mobility": "Exterior only; it is now residential. Do not enter, photograph residents, or block the porte-cochère.",
+      "durability_risk": "**Low**; designated landmark.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "19502719",
+        "url": "https://en.wikipedia.org/?curid=19502719",
+        "excerpt": "“The primary elevation … [has] a central portico topped by a dome”; above it is a cupola “with clocks and a gilded dome.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The central portico topped by a clocked cupola and gilded dome.",
+          "observable_target": "facade",
+          "viewpoint": "Exterior only; it is now residential. Do not enter, photograph residents, or block the porte-cochère.",
+          "stability": "stable",
+          "seasonality": "**Low**; designated landmark."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The central portico topped by a clocked cupola and gilded dome. A former police headquarters looks more like an ornate palace."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "A police headquarters put on a gilded dome, a clock, and enough columns to impersonate a palace.",
+        "hints": [
+          "Look for law-enforcement history in Baroque dress.",
+          "Find the central portico and gilded dome at 240 Centre."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-028",
+      "title": "Seven Thousand Pounds Mid-Charge",
+      "matched_catalog_name": "Charging Bull",
+      "place_id": "place:wikipedia:446394",
+      "canonical_place": "*Charging Bull*",
+      "neighborhood_category": "Financial District · public art / implied motion",
+      "observable_target": "The large bronze bull posed in a charge.",
+      "satisfying_reason": "Static bronze communicates unmistakable movement and force.",
+      "access_safety_mobility": "Extremely crowded traffic median. Use marked crossings, never step into vehicle lanes, and provide an alternate completion radius/view.",
+      "durability_risk": "**Low**, but crowding can make a clean visual challenge frustrating.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "446394",
+        "url": "https://en.wikipedia.org/?curid=446394",
+        "excerpt": "the “7,100-pound … bronze sculpture” stands 11 feet tall, measures 16 feet long, and depicts a bull."
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The large bronze bull posed in a charge.",
+          "observable_target": "artwork",
+          "viewpoint": "Extremely crowded traffic median. Use marked crossings, never step into vehicle lanes, and provide an alternate completion radius/view.",
+          "stability": "stable",
+          "seasonality": "**Low**, but crowding can make a clean visual challenge frustrating."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The large bronze bull posed in a charge. Static bronze communicates unmistakable movement and force."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I weigh 7,100 pounds but have been caught forever in the instant before I rush.",
+        "hints": [
+          "Financial optimism has horns.",
+          "Find the bronze bull just north of Bowling Green."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-029",
+      "title": "The Scars They Chose to Keep",
+      "matched_catalog_name": "23 Wall Street",
+      "place_id": "place:wikipedia:9046237",
+      "canonical_place": "23 Wall Street / J.P. Morgan Building",
+      "neighborhood_category": "Financial District · material detail / preserved traces",
+      "observable_target": "Surviving exterior damage in the pink Tennessee marble associated with the 1920 Wall Street bombing.",
+      "satisfying_reason": "The answer is not a commemorative plaque but physical scars deliberately left in place.",
+      "access_safety_mobility": "Busy sidewalk/security area; no touching, loitering at entrances, or obstruction. Exact publicly visible marks must be field-confirmed.",
+      "durability_risk": "**Low-medium**; marks are longstanding, but barricades, grime, restoration, or events can affect visibility.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "9046237",
+        "url": "https://en.wikipedia.org/?curid=9046237",
+        "excerpt": "after damage in the 1920 Wall Street bombing, “J.P. Morgan & Co. refused to make repairs”; the facade is “ashlar masonry and pink Tennessee marble.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Surviving exterior damage in the pink Tennessee marble associated with the 1920 Wall Street bombing.",
+          "observable_target": "material",
+          "viewpoint": "Busy sidewalk/security area; no touching, loitering at entrances, or obstruction. Exact publicly visible marks must be field-confirmed.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; marks are longstanding, but barricades, grime, restoration, or events can affect visibility."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Surviving exterior damage in the pink Tennessee marble associated with the 1920 Wall Street bombing. The answer is not a commemorative plaque but physical scars deliberately left in place."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My pink marble remembers an explosion because its owners refused to let the wounds disappear.",
+        "hints": [
+          "Study the low stone facade rather than the towers.",
+          "Look for unrepaired impact marks on 23 Wall Street."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-030",
+      "title": "The Building in Three Colors",
+      "matched_catalog_name": "Corbin Building",
+      "place_id": "place:wikipedia:22511365",
+      "canonical_place": "Corbin Building",
+      "neighborhood_category": "Financial District · architecture / color and material",
+      "observable_target": "Its polychrome brick, brownstone, and terracotta exterior with rounded arches.",
+      "satisfying_reason": "A narrow historic building offers rich, close-range visual detail amid larger neighbors.",
+      "access_safety_mobility": "Public sidewalk/transit-entry view; maintain clear pedestrian flow.",
+      "durability_risk": "**Low**; restored landmark integrated with transit infrastructure.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "22511365",
+        "url": "https://en.wikipedia.org/?curid=22511365",
+        "excerpt": "“The Corbin Building has a polychrome exterior of brick, brownstone and terracotta featuring rounded arches.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Its polychrome brick, brownstone, and terracotta exterior with rounded arches.",
+          "observable_target": "material",
+          "viewpoint": "Public sidewalk/transit-entry view; maintain clear pedestrian flow.",
+          "stability": "stable",
+          "seasonality": "**Low**; restored landmark integrated with transit infrastructure."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Its polychrome brick, brownstone, and terracotta exterior with rounded arches. A narrow historic building offers rich, close-range visual detail amid larger neighbors."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Brick, brownstone, and fired clay take turns around my rounded arches. Find the narrow building wearing all three.",
+        "hints": [
+          "Look beside a major Broadway transit entrance.",
+          "Find the Corbin Building’s polychrome arched facade."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-031",
+      "title": "Columns Said to Come from Pompeii",
+      "matched_catalog_name": "Delmonico's",
+      "place_id": "place:wikipedia:4305609",
+      "canonical_place": "Delmonico’s",
+      "neighborhood_category": "Financial District · food culture / storefront architecture",
+      "observable_target": "The pair of entrance columns long claimed to have come from Pompeii.",
+      "satisfying_reason": "A restaurant entrance prompts a miniature provenance mystery.",
+      "access_safety_mobility": "Exterior clue; no purchase required. Do not block the entrance or valet/service activity.",
+      "durability_risk": "**Medium**; columns/building are durable, but restaurant branding, operation, and construction can change.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "4305609",
+        "url": "https://en.wikipedia.org/?curid=4305609",
+        "excerpt": "when the building opened, “New Yorkers were told that the columns by the entrance had been imported from the ruins of Pompeii.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The pair of entrance columns long claimed to have come from Pompeii.",
+          "observable_target": "object",
+          "viewpoint": "Exterior clue; no purchase required. Do not block the entrance or valet/service activity.",
+          "stability": "stable",
+          "seasonality": "**Medium**; columns/building are durable, but restaurant branding, operation, and construction can change."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The pair of entrance columns long claimed to have come from Pompeii. A restaurant entrance prompts a miniature provenance mystery."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "New Yorkers were told my doorway carried two survivors from a buried Roman city. Find the restaurant between them.",
+        "hints": [
+          "The buried city was Pompeii.",
+          "Inspect the entrance columns at Delmonico’s."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-032",
+      "title": "The Doctors Above the Door",
+      "matched_catalog_name": "Ottendorfer Public Library and Stuyvesant Polyclinic Hospital",
+      "place_id": "place:wikipedia:22526150",
+      "canonical_place": "Ottendorfer Library and former Stuyvesant Polyclinic",
+      "neighborhood_category": "East Village · facade ornament / hidden faces",
+      "observable_target": "Terracotta busts of medical figures on the former hospital facade.",
+      "satisfying_reason": "Faces emerge from ornament only after players deliberately scan upward.",
+      "access_safety_mobility": "Exterior sidewalk view; do not require entry. Tree cover and narrow sidewalks may complicate the angle.",
+      "durability_risk": "**Low**; landmark ornament, with seasonal foliage/scaffolding risk.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "22526150",
+        "url": "https://en.wikipedia.org/?curid=22526150",
+        "excerpt": "“The hospital building features terracotta busts of several notable medical professionals.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Terracotta busts of medical figures on the former hospital facade.",
+          "observable_target": "object",
+          "viewpoint": "Exterior sidewalk view; do not require entry. Tree cover and narrow sidewalks may complicate the angle.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark ornament, with seasonal foliage/scaffolding risk."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Terracotta busts of medical figures on the former hospital facade. Faces emerge from ornament only after players deliberately scan upward."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "The doctors left the hospital, but several still keep watch from the fired-clay facade.",
+        "hints": [
+          "Look beside the historic Ottendorfer library.",
+          "Find the terracotta busts on the former polyclinic."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-033",
+      "title": "A Picasso You Can Walk Around",
+      "matched_catalog_name": "University Village (Manhattan)",
+      "place_id": "place:wikipedia:23461591",
+      "canonical_place": "*Bust of Sylvette* at University Village",
+      "neighborhood_category": "SoHo/Greenwich Village · public art / modernist plaza",
+      "observable_target": "The large concrete *Bust of Sylvette* in the central plaza among three towers.",
+      "satisfying_reason": "A Picasso-linked portrait becomes an inhabitable-scale object rather than a framed image.",
+      "access_safety_mobility": "Verify that the chosen plaza approach is publicly permitted and step-free; respect residential boundaries and posted rules.",
+      "durability_risk": "**Low-medium**; permanent art, but plaza access or construction can change.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "23461591",
+        "url": "https://en.wikipedia.org/?curid=23461591",
+        "excerpt": "three residential towers “surround a central plaza featuring the Bust of Sylvette sculpture by Carl Nesjar and Pablo Picasso.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The large concrete *Bust of Sylvette* in the central plaza among three towers.",
+          "observable_target": "artwork",
+          "viewpoint": "Verify that the chosen plaza approach is publicly permitted and step-free; respect residential boundaries and posted rules.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; permanent art, but plaza access or construction can change."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The large concrete *Bust of Sylvette* in the central plaza among three towers. A Picasso-linked portrait becomes an inhabitable-scale object rather than a framed image."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "A portrait escaped its canvas, grew taller than you, and settled among three modern towers.",
+        "hints": [
+          "Search the central plaza of University Village.",
+          "Find the concrete *Bust of Sylvette*, credited to Carl Nesjar and Pablo Picasso."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-034",
+      "title": "The Bank’s Beehive",
+      "matched_catalog_name": "New York Savings Bank Building",
+      "place_id": "place:wikipedia:28234236",
+      "canonical_place": "New York Savings Bank Building",
+      "neighborhood_category": "West Village/Chelsea edge · architectural symbol",
+      "observable_target": "The carved beehive atop the projecting two-faced clock sign.",
+      "satisfying_reason": "A tiny symbol of thrift hides above a highly trafficked corner.",
+      "access_safety_mobility": "View from public sidewalk using signalized crossings. High pedestrian traffic; do not stop in the subway entrance.",
+      "durability_risk": "**Low-medium**; architectural sign is durable but retail signs, trees, or scaffolding may obscure it.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "28234236",
+        "url": "https://en.wikipedia.org/?curid=28234236",
+        "excerpt": "a triangular sign bears “a pair of clock faces”; “Atop the sign is a carved beehive, the symbol of the New York Savings Bank.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The carved beehive atop the projecting two-faced clock sign.",
+          "observable_target": "object",
+          "viewpoint": "View from public sidewalk using signalized crossings. High pedestrian traffic; do not stop in the subway entrance.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; architectural sign is durable but retail signs, trees, or scaffolding may obscure it."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The carved beehive atop the projecting two-faced clock sign. A tiny symbol of thrift hides above a highly trafficked corner."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "A hive with no bees crowns a clock with two faces—the old banker’s lesson in patient saving.",
+        "hints": [
+          "Look for a former marble bank near the Village’s northern edge.",
+          "Inspect the triangular clock sign for a carved beehive."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-035",
+      "title": "Stone Lace for the Telephone Company",
+      "matched_catalog_name": "Barclay–Vesey Building",
+      "place_id": "place:wikipedia:13189498",
+      "canonical_place": "Barclay–Vesey Building / 100 Barclay",
+      "neighborhood_category": "Tribeca · Art Deco ornament / infrastructure heritage",
+      "observable_target": "Elaborate exterior ornament around the massive buttress-like piers and setbacks.",
+      "satisfying_reason": "A telecommunications building combines fortress-like mass with intricate decoration.",
+      "access_safety_mobility": "Exterior sidewalk viewing; avoid loading/garage areas and World Trade Center traffic flows.",
+      "durability_risk": "**Low**; landmark exterior. Exact ornament detail must be selected for reliable street visibility.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "13189498",
+        "url": "https://en.wikipedia.org/?curid=13189498",
+        "excerpt": "its design uses “vertical piers designed as buttresses; setbacks at upper floors; and a program of elaborate ornamentation.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Elaborate exterior ornament around the massive buttress-like piers and setbacks.",
+          "observable_target": "material",
+          "viewpoint": "Exterior sidewalk viewing; avoid loading/garage areas and World Trade Center traffic flows.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark exterior. Exact ornament detail must be selected for reliable street visibility."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Elaborate exterior ornament around the massive buttress-like piers and setbacks. A telecommunications building combines fortress-like mass with intricate decoration."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "I was built for voices carried by wire: heavy as a fortress, yet trimmed like stone lace.",
+        "hints": [
+          "Look for an early Art Deco telephone building.",
+          "Study 100 Barclay’s buttress-like piers, setbacks, and exterior ornament."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-036",
+      "title": "The Fortress with Handmade Iron",
+      "matched_catalog_name": "Federal Reserve Bank of New York Building",
+      "place_id": "place:wikipedia:12129089",
+      "canonical_place": "Federal Reserve Bank of New York Building",
+      "neighborhood_category": "Financial District · architecture / decorative metalwork",
+      "observable_target": "Samuel Yellin’s decorative ironwork against the fortress-like bank exterior.",
+      "satisfying_reason": "The delicacy of handcrafted metal contrasts with a building associated with vaults and security.",
+      "access_safety_mobility": "Critical financial infrastructure: exterior public-sidewalk observation only; do not test doors, photograph security systems, or linger at protected entrances.",
+      "durability_risk": "**Low**, though barricades and security perimeters may limit useful viewing.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "12129089",
+        "url": "https://en.wikipedia.org/?curid=12129089",
+        "excerpt": "the building was designed “with decorative ironwork by Samuel Yellin of Philadelphia.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "Samuel Yellin’s decorative ironwork against the fortress-like bank exterior.",
+          "observable_target": "material",
+          "viewpoint": "Critical financial infrastructure: exterior public-sidewalk observation only; do not test doors, photograph security systems, or linger at protected entrances.",
+          "stability": "stable",
+          "seasonality": "**Low**, though barricades and security perimeters may limit useful viewing."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "Samuel Yellin’s decorative ironwork against the fortress-like bank exterior. The delicacy of handcrafted metal contrasts with a building associated with vaults and security."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My gold sleeps far below, but the treasure you can see was drawn in iron by hand.",
+        "hints": [
+          "Look at the exterior of New York’s Federal Reserve.",
+          "Find the decorative ironwork credited to Samuel Yellin."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-037",
+      "title": "The Building with One Blank Side Too Many",
+      "matched_catalog_name": "Cary Building (New York City)",
+      "place_id": "place:wikipedia:14534547",
+      "canonical_place": "Cary Building",
+      "neighborhood_category": "Tribeca · architecture / urban change",
+      "observable_target": "The contrast between ornate cast-iron fronts and the long exposed blank brick wall created by street widening.",
+      "satisfying_reason": "The clue is about a city-planning “scar” visible in a building’s mismatched sides.",
+      "access_safety_mobility": "Public sidewalk; choose a legal crossing and wide-angle viewpoint.",
+      "durability_risk": "**Low**; urban form is durable, though adjacent construction may cover the wall.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "14534547",
+        "url": "https://en.wikipedia.org/?curid=14534547",
+        "excerpt": "the Cary Building has a cast-iron facade; widening Church Street exposed “a 200-foot-long wall of unadorned brick.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The contrast between ornate cast-iron fronts and the long exposed blank brick wall created by street widening.",
+          "observable_target": "spatial_relationship",
+          "viewpoint": "Public sidewalk; choose a legal crossing and wide-angle viewpoint.",
+          "stability": "stable",
+          "seasonality": "**Low**; urban form is durable, though adjacent construction may cover the wall."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The contrast between ornate cast-iron fronts and the long exposed blank brick wall created by street widening. The clue is about a city-planning “scar” visible in a building’s mismatched sides."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Two faces dressed in cast iron; one enormous brick side was never meant to be seen.",
+        "hints": [
+          "A widened street exposed the surprise.",
+          "Compare the Cary Building’s ornate facades with its long unadorned east wall."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-038",
+      "title": "Four Columns Up a Restored Stair",
+      "matched_catalog_name": "Tweed Courthouse",
+      "place_id": "place:wikipedia:7547059",
+      "canonical_place": "Tweed Courthouse",
+      "neighborhood_category": "Tribeca/Civic Center · architecture / civic detail",
+      "observable_target": "The Chambers Street portico with four Corinthian columns above the restored granite stair.",
+      "satisfying_reason": "The apparently original grand entrance is partly a careful reconstruction responding to a changed street.",
+      "access_safety_mobility": "Exterior public-space view. Steps are not necessary for completion; provide an accessible ground-level sightline.",
+      "durability_risk": "**Low**; civic landmark, with possible security/event closures.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "7547059",
+        "url": "https://en.wikipedia.org/?curid=7547059",
+        "excerpt": "“The main entrance … is composed of a portico with four Corinthian columns”; its granite stair was “restored in 2002.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The Chambers Street portico with four Corinthian columns above the restored granite stair.",
+          "observable_target": "facade",
+          "viewpoint": "Exterior public-space view. Steps are not necessary for completion; provide an accessible ground-level sightline.",
+          "stability": "stable",
+          "seasonality": "**Low**; civic landmark, with possible security/event closures."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The Chambers Street portico with four Corinthian columns above the restored granite stair. The apparently original grand entrance is partly a careful reconstruction responding to a changed street."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Four Corinthian guards stand above stairs removed for traffic, then returned when the street made room again.",
+        "hints": [
+          "Look beside City Hall for the courthouse associated with Boss Tweed.",
+          "Find the four-column portico approached by the restored granite stair."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-039",
+      "title": "Pastries Under Colored Glass",
+      "matched_catalog_name": "Veniero's",
+      "place_id": "place:wikipedia:14818028",
+      "canonical_place": "Veniero’s Pasticceria & Caffè",
+      "neighborhood_category": "East Village · food culture / interior craft",
+      "observable_target": "The adjoining room’s ceiling of stained-glass panels and original pressed tin.",
+      "satisfying_reason": "A pastry stop unexpectedly rewards players for looking at the ceiling rather than the display case.",
+      "access_safety_mobility": "Private business during posted hours. Patronize respectfully, ask before photography, avoid peak periods, and field-check step-free seating-room access.",
+      "durability_risk": "**Medium-low**; longstanding interior, but room access, hours, and photo rules can change.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "14818028",
+        "url": "https://en.wikipedia.org/?curid=14818028",
+        "excerpt": "“In 1984 the family added an adjoining warm enclave, with a ceiling of stained-glass panels and the original pressed tin.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The adjoining room’s ceiling of stained-glass panels and original pressed tin.",
+          "observable_target": "object",
+          "viewpoint": "Private business during posted hours. Patronize respectfully, ask before photography, avoid peak periods, and field-check step-free seating-room access.",
+          "stability": "volatile",
+          "seasonality": "**Medium-low**; longstanding interior, but room access, hours, and photo rules can change."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The adjoining room’s ceiling of stained-glass panels and original pressed tin. A pastry stop unexpectedly rewards players for looking at the ceiling rather than the display case."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "Come for cannoli, then look away from the sweets: colored glass and pressed tin serve dessert overhead.",
+        "hints": [
+          "The clue is inside a family bakery founded in the nineteenth century.",
+          "Look up in Veniero’s adjoining room for stained-glass ceiling panels."
+        ]
+      }
+    },
+    {
+      "research_id": "DQ-NYC-040",
+      "title": "Candy Store, Dinner Menu",
+      "matched_catalog_name": "Ray's Candy Store",
+      "place_id": "place:wikipedia:25850609",
+      "canonical_place": "Ray’s Candy Store",
+      "neighborhood_category": "East Village · storefront / durable food culture",
+      "observable_target": "The old-school storefront identifying Ray’s Candy Store, whose offering spans egg creams, soft serve, beignets, fries, and coffee.",
+      "satisfying_reason": "The word “candy” is playfully contradicted by an eccentric, meal-sized menu.",
+      "access_safety_mobility": "Exterior completion should suffice; if entering, buy something and do not crowd the narrow counter. Step-free entry/interior clearance requires audit.",
+      "durability_risk": "**Medium-high**; the business is longstanding, but signage, menu, hours, and ownership continuity are more vulnerable than architecture.",
+      "source": {
+        "provider": "wikipedia",
+        "external_id": "25850609",
+        "url": "https://en.wikipedia.org/?curid=25850609",
+        "excerpt": "“The store has been in business since 1974” and serves “egg creams, soft serve ice cream … New Orleans-style beignets, Belgian fries, and coffee.”"
+      },
+      "evidence": [
+        {
+          "local_id": "observable-target",
+          "claim": "The old-school storefront identifying Ray’s Candy Store, whose offering spans egg creams, soft serve, beignets, fries, and coffee.",
+          "observable_target": "signage",
+          "viewpoint": "Exterior completion should suffice; if entering, buy something and do not crowd the narrow counter. Step-free entry/interior clearance requires audit.",
+          "stability": "volatile",
+          "seasonality": "**Medium-high**; the business is longstanding, but signage, menu, hours, and ownership continuity are more vulnerable than architecture."
+        }
+      ],
+      "idea": {
+        "lifecycle": "needs_field_verification",
+        "concept": "The old-school storefront identifying Ray’s Candy Store, whose offering spans egg creams, soft serve, beignets, fries, and coffee. The word “candy” is playfully contradicted by an eccentric, meal-sized menu."
+      },
+      "clue_package": {
+        "lifecycle": "candidate",
+        "riddle": "My sign promises candy; my counter answers with egg creams, beignets, Belgian fries, and coffee.",
+        "hints": [
+          "Look for a tiny East Village business operating since 1974.",
+          "Find Ray’s Candy Store and confirm its unlikely mix of treats."
+        ]
+      }
+    }
+  ],
+  "rejected_candidates": [
+    {
+      "candidate": "Chico Mendez Mural Garden",
+      "decision": "Reject",
+      "reason": "The committed source explicitly says the garden “was demolished on December 31, 1997”; unsuitable as a present-day observable target."
+    },
+    {
+      "candidate": "Metronome steam plume",
+      "decision": "Reject as target",
+      "reason": "Source says steam was emitted “at one point”; the orange clock and brick-wave wall remain the defensible target."
+    },
+    {
+      "candidate": "Scholastic Building “green cast-iron homage”",
+      "decision": "Defer",
+      "reason": "Available source confirmed the building and historic-district context but did not provide sufficiently exact quoted evidence for the proposed color/detail."
+    },
+    {
+      "candidate": "First Houses courtyard",
+      "decision": "Reject for launch tranche",
+      "reason": "Residential public-housing context creates privacy and ambiguous-public-access concerns; the online source did not establish a clearly public, distinctive target."
+    },
+    {
+      "candidate": "Ray’s exact awning design",
+      "decision": "Defer pending fieldwork",
+      "reason": "The business and menu are sourced, but current colors, lettering, and awning configuration were not established; entry 40 avoids inventing them."
+    },
+    {
+      "candidate": "Charging Bull polished body parts",
+      "decision": "Reject",
+      "reason": "Encourages touching an overcrowded sculpture and relies on a behavior-driven, potentially inappropriate detail."
+    },
+    {
+      "candidate": "Washington Mews interior lane details",
+      "decision": "Reject as completion requirement",
+      "reason": "It is explicitly a private gated street; only a lawful public-sidewalk view is acceptable."
+    },
+    {
+      "candidate": "Patchin Place gas lamp",
+      "decision": "Defer",
+      "reason": "Commonly described in secondary guides, but the source reviewed here did not provide strong enough evidence of current presence/visibility."
+    },
+    {
+      "candidate": "Jarmulowsky original tempietto",
+      "decision": "Reject wording",
+      "reason": "The original was destroyed; the current crown must be described accurately as a replica completed around 2020."
+    },
+    {
+      "candidate": "Doyers Street painted pavement",
+      "decision": "Defer",
+      "reason": "Street geometry is durable; paint color/design is subject to resurfacing and was not sufficiently established by the reviewed source."
+    },
+    {
+      "candidate": "Storefront facade manipulation",
+      "decision": "Reject interaction",
+      "reason": "Rotating panels are observable, but players should not be instructed to move them without staff invitation."
+    },
+    {
+      "candidate": "Caffe Reggio Medici bench",
+      "decision": "Defer",
+      "reason": "Sourced as an interior object, but provenance and current public visibility merit stronger editorial and field confirmation before use."
+    }
+  ]
+}

@@ -424,8 +424,8 @@
     },
     {
       "id": "place:wikipedia:11495361",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "33 Thomas Street",
       "location": {
         "lat": 40.71678,
@@ -442,7 +442,25 @@
       "prohibited_aliases": [
         "33 Thomas Street"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-11495361:dq-nyc-015-observable-target",
+          "claim": "The tall, largely windowless telecommunications building.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:11495361:research-dq-nyc-015"
+          ],
+          "viewpoint": "Exterior observation from public sidewalk only. It is critical infrastructure: no entry, tailgating, equipment photography, or security interference.",
+          "stability": "stable",
+          "seasonality": "**Low**; major infrastructure building.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -469,6 +487,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "33 Thomas Street (also known as the AT&T Long Lines Building) is a 550-foot-tall (170 m) windowless skyscraper in the Tribeca neighborhood of Lower Manhattan in New York City, New York, United States. It stands on the east side of Church Street, between Thomas Street and Worth Street. Designed in the Brutalist architectural style, it is a telephone exchange or wire center building which contained three major 4ESS switches for interexchange carrier services (used for long distance calling), as well as a number of other switches used for competitive local exchange carrier services. However, it…"
+        },
+        {
+          "source_id": "source:wikipedia:11495361:research-dq-nyc-015",
+          "provider": "wikipedia",
+          "external_id": "11495361",
+          "url": "https://en.wikipedia.org/?curid=11495361",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“33 Thomas Street … is a 550-foot-tall … windowless skyscraper” and a telephone exchange/wire center."
         }
       ],
       "legacy_editorial_context": {
@@ -1056,8 +1083,8 @@
     },
     {
       "id": "place:wikipedia:11927283",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Patchin Place",
       "location": {
         "lat": 40.73499,
@@ -1074,7 +1101,25 @@
       "prohibited_aliases": [
         "Patchin Place"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-11927283:dq-nyc-008-observable-target",
+          "claim": "The gated cul-de-sac and its ten three-story brick row houses.",
+          "observable_target": "streetscape",
+          "source_ids": [
+            "source:wikipedia:11927283:research-dq-nyc-008"
+          ],
+          "viewpoint": "**View only from the public sidewalk. Do not enter the gated lane or disturb residents.** Visibility and curb cuts require field checking.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; buildings endure, but gate closure, foliage, or resident privacy measures can block sightlines.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -1101,6 +1146,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Patchin Place is a gated cul-de-sac located off of 10th Street between Greenwich Avenue and the Avenue of the Americas (Sixth Avenue) in the Greenwich Village neighborhood of Manhattan, New York City. Its ten 3-story brick row houses, said to have been originally built as housing for the Basque staff of the nearby Brevoort House hotel, have been home to several famous writers, including Theodore Dreiser, E. E. Cummings, John Cowper Powys and Djuna Barnes, making it a stop on Greenwich Village walking tours. Today it is a popular location for psychotherapists' offices."
+        },
+        {
+          "source_id": "source:wikipedia:11927283:research-dq-nyc-008",
+          "provider": "wikipedia",
+          "external_id": "11927283",
+          "url": "https://en.wikipedia.org/?curid=11927283",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“Patchin Place is a gated cul-de-sac”; it contains “ten 3-story brick row houses.”"
         }
       ],
       "legacy_editorial_context": {
@@ -1409,8 +1463,8 @@
     },
     {
       "id": "place:wikipedia:12129089",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Federal Reserve Bank of New York Building",
       "location": {
         "lat": 40.708333333333336,
@@ -1427,7 +1481,25 @@
       "prohibited_aliases": [
         "Federal Reserve Bank of New York Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-12129089:dq-nyc-036-observable-target",
+          "claim": "Samuel Yellin’s decorative ironwork against the fortress-like bank exterior.",
+          "observable_target": "material",
+          "source_ids": [
+            "source:wikipedia:12129089:research-dq-nyc-036"
+          ],
+          "viewpoint": "Critical financial infrastructure: exterior public-sidewalk observation only; do not test doors, photograph security systems, or linger at protected entrances.",
+          "stability": "stable",
+          "seasonality": "**Low**, though barricades and security perimeters may limit useful viewing.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -1454,6 +1526,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Federal Reserve Bank of New York Building, also known as 33 Liberty Street, is a building in the Financial District of Lower Manhattan in New York City, which serves as the headquarters of the Federal Reserve Bank of New York. The building occupies the full block between Liberty, William, and Nassau Streets and Maiden Lane; it narrows at its east end, following the footprint of the block. The Federal Reserve Building has fourteen above-ground stories and five basement levels, designed by York and Sawyer with decorative ironwork by Samuel Yellin of Philadelphia. Its facade is separated…"
+        },
+        {
+          "source_id": "source:wikipedia:12129089:research-dq-nyc-036",
+          "provider": "wikipedia",
+          "external_id": "12129089",
+          "url": "https://en.wikipedia.org/?curid=12129089",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the building was designed “with decorative ironwork by Samuel Yellin of Philadelphia.”"
         }
       ],
       "legacy_editorial_context": {
@@ -1693,8 +1774,8 @@
     },
     {
       "id": "place:wikipedia:12341870",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "E. V. Haughwout Building",
       "location": {
         "lat": 40.721944444444446,
@@ -1711,7 +1792,25 @@
       "prohibited_aliases": [
         "E. V. Haughwout Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-12341870:dq-nyc-026-observable-target",
+          "claim": "Cast-iron facades wrapping two street fronts.",
+          "observable_target": "material",
+          "source_ids": [
+            "source:wikipedia:12341870:research-dq-nyc-026"
+          ],
+          "viewpoint": "Sidewalk-only; use signalized crossings for a two-face view.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark facade, with periodic retail signage and scaffolding.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -1738,6 +1837,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The E. V. Haughwout Building is a five-story, 79-foot-tall (24 m) commercial loft building in the SoHo neighborhood of Manhattan, New York City, at the corner of Broome Street and Broadway. Built in 1857 to a design by John P. Gaynor, with cast-iron facades for two street-fronts provided by Daniel D. Badger's Architectural Iron Works, it originally housed Eder V. Haughwout's fashionable emporium, which sold imported cut glass and silverware as well as its own handpainted china and fine chandeliers, and which attracted many wealthy clients – including Mary Todd Lincoln, who had new official…"
+        },
+        {
+          "source_id": "source:wikipedia:12341870:research-dq-nyc-026",
+          "provider": "wikipedia",
+          "external_id": "12341870",
+          "url": "https://en.wikipedia.org/?curid=12341870",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the building has “cast-iron facades for two street-fronts provided by Daniel D. Badger’s Architectural Iron Works.”"
         }
       ],
       "legacy_editorial_context": {
@@ -2402,8 +2510,8 @@
     },
     {
       "id": "place:wikipedia:13189498",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Barclay–Vesey Building",
       "location": {
         "lat": 40.71388888888889,
@@ -2419,7 +2527,25 @@
       "prohibited_aliases": [
         "Barclay–Vesey Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-13189498:dq-nyc-035-observable-target",
+          "claim": "Elaborate exterior ornament around the massive buttress-like piers and setbacks.",
+          "observable_target": "material",
+          "source_ids": [
+            "source:wikipedia:13189498:research-dq-nyc-035"
+          ],
+          "viewpoint": "Exterior sidewalk viewing; avoid loading/garage areas and World Trade Center traffic flows.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark exterior. Exact ornament detail must be selected for reliable street visibility.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -2446,6 +2572,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Barclay–Vesey Building (also known as 100 Barclay, the Verizon Building, and formerly the New York Telephone Company Building) is an office and residential building at 140 West Street in Lower Manhattan, New York City. The 32-story building was designed in the Art Deco style by Ralph Walker of Voorhees, Gmelin and Walker, and was Walker's first major commission as well as one of the first Art Deco skyscrapers. It occupies the entire block bounded by West Street to the west, Barclay Street to the north, Vesey Street to the south, and Washington Street to the east, abutting the World Trade…"
+        },
+        {
+          "source_id": "source:wikipedia:13189498:research-dq-nyc-035",
+          "provider": "wikipedia",
+          "external_id": "13189498",
+          "url": "https://en.wikipedia.org/?curid=13189498",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "its design uses “vertical piers designed as buttresses; setbacks at upper floors; and a program of elaborate ornamentation.”"
         }
       ],
       "legacy_editorial_context": {
@@ -2614,8 +2749,8 @@
     },
     {
       "id": "place:wikipedia:1364440",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Washington Square Arch",
       "location": {
         "lat": 40.7312355,
@@ -2632,7 +2767,25 @@
       "prohibited_aliases": [
         "Washington Square Arch"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-1364440:dq-nyc-006-observable-target",
+          "claim": "The white marble triumphal arch terminating Fifth Avenue.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:1364440:research-dq-nyc-006"
+          ],
+          "viewpoint": "Public park paths; do not climb the monument. Step-free views available, with crowd congestion likely.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent landmark, with occasional restoration/scaffolding.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -2659,6 +2812,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Washington Square Arch, officially the Washington Arch, is a marble memorial arch in Washington Square Park, in the Greenwich Village neighborhood of Lower Manhattan, New York City. Designed by architect Stanford White in 1891, it commemorates the centennial of George Washington's 1789 inauguration as President of the United States, and forms the southern terminus of Fifth Avenue."
+        },
+        {
+          "source_id": "source:wikipedia:1364440:research-dq-nyc-006",
+          "provider": "wikipedia",
+          "external_id": "1364440",
+          "url": "https://en.wikipedia.org/?curid=1364440",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The Washington Square Arch … is a marble memorial arch”; it “forms the southern terminus of Fifth Avenue.”"
         }
       ],
       "legacy_editorial_context": {
@@ -2966,8 +3128,8 @@
     },
     {
       "id": "place:wikipedia:1453080",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Irish Hunger Memorial",
       "location": {
         "lat": 40.715138888888895,
@@ -2984,7 +3146,25 @@
       "prohibited_aliases": [
         "Irish Hunger Memorial"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-1453080:dq-nyc-018-observable-target",
+          "claim": "Irish stones, native vegetation, and the reconstructed cottage integrated into the sloping memorial.",
+          "observable_target": "landscape",
+          "source_ids": [
+            "source:wikipedia:1453080:research-dq-nyc-018"
+          ],
+          "viewpoint": "Public site subject to posted hours/closures. Sloped and uneven surfaces may challenge some users; provide a ground-level alternative viewpoint after field audit.",
+          "stability": "seasonal",
+          "seasonality": "**Medium**; vegetation is seasonal and weather/maintenance can close the upper path.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -3011,6 +3191,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Irish Hunger Memorial (Irish: Cuimhneachán Ghorta Mhóir na hÉireann) is a 0.5-acre (0.20 ha) park at the corner of Vesey Street and North End Avenue in the Battery Park City neighborhood of Manhattan in New York City. The memorial is dedicated to raising awareness of the Great Irish Hunger, referred to as An Gorta Mór in Irish, in which over one million starved to death between 1845 and 1852. In the decade after 1845, over 900,000 Irish emigrants entered the port of New York so that by 1855 Irish-born New Yorkers composed almost one third of the city's population. Construction of the…"
+        },
+        {
+          "source_id": "source:wikipedia:1453080:research-dq-nyc-018",
+          "provider": "wikipedia",
+          "external_id": "1453080",
+          "url": "https://en.wikipedia.org/?curid=1453080",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "it is landscaped with “stones, soil, and native vegetation transported from the western coast of Ireland—with stones from every Irish county”; the site incorporates “an authentic Irish cottage.”"
         }
       ],
       "legacy_editorial_context": {
@@ -3037,8 +3226,8 @@
     },
     {
       "id": "place:wikipedia:14534547",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Cary Building (New York City)",
       "location": {
         "lat": 40.71527777777778,
@@ -3054,7 +3243,25 @@
       "prohibited_aliases": [
         "Cary Building (New York City)"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-14534547:dq-nyc-037-observable-target",
+          "claim": "The contrast between ornate cast-iron fronts and the long exposed blank brick wall created by street widening.",
+          "observable_target": "spatial_relationship",
+          "source_ids": [
+            "source:wikipedia:14534547:research-dq-nyc-037"
+          ],
+          "viewpoint": "Public sidewalk; choose a legal crossing and wide-angle viewpoint.",
+          "stability": "stable",
+          "seasonality": "**Low**; urban form is durable, though adjacent construction may cover the wall.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -3081,6 +3288,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Cary Building at 105-107 Chambers Street, extending along Church Street to Reade Street, in the Tribeca neighborhood of Manhattan, New York City, was built in 1856–1857 and was designed by Gamaliel King and John Kellum (\"King & Kellum\") in the Italian Renaissance revival style, with the cast-iron facade provided by Daniel D. Badger's Architectural Iron Work. The five-story twin-facaded building was constructed for William H. Cary's Cary, Howard & Sanger, a dry goods firm. Although built as a commercial structure, the Cary Building is now residential. As a result of the widening of Church…"
+        },
+        {
+          "source_id": "source:wikipedia:14534547:research-dq-nyc-037",
+          "provider": "wikipedia",
+          "external_id": "14534547",
+          "url": "https://en.wikipedia.org/?curid=14534547",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the Cary Building has a cast-iron facade; widening Church Street exposed “a 200-foot-long wall of unadorned brick.”"
         }
       ],
       "legacy_editorial_context": {
@@ -3317,8 +3533,8 @@
     },
     {
       "id": "place:wikipedia:14818028",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Veniero's",
       "location": {
         "lat": 40.72938888888889,
@@ -3336,7 +3552,25 @@
       "prohibited_aliases": [
         "Veniero's"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-14818028:dq-nyc-039-observable-target",
+          "claim": "The adjoining room’s ceiling of stained-glass panels and original pressed tin.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:14818028:research-dq-nyc-039"
+          ],
+          "viewpoint": "Private business during posted hours. Patronize respectfully, ask before photography, avoid peak periods, and field-check step-free seating-room access.",
+          "stability": "volatile",
+          "seasonality": "**Medium-low**; longstanding interior, but room access, hours, and photo rules can change.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -3363,6 +3597,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Veniero's Pasticceria & Caffè is an Italian bakery that was established in 1894, and is located at 342 East 11th Street (between First Avenue and Second Avenue), in the East Village neighborhood of Manhattan, New York City. Founded by Antonio Veniero of Sorrento, the bakery was opened as a pool emporium and caffè where Veniero served his baked products to customers. Later, the demand for his pastries and cakes won him awards in Rome, Bologna and the New York World's Fair. The bakery has been continuously owned and operated by the Veniero family since its founding. In 1984 the family added an…"
+        },
+        {
+          "source_id": "source:wikipedia:14818028:research-dq-nyc-039",
+          "provider": "wikipedia",
+          "external_id": "14818028",
+          "url": "https://en.wikipedia.org/?curid=14818028",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“In 1984 the family added an adjoining warm enclave, with a ceiling of stained-glass panels and the original pressed tin.”"
         }
       ],
       "legacy_editorial_context": {
@@ -3877,8 +4120,8 @@
     },
     {
       "id": "place:wikipedia:1607875",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "West Fourth Street Courts",
       "location": {
         "lat": 40.731388888888894,
@@ -3894,7 +4137,25 @@
       "prohibited_aliases": [
         "West Fourth Street Courts"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-1607875:dq-nyc-010-observable-target",
+          "claim": "The unusually compact basketball court enclosed by fencing.",
+          "observable_target": "spatial_relationship",
+          "source_ids": [
+            "source:wikipedia:1607875:research-dq-nyc-010"
+          ],
+          "viewpoint": "Public recreation site; do not interrupt games or photograph identifiable players without consent. View from outside fence; nearby sidewalks are step-free.",
+          "stability": "stable",
+          "seasonality": "**Low**; court identity is durable, though resurfacing and events can limit access.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -3921,6 +4182,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The West Fourth Street Courts, also known as \"The Cage\", are a notable public athletic venue for amateur basketball in the Greenwich Village neighborhood of Manhattan in New York City. \"The Cage\" has become one of the most important tournament sites for the citywide \"Streetball\" amateur basketball tournament, and is noted for its non-regulation size. Due to its small size, there is a greater emphasis on physical play, commonly referred to as \"banging inside.\" The sidelines are often overlooked during gameplay. Given the high number of players participating, competition for playing time is…"
+        },
+        {
+          "source_id": "source:wikipedia:1607875:research-dq-nyc-010",
+          "provider": "wikipedia",
+          "external_id": "1607875",
+          "url": "https://en.wikipedia.org/?curid=1607875",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the courts are “also known as ‘The Cage’” and are “noted for [their] non-regulation size.”"
         }
       ],
       "legacy_editorial_context": {
@@ -4156,8 +4426,8 @@
     },
     {
       "id": "place:wikipedia:17564567",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "56 Leonard Street",
       "location": {
         "lat": 40.71767,
@@ -4173,7 +4443,25 @@
       "prohibited_aliases": [
         "56 Leonard Street"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-17564567:dq-nyc-014-observable-target",
+          "claim": "The tower’s irregular, cantilevered stack of floors—the “Jenga” silhouette.",
+          "observable_target": "shape",
+          "source_ids": [
+            "source:wikipedia:17564567:research-dq-nyc-014"
+          ],
+          "viewpoint": "View from a sufficiently wide public sidewalk; watch cyclists and avoid leaning into the street.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent skyline form, with temporary construction obstructions possible.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -4200,6 +4488,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "56 Leonard Street (known colloquially as the Jenga Building or Jenga Tower) is an 821 ft-tall (250 m), 57-story skyscraper on Leonard Street in the neighborhood of Tribeca in Manhattan, New York City. Completed in 2017, the building was designed by the Swiss architecture firm Herzog & de Meuron, which describes the building as \"houses stacked in the sky.\" It is the tallest structure in Tribeca."
+        },
+        {
+          "source_id": "source:wikipedia:17564567:research-dq-nyc-014",
+          "provider": "wikipedia",
+          "external_id": "17564567",
+          "url": "https://en.wikipedia.org/?curid=17564567",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the “Jenga Building” was described by Herzog & de Meuron as “houses stacked in the sky.”"
         }
       ],
       "legacy_editorial_context": {
@@ -4932,8 +5229,8 @@
     },
     {
       "id": "place:wikipedia:18935597",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Woman with Bicycle",
       "location": {
         "lat": 40.72786111111111,
@@ -4948,7 +5245,25 @@
       "prohibited_aliases": [
         "Woman with Bicycle"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-18935597:dq-nyc-004-observable-target",
+          "claim": "Knox Martin’s six-story wall painting.",
+          "observable_target": "artwork",
+          "source_ids": [
+            "source:wikipedia:18935597:research-dq-nyc-004"
+          ],
+          "viewpoint": "Exterior sidewalk view; choose a safe angle without stepping into traffic or blocking entrances.",
+          "stability": "volatile",
+          "seasonality": "**Medium**; murals can be obscured, repainted, scaffolded, or partly hidden by construction.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -4975,6 +5290,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Woman with Bicycle is a six-story wall painting created by the American painter, sculptor and muralist Knox Martin in 1979 under the sponsorship of the Public Art Fund. The mural is dedicated to the memory of his friend and mentor Elias Goldberg."
+        },
+        {
+          "source_id": "source:wikipedia:18935597:research-dq-nyc-004",
+          "provider": "wikipedia",
+          "external_id": "18935597",
+          "url": "https://en.wikipedia.org/?curid=18935597",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“Woman with Bicycle is a six-story wall painting created by … Knox Martin in 1979.”"
         }
       ],
       "legacy_editorial_context": {
@@ -5283,8 +5607,8 @@
     },
     {
       "id": "place:wikipedia:19502719",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "240 Centre Street",
       "location": {
         "lat": 40.72,
@@ -5301,7 +5625,25 @@
       "prohibited_aliases": [
         "240 Centre Street"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-19502719:dq-nyc-027-observable-target",
+          "claim": "The central portico topped by a clocked cupola and gilded dome.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:19502719:research-dq-nyc-027"
+          ],
+          "viewpoint": "Exterior only; it is now residential. Do not enter, photograph residents, or block the porte-cochère.",
+          "stability": "stable",
+          "seasonality": "**Low**; designated landmark.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -5328,6 +5670,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "240 Centre Street, formerly the New York City Police Headquarters, is a building in the Little Italy neighborhood of Manhattan in New York City, United States. Designed by the firm Hoppin & Koen, it was the headquarters of the New York City Police Department (NYPD) from 1909 to 1973. Afterward, it was converted into a luxury residential building in 1988 by the firm Ehrenkranz Group & Eckstut, becoming the Police Building Apartments. 240 Centre Street occupies an entire city block between Centre Street to the west, Broome Street to the north, Centre Market Place to the east, and Grand Street…"
+        },
+        {
+          "source_id": "source:wikipedia:19502719:research-dq-nyc-027",
+          "provider": "wikipedia",
+          "external_id": "19502719",
+          "url": "https://en.wikipedia.org/?curid=19502719",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The primary elevation … [has] a central portico topped by a dome”; above it is a cupola “with clocks and a gilded dome.”"
         }
       ],
       "legacy_editorial_context": {
@@ -5636,8 +5987,8 @@
     },
     {
       "id": "place:wikipedia:2021948",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Jefferson Market Library",
       "location": {
         "lat": 40.734722222222224,
@@ -5654,7 +6005,25 @@
       "prohibited_aliases": [
         "Jefferson Market Library"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-2021948:dq-nyc-007-observable-target",
+          "claim": "The courthouse-like clock tower and tympanum depicting a scene from *The Merchant of Venice*.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:2021948:research-dq-nyc-007"
+          ],
+          "viewpoint": "Exterior target is sidewalk-visible. Use the library only during posted hours; entrance accessibility should be field-checked.",
+          "stability": "stable",
+          "seasonality": "**Low**; carved architectural detail, though foliage or scaffolding may affect visibility.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -5681,6 +6050,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Jefferson Market Branch of the New York Public Library, once known as the Jefferson Market Courthouse, is a National Historic Landmark located at 425 Avenue of the Americas (Sixth Avenue), on the southwest corner of West 10th Street, in Greenwich Village, Manhattan, New York City, on a triangular plot formed by Greenwich Avenue and West 10th Street. It was originally built as the Third Judicial District Courthouse from 1874 to 1877, and was designed by architect Frederick Clarke Withers of the firm of Vaux and Withers. Though faced with demolition in 1958, public outcry led to its reuse…"
+        },
+        {
+          "source_id": "source:wikipedia:2021948:research-dq-nyc-007",
+          "provider": "wikipedia",
+          "external_id": "2021948",
+          "url": "https://en.wikipedia.org/?curid=2021948",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the architect added “church-like touches with non-religious content,” including “the tympanum which shows a scene from The Merchant of Venice.”"
         }
       ],
       "legacy_editorial_context": {
@@ -6198,8 +6576,8 @@
     },
     {
       "id": "place:wikipedia:22408670",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Jarmulowsky Bank Building",
       "location": {
         "lat": 40.71472222222223,
@@ -6216,7 +6594,25 @@
       "prohibited_aliases": [
         "Jarmulowsky Bank Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-22408670:dq-nyc-022-observable-target",
+          "claim": "The reconstructed rooftop tempietto and dome.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:22408670:research-dq-nyc-022"
+          ],
+          "viewpoint": "Exterior view only. Select a safe sidewalk sightline; no private hotel access is needed.",
+          "stability": "stable",
+          "seasonality": "**Low** structurally; visibility depends on angle, weather, and nearby construction.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -6243,6 +6639,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Jarmulowsky Bank Building (also Nine Orchard) is a 12-story building on the Lower East Side of Manhattan in New York City. Located at Canal Street and Orchard Street, the Jarmulowsky Bank Building was built in 1912 and designed by architects William Lawrence Rouse and Lafayette A. Goldstone in the Beaux-Arts style. The building is clad with limestone on its lower stories and architectural terracotta on its upper stories. Sender Jarmulowsky established the Jarmulowsky Bank in 1873. When World War I broke out two years after the building was completed, there was a run on the bank, as German…"
+        },
+        {
+          "source_id": "source:wikipedia:22408670:research-dq-nyc-022",
+          "provider": "wikipedia",
+          "external_id": "22408670",
+          "url": "https://en.wikipedia.org/?curid=22408670",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“In 2014, the New York City Landmarks Preservation Commission approved a replica tempietto, which was completed by the beginning of 2020.”"
         }
       ],
       "legacy_editorial_context": {
@@ -6339,8 +6744,8 @@
     },
     {
       "id": "place:wikipedia:22511365",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Corbin Building",
       "location": {
         "lat": 40.71,
@@ -6356,7 +6761,25 @@
       "prohibited_aliases": [
         "Corbin Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-22511365:dq-nyc-030-observable-target",
+          "claim": "Its polychrome brick, brownstone, and terracotta exterior with rounded arches.",
+          "observable_target": "material",
+          "source_ids": [
+            "source:wikipedia:22511365:research-dq-nyc-030"
+          ],
+          "viewpoint": "Public sidewalk/transit-entry view; maintain clear pedestrian flow.",
+          "stability": "stable",
+          "seasonality": "**Low**; restored landmark integrated with transit infrastructure.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -6383,6 +6806,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Corbin Building (also known as 13 John Street and 192 Broadway) is a historic office building at the northeast corner of John Street and Broadway in the Financial District of Manhattan in New York City. It was built in 1888–1889 as a speculative development and was designed by Francis H. Kimball in the Romanesque Revival style with French Gothic detailing. The building was named for Austin Corbin, a president of the Long Island Rail Road who also founded several banks. The Corbin Building has a polychrome exterior of brick, brownstone and terracotta featuring rounded arches with…"
+        },
+        {
+          "source_id": "source:wikipedia:22511365:research-dq-nyc-030",
+          "provider": "wikipedia",
+          "external_id": "22511365",
+          "url": "https://en.wikipedia.org/?curid=22511365",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The Corbin Building has a polychrome exterior of brick, brownstone and terracotta featuring rounded arches.”"
         }
       ],
       "legacy_editorial_context": {
@@ -6550,8 +6982,8 @@
     },
     {
       "id": "place:wikipedia:22521183",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Firehouse, Engine Company 31",
       "location": {
         "lat": 40.717222222222226,
@@ -6567,7 +6999,25 @@
       "prohibited_aliases": [
         "Firehouse, Engine Company 31"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-22521183:dq-nyc-019-observable-target",
+          "claim": "The former firehouse styled after an early-sixteenth-century Loire Valley château.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:22521183:research-dq-nyc-019"
+          ],
+          "viewpoint": "Exterior sidewalk view; do not block doors or enter the current community facility without permission.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark architecture.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -6594,6 +7044,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Firehouse, Engine Company 31 is a historic fire station located at 87 Lafayette Street between Walker and White Streets in the Tribeca and Civic Center neighborhoods of Manhattan in New York City. It was built in 1895 and designed by architects Napoleon LeBrun & Sons, who styled it after early-16th-century chateaux in the Loire Valley of France. The building was designated a New York City Landmark in 1966 and added to the National Register of Historic Places in 1972. The New York City Fire Department vacated the building in November 1972, and it is currently occupied by the Downtown Community…"
+        },
+        {
+          "source_id": "source:wikipedia:22521183:research-dq-nyc-019",
+          "provider": "wikipedia",
+          "external_id": "22521183",
+          "url": "https://en.wikipedia.org/?curid=22521183",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "architects Napoleon LeBrun & Sons “styled it after early-16th-century chateaux in the Loire Valley of France.”"
         }
       ],
       "legacy_editorial_context": {
@@ -6691,8 +7150,8 @@
     },
     {
       "id": "place:wikipedia:22526150",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Ottendorfer Public Library and Stuyvesant Polyclinic Hospital",
       "location": {
         "lat": 40.72972222222222,
@@ -6709,7 +7168,25 @@
       "prohibited_aliases": [
         "Ottendorfer Public Library and Stuyvesant Polyclinic Hospital"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-22526150:dq-nyc-032-observable-target",
+          "claim": "Terracotta busts of medical figures on the former hospital facade.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:22526150:research-dq-nyc-032"
+          ],
+          "viewpoint": "Exterior sidewalk view; do not require entry. Tree cover and narrow sidewalks may complicate the angle.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark ornament, with seasonal foliage/scaffolding risk.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -6736,6 +7213,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Ottendorfer Public Library and Stuyvesant Polyclinic Hospital are a pair of historic buildings at 135 and 137 Second Avenue in the East Village neighborhood of Manhattan in New York City. The buildings house the Ottendorfer Branch of the New York Public Library, as well as the women's workspace The Wing within the former Stuyvesant Polyclinic hospital until the company's cessation of operations in 2022. The buildings were jointly designed by German-born architect William Schickel in the neo-Italian Renaissance style. Both structures are three stories tall with a facade of Philadelphia…"
+        },
+        {
+          "source_id": "source:wikipedia:22526150:research-dq-nyc-032",
+          "provider": "wikipedia",
+          "external_id": "22526150",
+          "url": "https://en.wikipedia.org/?curid=22526150",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The hospital building features terracotta busts of several notable medical professionals.”"
         }
       ],
       "legacy_editorial_context": {
@@ -6976,8 +7462,8 @@
     },
     {
       "id": "place:wikipedia:23461591",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "University Village (Manhattan)",
       "location": {
         "lat": 40.7267,
@@ -6992,7 +7478,25 @@
       "prohibited_aliases": [
         "University Village (Manhattan)"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-23461591:dq-nyc-033-observable-target",
+          "claim": "The large concrete *Bust of Sylvette* in the central plaza among three towers.",
+          "observable_target": "artwork",
+          "source_ids": [
+            "source:wikipedia:23461591:research-dq-nyc-033"
+          ],
+          "viewpoint": "Verify that the chosen plaza approach is publicly permitted and step-free; respect residential boundaries and posted rules.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; permanent art, but plaza access or construction can change.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -7019,6 +7523,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "University Village is a building complex owned by New York University in the Greenwich Village neighborhood of Manhattan in New York City, New York, U.S. University Village includes three residential towers built in the 1960s: 505 LaGuardia Place, a housing cooperative, and 100 Bleecker Street and 110 Bleecker Street (collectively referred to as the Silver Towers), which house NYU faculty and graduate students. The buildings were designed by modern architects James Ingo Freed and I. M. Pei, and they surround a central plaza featuring the Bust of Sylvette sculpture by Carl Nesjar and Pablo…"
+        },
+        {
+          "source_id": "source:wikipedia:23461591:research-dq-nyc-033",
+          "provider": "wikipedia",
+          "external_id": "23461591",
+          "url": "https://en.wikipedia.org/?curid=23461591",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "three residential towers “surround a central plaza featuring the Bust of Sylvette sculpture by Carl Nesjar and Pablo Picasso.”"
         }
       ],
       "legacy_editorial_context": {
@@ -7538,8 +8051,8 @@
     },
     {
       "id": "place:wikipedia:24851322",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Time Landscape",
       "location": {
         "lat": 40.72707,
@@ -7555,7 +8068,25 @@
       "prohibited_aliases": [
         "Time Landscape"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-24851322:dq-nyc-003-observable-target",
+          "claim": "The small rectangular plot of native vegetation representing stages of forest growth.",
+          "observable_target": "landscape",
+          "source_ids": [
+            "source:wikipedia:24851322:research-dq-nyc-003"
+          ],
+          "viewpoint": "Observe from the surrounding public sidewalk; do not enter or disturb vegetation. Sidewalk viewing is generally step-free.",
+          "stability": "seasonal",
+          "seasonality": "**Medium-high**; seasonal appearance, pruning, plant loss, and restoration can obscure the three-stage idea.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -7582,6 +8113,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Time Landscape is a landscape artwork by American artist Alan Sonfist. Proposed in 1965, it consists of plants that were native to the New York City area in pre-colonial times. Those planted were replanted here until 1978, on a rectangular plot of 25' x 40' situated at University Village in lower Manhattan at the northeast corner of La Guardia Place and West Houston Street. The New York City Department of Parks and Recreation describes the artwork: \"When it was first planted, Time Landscape portrayed the three stages of forest growth from grasses to saplings to grown trees. The southern part…"
+        },
+        {
+          "source_id": "source:wikipedia:24851322:research-dq-nyc-003",
+          "provider": "wikipedia",
+          "external_id": "24851322",
+          "url": "https://en.wikipedia.org/?curid=24851322",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "it “consists of plants that were native to the New York City area in pre-colonial times”; NYC Parks describes “three stages of forest growth from grasses to saplings to grown trees.”"
         }
       ],
       "legacy_editorial_context": {
@@ -7749,8 +8289,8 @@
     },
     {
       "id": "place:wikipedia:25850609",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Ray's Candy Store",
       "location": {
         "lat": 40.72626388888889,
@@ -7767,7 +8307,25 @@
       "prohibited_aliases": [
         "Ray's Candy Store"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-25850609:dq-nyc-040-observable-target",
+          "claim": "The old-school storefront identifying Ray’s Candy Store, whose offering spans egg creams, soft serve, beignets, fries, and coffee.",
+          "observable_target": "signage",
+          "source_ids": [
+            "source:wikipedia:25850609:research-dq-nyc-040"
+          ],
+          "viewpoint": "Exterior completion should suffice; if entering, buy something and do not crowd the narrow counter. Step-free entry/interior clearance requires audit.",
+          "stability": "volatile",
+          "seasonality": "**Medium-high**; the business is longstanding, but signage, menu, hours, and ownership continuity are more vulnerable than architecture.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -7794,6 +8352,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Ray's Candy Store is a deli at 113 Avenue A in the East Village neighborhood of Manhattan in New York City. The store has been in business since 1974. Owned and operated by Ray Alvarez, it serves an eclectic mix of foods, including egg creams, soft serve ice cream, frozen yogurt, New Orleans-style beignets, Belgian fries, and coffee. The store has been featured in several American books, films, and television shows."
+        },
+        {
+          "source_id": "source:wikipedia:25850609:research-dq-nyc-040",
+          "provider": "wikipedia",
+          "external_id": "25850609",
+          "url": "https://en.wikipedia.org/?curid=25850609",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The store has been in business since 1974” and serves “egg creams, soft serve ice cream … New Orleans-style beignets, Belgian fries, and coffee.”"
         }
       ],
       "legacy_editorial_context": {
@@ -7960,8 +8527,8 @@
     },
     {
       "id": "place:wikipedia:269156",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Woolworth Building",
       "location": {
         "lat": 40.71222222222222,
@@ -7978,7 +8545,25 @@
       "prohibited_aliases": [
         "Woolworth Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-269156:dq-nyc-016-observable-target",
+          "claim": "The Neo-Gothic tower whose exterior is largely architectural terracotta over a limestone base.",
+          "observable_target": "material",
+          "source_ids": [
+            "source:wikipedia:269156:research-dq-nyc-016"
+          ],
+          "viewpoint": "Exterior clue; use park/sidewalk viewpoints rather than stopping in crosswalks. Lobby access is not required.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark facade, subject to periodic restoration netting.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -8005,6 +8590,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Woolworth Building is a 792-foot-tall (241 m) residential building and early skyscraper at 233 Broadway in the Tribeca neighborhood of Lower Manhattan in New York City, United States. Designed by Cass Gilbert in the Neo-Gothic style, the Woolworth Building was originally an office skyscraper. It was the tallest building in the world from 1913 to 1929, and it remains one of the United States' 100 tallest buildings as of 2024. The Woolworth Building is bounded by Broadway and City Hall Park to its east, Park Place to its north, and Barclay Street to its south. It consists of a 30-story base…"
+        },
+        {
+          "source_id": "source:wikipedia:269156:research-dq-nyc-016",
+          "provider": "wikipedia",
+          "external_id": "269156",
+          "url": "https://en.wikipedia.org/?curid=269156",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“Its facade is mostly clad with architectural terracotta, though the lower portions are limestone.”"
         }
       ],
       "legacy_editorial_context": {
@@ -8174,8 +8768,8 @@
     },
     {
       "id": "place:wikipedia:27621733",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Caffe Reggio",
       "location": {
         "lat": 40.730287,
@@ -8192,7 +8786,25 @@
       "prohibited_aliases": [
         "Caffe Reggio"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-27621733:dq-nyc-011-observable-target",
+          "claim": "The 1902 espresso machine against the café’s back wall.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:27621733:research-dq-nyc-011"
+          ],
+          "viewpoint": "Private business during posted hours; patronize respectfully, ask before photography, and never obstruct staff. Interior route and restroom accessibility require field verification.",
+          "stability": "stable",
+          "seasonality": "**Medium-low**; artifact is longstanding but interior placement, hours, or photo policy may change.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -8219,6 +8831,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Caffe Reggio is a New York City coffeehouse at 119 Macdougal Street in the heart of Manhattan's Greenwich Village which first opened in 1927. Italian cappuccino was introduced in America by the founder of Caffe Reggio, Domenico Parisi, in the early 1920s. Inside the cafe, against the back wall, is the original espresso machine, made in 1902, which Domenico Parisi purchased when he opened the cafe in 1927. This cafe was also one of the first American cafes to sell a cappuccino. Caffe Reggio has been featured in many movies, including The Godfather Part II, Next Stop, Greenwich Village, The…"
+        },
+        {
+          "source_id": "source:wikipedia:27621733:research-dq-nyc-011",
+          "provider": "wikipedia",
+          "external_id": "27621733",
+          "url": "https://en.wikipedia.org/?curid=27621733",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“Inside the cafe, against the back wall, is the original espresso machine, made in 1902.”"
         }
       ],
       "legacy_editorial_context": {
@@ -8317,8 +8938,8 @@
     },
     {
       "id": "place:wikipedia:28234236",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "New York Savings Bank Building",
       "location": {
         "lat": 40.74,
@@ -8334,7 +8955,25 @@
       "prohibited_aliases": [
         "New York Savings Bank Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-28234236:dq-nyc-034-observable-target",
+          "claim": "The carved beehive atop the projecting two-faced clock sign.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:28234236:research-dq-nyc-034"
+          ],
+          "viewpoint": "View from public sidewalk using signalized crossings. High pedestrian traffic; do not stop in the subway entrance.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; architectural sign is durable but retail signs, trees, or scaffolding may obscure it.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -8361,6 +9000,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The New York Savings Bank Building is a former bank building in the Chelsea neighborhood of Manhattan in New York City. Constructed for the defunct New York Savings Bank from 1896 to 1898, it occupies an L-shaped site on 81 Eighth Avenue, at the northwestern corner with 14th Street. The New York Savings Bank Building was designed by Robert Henderson Robertson, with later additions by George H. Provot and Halsey, McCormack & Helmer. The building's facade and interior are New York City designated landmarks, and the building is listed on the National Register of Historic Places. The building's…"
+        },
+        {
+          "source_id": "source:wikipedia:28234236:research-dq-nyc-034",
+          "provider": "wikipedia",
+          "external_id": "28234236",
+          "url": "https://en.wikipedia.org/?curid=28234236",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "a triangular sign bears “a pair of clock faces”; “Atop the sign is a carved beehive, the symbol of the New York Savings Bank.”"
         }
       ],
       "legacy_editorial_context": {
@@ -8387,8 +9035,8 @@
     },
     {
       "id": "place:wikipedia:28352081",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Palazzo Chupi",
       "location": {
         "lat": 40.735296,
@@ -8404,7 +9052,25 @@
       "prohibited_aliases": [
         "Palazzo Chupi"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-28352081:dq-nyc-012-observable-target",
+          "claim": "The bold pink Venetian-palazzo-style building above a former stable.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:28352081:research-dq-nyc-012"
+          ],
+          "viewpoint": "Exterior-only sidewalk observation; respect residential privacy and do not photograph into windows.",
+          "stability": "stable",
+          "seasonality": "**Low**; distinctive permanent architecture, though repainting/scaffolding is possible.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -8431,6 +9097,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Palazzo Chupi is a residential condominium building in the West Village section of the Greenwich Village neighborhood of Manhattan, New York City. Located at 360 West 11th Street between Washington and West Streets, it was designed by artist Julian Schnabel. The building is designed in the style of a Venetian palazzo, built on top of a former horse stable. Schnabel uses the lower four floors, the former stable, as a studio. They also contain a parking garage, art gallery space and swimming pool. The building, which contains five \"palatial\" units, is easy to spot because of its singular style…"
+        },
+        {
+          "source_id": "source:wikipedia:28352081:research-dq-nyc-012",
+          "provider": "wikipedia",
+          "external_id": "28352081",
+          "url": "https://en.wikipedia.org/?curid=28352081",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the building is designed “in the style of a Venetian palazzo” and “is easy to spot because of its singular style and bold pink color.”"
         }
       ],
       "legacy_editorial_context": {
@@ -8667,8 +9342,8 @@
     },
     {
       "id": "place:wikipedia:28435530",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Odd Fellows Hall (New York City)",
       "location": {
         "lat": 40.71944444444445,
@@ -8684,7 +9359,25 @@
       "prohibited_aliases": [
         "Odd Fellows Hall (New York City)"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-28435530:dq-nyc-023-observable-target",
+          "claim": "The later mansard roof sitting above the earlier Italianate building.",
+          "observable_target": "shape",
+          "source_ids": [
+            "source:wikipedia:28435530:research-dq-nyc-023"
+          ],
+          "viewpoint": "Public sidewalk view; crossing may improve sightline but must use signals.",
+          "stability": "stable",
+          "seasonality": "**Low**; durable roof form, occasionally obscured by scaffolding.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -8711,6 +9404,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Odd Fellows Hall is a building at 165–171 Grand Street between Centre and Baxter Streets, in the Little Italy and SoHo neighborhoods of Manhattan, New York City. It was built in 1847–1848 and designed by the firm of Trench & Snook in the Italianate style, one of the city's earliest structures in this style, which Joseph Trench had brought to New York with his design for 280 Broadway in 1845. His partner, John B. Snook, was responsible for many cast-iron buildings in SoHo. The mansard roof was an addition, designed by John Buckingham and built in 1881–1882. The Independent Order of Odd…"
+        },
+        {
+          "source_id": "source:wikipedia:28435530:research-dq-nyc-023",
+          "provider": "wikipedia",
+          "external_id": "28435530",
+          "url": "https://en.wikipedia.org/?curid=28435530",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The mansard roof was an addition … built in 1881–1882”; the original building was Italianate."
         }
       ],
       "legacy_editorial_context": {
@@ -9157,8 +9859,8 @@
     },
     {
       "id": "place:wikipedia:2976321",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Eldridge Street Synagogue",
       "location": {
         "lat": 40.71472222222223,
@@ -9176,7 +9878,25 @@
       "prohibited_aliases": [
         "Eldridge Street Synagogue"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-2976321:dq-nyc-021-observable-target",
+          "claim": "The facade’s rose window framed by two stair towers and arched openings.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:2976321:research-dq-nyc-021"
+          ],
+          "viewpoint": "Facade is public-sidewalk view. Interior museum admission/hours must not be required; avoid photographing worshippers.",
+          "stability": "stable",
+          "seasonality": "**Low**; restored facade, with possible event or restoration obstructions.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -9203,6 +9923,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Eldridge Street Synagogue is an Orthodox Jewish synagogue at 12–16 Eldridge Street in the Chinatown and Lower East Side neighborhoods of Manhattan in New York City. Built in 1887 for Congregation Kahal Adath Jeshurun, the synagogue is one of the first erected in the U.S. by Eastern European Jews. The congregation, officially known as Kahal Adath Jeshurun with Anshe Lubz, still owns the synagogue and hosts weekly services there in the 21st century. The Museum at Eldridge Street, founded in 1986 as the Eldridge Street Project, also occupies the synagogue under a long-term lease. The…"
+        },
+        {
+          "source_id": "source:wikipedia:2976321:research-dq-nyc-021",
+          "provider": "wikipedia",
+          "external_id": "2976321",
+          "url": "https://en.wikipedia.org/?curid=2976321",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The Eldridge Street facade includes a rose window, two stair towers, and arched openings.”"
         }
       ],
       "legacy_editorial_context": {
@@ -9723,8 +10452,8 @@
     },
     {
       "id": "place:wikipedia:3134198",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Chatham Square",
       "location": {
         "lat": 40.71361111111111,
@@ -9741,7 +10470,25 @@
       "prohibited_aliases": [
         "Chatham Square"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-3134198:dq-nyc-024-observable-target",
+          "claim": "The Kimlau memorial arch amid Chatham Square’s unusually complex street convergence.",
+          "observable_target": "spatial_relationship",
+          "source_ids": [
+            "source:wikipedia:3134198:research-dq-nyc-024"
+          ],
+          "viewpoint": "Busy, multi-leg intersection. Use only marked crossings and an accessible plaza approach; construction is a significant possibility.",
+          "stability": "stable",
+          "seasonality": "**Medium-high**; a major Kimlau Square redesign has been announced, so layout and access must be checked immediately before publication.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -9768,6 +10515,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Chatham Square is a major intersection in Chinatown, Manhattan, New York City. The square lies at the confluence of eight streets: the Bowery, Doyers Street, East Broadway, St. James Place, Mott Street, Oliver Street, Worth Street and Park Row. The small park in the center of the square is known as Kimlau Square and Lin Ze Xu Square."
+        },
+        {
+          "source_id": "source:wikipedia:3134198:research-dq-nyc-024",
+          "provider": "wikipedia",
+          "external_id": "3134198",
+          "url": "https://en.wikipedia.org/?curid=3134198",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "Chatham Square lies at “the confluence of eight streets”; “The Kimlau War Memorial was erected … to honor United States service members of Chinese ancestry.”"
         }
       ],
       "legacy_editorial_context": {
@@ -9933,8 +10689,8 @@
     },
     {
       "id": "place:wikipedia:32319261",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "75½ Bedford Street",
       "location": {
         "lat": 40.73137,
@@ -9952,7 +10708,25 @@
       "prohibited_aliases": [
         "75½ Bedford Street"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-32319261:dq-nyc-013-observable-target",
+          "claim": "The exceptionally narrow townhouse and its half-number address.",
+          "observable_target": "shape",
+          "source_ids": [
+            "source:wikipedia:32319261:research-dq-nyc-013"
+          ],
+          "viewpoint": "Public sidewalk only; private residence, so avoid windows, doorways, and lingering crowds.",
+          "stability": "stable",
+          "seasonality": "**Low**; landmark-district building, although facade work can obscure it.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -9979,6 +10753,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "75½ Bedford Street is a house located in the West Village neighborhood of New York City that is only 9 feet 6 inches (2.9 meters) wide. Built in 1873, it is often described as the narrowest house in New York. Its past tenants have included Edna St. Vincent Millay, author Ann McGovern, cartoonist William Steig and anthropologist Margaret Mead. It is sometimes referred to as the Millay House, indicated by a plaque on the outside of the house. The house is located in the Greenwich Village Historic District, but is not an individually designated New York City Landmark."
+        },
+        {
+          "source_id": "source:wikipedia:32319261:research-dq-nyc-013",
+          "provider": "wikipedia",
+          "external_id": "32319261",
+          "url": "https://en.wikipedia.org/?curid=32319261",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the house “is only 9 feet 6 inches (2.9 meters) wide” and is “often described as the narrowest house in New York.”"
         }
       ],
       "legacy_editorial_context": {
@@ -10426,8 +11209,8 @@
     },
     {
       "id": "place:wikipedia:3638870",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Storefront for Art and Architecture",
       "location": {
         "lat": 40.721472222222225,
@@ -10444,7 +11227,25 @@
       "prohibited_aliases": [
         "Storefront for Art and Architecture"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-3638870:dq-nyc-025-observable-target",
+          "claim": "The facade’s differently oriented rotating panels.",
+          "observable_target": "movement",
+          "source_ids": [
+            "source:wikipedia:3638870:research-dq-nyc-025"
+          ],
+          "viewpoint": "Observe from sidewalk. Do not rotate panels unless staff explicitly invite it; respect gallery hours and doorway clearance.",
+          "stability": "stable",
+          "seasonality": "**Medium**; panels are permanent but configuration, closure, and maintenance vary.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -10471,6 +11272,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Storefront for Art and Architecture is an independent, non-profit art and architecture organization located in SoHo, Manhattan in New York City. The organization is committed to the advancement of innovative positions in architecture, art and design."
+        },
+        {
+          "source_id": "source:wikipedia:3638870:research-dq-nyc-025",
+          "provider": "wikipedia",
+          "external_id": "3638870",
+          "url": "https://en.wikipedia.org/?curid=3638870",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the redesign placed “rotating panels of various orientation along the length of the gallery’s facade.”"
         }
       ],
       "legacy_editorial_context": {
@@ -10916,8 +11726,8 @@
     },
     {
       "id": "place:wikipedia:4282471",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Manhattan Municipal Building",
       "location": {
         "lat": 40.713055555555556,
@@ -10934,7 +11744,25 @@
       "prohibited_aliases": [
         "Manhattan Municipal Building"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-4282471:dq-nyc-017-observable-target",
+          "claim": "The gilded *Civic Fame* statue at the building’s summit.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:4282471:research-dq-nyc-017"
+          ],
+          "viewpoint": "Observe from public plaza or sidewalk; do not stand in bridge or vehicle approaches. Step-free viewpoints exist but must be field-selected.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent statue, though distance, glare, fog, and scaffolding affect playability.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -10961,6 +11789,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The David N. Dinkins Municipal Building (originally the Municipal Building and later known as the Manhattan Municipal Building) is a 40-story, 580-foot (180 m) building at 1 Centre Street, east of Chambers Street, in the Civic Center neighborhood of Manhattan in New York City. The structure was built to accommodate increased governmental space demands after the 1898 consolidation of the city's five boroughs. Construction began in 1909 and continued through 1914 at a total cost of $12 million (equivalent to $276,794,000 in 2024). Designed by McKim, Mead & White, the Manhattan Municipal…"
+        },
+        {
+          "source_id": "source:wikipedia:4282471:research-dq-nyc-017",
+          "provider": "wikipedia",
+          "external_id": "4282471",
+          "url": "https://en.wikipedia.org/?curid=4282471",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The base incorporates a subway station, while the top includes the gilded Civic Fame statue.”"
         }
       ],
       "legacy_editorial_context": {
@@ -10987,8 +11824,8 @@
     },
     {
       "id": "place:wikipedia:4305609",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Delmonico's",
       "location": {
         "lat": 40.70508,
@@ -11005,7 +11842,25 @@
       "prohibited_aliases": [
         "Delmonico's"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-4305609:dq-nyc-031-observable-target",
+          "claim": "The pair of entrance columns long claimed to have come from Pompeii.",
+          "observable_target": "object",
+          "source_ids": [
+            "source:wikipedia:4305609:research-dq-nyc-031"
+          ],
+          "viewpoint": "Exterior clue; no purchase required. Do not block the entrance or valet/service activity.",
+          "stability": "stable",
+          "seasonality": "**Medium**; columns/building are durable, but restaurant branding, operation, and construction can change.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -11032,6 +11887,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Delmonico's is a series of restaurants that have operated in New York City, with the present version located at 56 Beaver Street in the Financial District of Manhattan. The original version opened in 1827 at 23 William Street. Delmonico's (under the Delmonico family's ownership and management) shuttered all locations by 1923. In 1926, Delmonico's reopened under new ownership by Oscar Tucci at 56 Beaver Street."
+        },
+        {
+          "source_id": "source:wikipedia:4305609:research-dq-nyc-031",
+          "provider": "wikipedia",
+          "external_id": "4305609",
+          "url": "https://en.wikipedia.org/?curid=4305609",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "when the building opened, “New Yorkers were told that the columns by the entrance had been imported from the ruins of Pompeii.”"
         }
       ],
       "legacy_editorial_context": {
@@ -11201,8 +12065,8 @@
     },
     {
       "id": "place:wikipedia:446394",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Charging Bull",
       "location": {
         "lat": 40.705576,
@@ -11218,7 +12082,25 @@
       "prohibited_aliases": [
         "Charging Bull"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-446394:dq-nyc-028-observable-target",
+          "claim": "The large bronze bull posed in a charge.",
+          "observable_target": "artwork",
+          "source_ids": [
+            "source:wikipedia:446394:research-dq-nyc-028"
+          ],
+          "viewpoint": "Extremely crowded traffic median. Use marked crossings, never step into vehicle lanes, and provide an alternate completion radius/view.",
+          "stability": "stable",
+          "seasonality": "**Low**, but crowding can make a clean visual challenge frustrating.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -11245,6 +12127,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Charging Bull (sometimes referred to as the Bull of Wall Street or the Bowling Green Bull) is a bronze sculpture that stands on Broadway just north of Bowling Green in the Financial District of Manhattan in New York City. The 7,100-pound (3,200 kg) bronze sculpture, standing 11 feet (3.4 m) tall and measuring 16 feet (4.9 m) long, depicts a bull, the symbol of financial optimism and prosperity. Charging Bull is a popular tourist destination that draws thousands of people a day, symbolizing Wall Street and the Financial District. The sculpture was created by Italian artist Arturo Di Modica in…"
+        },
+        {
+          "source_id": "source:wikipedia:446394:research-dq-nyc-028",
+          "provider": "wikipedia",
+          "external_id": "446394",
+          "url": "https://en.wikipedia.org/?curid=446394",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the “7,100-pound … bronze sculpture” stands 11 feet tall, measures 16 feet long, and depicts a bull."
         }
       ],
       "legacy_editorial_context": {
@@ -11413,8 +12304,8 @@
     },
     {
       "id": "place:wikipedia:4683905",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Metronome (public artwork)",
       "location": {
         "lat": 40.7344005,
@@ -11430,7 +12321,25 @@
       "prohibited_aliases": [
         "Metronome (public artwork)"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-4683905:dq-nyc-002-observable-target",
+          "claim": "The orange LED clock paired with the concentric brick-wave wall and circular void.",
+          "observable_target": "artwork",
+          "source_ids": [
+            "source:wikipedia:4683905:research-dq-nyc-002"
+          ],
+          "viewpoint": "View from public sidewalk/plaza; heavy pedestrian and bicycle traffic. No need to cross outside signals.",
+          "stability": "volatile",
+          "seasonality": "**Medium**; clock/display programming can change. Do not base the answer on steam, which the source describes only in the past tense.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -11457,6 +12366,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Metronome is a large public art installation located along the south end of Union Square in New York City. The work was commissioned by the Related Companies, developers of One Union Square South, with the participation of the Public Art Fund and the Municipal Art Society. The $4.2 million provided by the developer makes it one of the largest private commissions of public art. The artwork was created by Kristin Jones and Andrew Ginzel and consists of several sections, including a round circular void from which puffs of steam were at one point released throughout the day, and a clock made of…"
+        },
+        {
+          "source_id": "source:wikipedia:4683905:research-dq-nyc-002",
+          "provider": "wikipedia",
+          "external_id": "4683905",
+          "url": "https://en.wikipedia.org/?curid=4683905",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "the work includes “a round circular void … and a clock made of large orange LED digits”; its brick wall forms “a wave pattern like ripples on still water.”"
         }
       ],
       "legacy_editorial_context": {
@@ -11696,8 +12614,8 @@
     },
     {
       "id": "place:wikipedia:5028262",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Hangman's Elm",
       "location": {
         "lat": 40.7319444444,
@@ -11714,7 +12632,25 @@
       "prohibited_aliases": [
         "Hangman's Elm"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-5028262:dq-nyc-005-observable-target",
+          "claim": "The mature English elm in the northwest portion of Washington Square Park.",
+          "observable_target": "landscape",
+          "source_ids": [
+            "source:wikipedia:5028262:research-dq-nyc-005"
+          ],
+          "viewpoint": "Public park during posted hours; remain on paths and outside any tree-protection fencing. Generally step-free.",
+          "stability": "seasonal",
+          "seasonality": "**Medium**; living trees can be pruned, fenced, storm-damaged, or eventually lost.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -11741,6 +12677,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Hangman's Elm, or simply \"The Hanging Tree\", is an English elm located at the northwest corner in Washington Square Park in Greenwich Village, Manhattan, New York City. It stood at 135 feet (41 m) tall when measured c. 2000, and has a diameter of 67 inches (1.7 m). In 1989, the New York City Department of Parks and Recreation determined that this English elm was 310 years old, although that was subsequently revised to \"more than 300 years old\". As a result, it is considered to be Manhattan's oldest, outliving Peter Stuyvesant's pear tree at the northeast corner of 13th Street and Third…"
+        },
+        {
+          "source_id": "source:wikipedia:5028262:research-dq-nyc-005",
+          "provider": "wikipedia",
+          "external_id": "5028262",
+          "url": "https://en.wikipedia.org/?curid=5028262",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“Hangman’s Elm … is an English elm located at the northwest corner in Washington Square Park”; NYC Parks revised its age to “more than 300 years old.”"
         }
       ],
       "legacy_editorial_context": {
@@ -12474,8 +13419,8 @@
     },
     {
       "id": "place:wikipedia:6133057",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Washington Mews",
       "location": {
         "lat": 40.7313,
@@ -12492,7 +13437,25 @@
       "prohibited_aliases": [
         "Washington Mews"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-6133057:dq-nyc-009-observable-target",
+          "claim": "Former stable buildings along the private gated mews.",
+          "observable_target": "streetscape",
+          "source_ids": [
+            "source:wikipedia:6133057:research-dq-nyc-009"
+          ],
+          "viewpoint": "Observe only from public space unless signage explicitly permits entry; never tailgate through a private gate. Sidewalk view may be partially obstructed.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; lane and buildings are durable, but public visibility/access rules can change.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -12519,6 +13482,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Washington Mews is a private gated street in Manhattan, New York City between Fifth Avenue and University Place just north of Washington Square Park. Along with MacDougal Alley and Stuyvesant Street, it was originally part of a Lenape trail which connected the Hudson and East Rivers, and was first developed as a mews (row of stables) that serviced horses from homes in the area. Since the 1950s the former stables have served as housing, offices and other facilities for New York University."
+        },
+        {
+          "source_id": "source:wikipedia:6133057:research-dq-nyc-009",
+          "provider": "wikipedia",
+          "external_id": "6133057",
+          "url": "https://en.wikipedia.org/?curid=6133057",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“Washington Mews is a private gated street”; it “was first developed as a mews (row of stables).”"
         }
       ],
       "legacy_editorial_context": {
@@ -13044,8 +14016,8 @@
     },
     {
       "id": "place:wikipedia:7547059",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Tweed Courthouse",
       "location": {
         "lat": 40.71333333333334,
@@ -13063,7 +14035,25 @@
       "prohibited_aliases": [
         "Tweed Courthouse"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-7547059:dq-nyc-038-observable-target",
+          "claim": "The Chambers Street portico with four Corinthian columns above the restored granite stair.",
+          "observable_target": "facade",
+          "source_ids": [
+            "source:wikipedia:7547059:research-dq-nyc-038"
+          ],
+          "viewpoint": "Exterior public-space view. Steps are not necessary for completion; provide an accessible ground-level sightline.",
+          "stability": "stable",
+          "seasonality": "**Low**; civic landmark, with possible security/event closures.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -13090,6 +14080,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "The Tweed Courthouse (also known as the Old New York County Courthouse) is a historic courthouse building at 52 Chambers Street in the Civic Center of Manhattan in New York City, New York, U.S. It was built in the Italianate style with Romanesque Revival interiors. William M. \"Boss\" Tweed—the corrupt leader of Tammany Hall, a political machine that controlled the New York state and city governments when the courthouse was built—oversaw the building's erection. The Tweed Courthouse served as a judicial building for New York County, a county of New York state coextensive with the New York City…"
+        },
+        {
+          "source_id": "source:wikipedia:7547059:research-dq-nyc-038",
+          "provider": "wikipedia",
+          "external_id": "7547059",
+          "url": "https://en.wikipedia.org/?curid=7547059",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“The main entrance … is composed of a portico with four Corinthian columns”; its granite stair was “restored in 2002.”"
         }
       ],
       "legacy_editorial_context": {
@@ -13116,8 +14115,8 @@
     },
     {
       "id": "place:wikipedia:768472",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Alamo (sculpture)",
       "location": {
         "lat": 40.730000000000004,
@@ -13133,7 +14132,25 @@
       "prohibited_aliases": [
         "Alamo (sculpture)"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-768472:dq-nyc-001-observable-target",
+          "claim": "The eight-foot black cube balanced on one corner, with visibly uneven faces.",
+          "observable_target": "artwork",
+          "source_ids": [
+            "source:wikipedia:768472:research-dq-nyc-001"
+          ],
+          "viewpoint": "Public outdoor plaza; view without touching or entering the roadway. Crowds and skaters may require patience; step-free approach.",
+          "stability": "stable",
+          "seasonality": "**Low**; permanent sculpture, though temporary maintenance barriers are possible.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -13160,6 +14177,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Alamo, also known as the Astor Place Cube or simply The Cube, is an outdoor sculpture by Tony Rosenthal, located on Astor Place, in the East Village neighborhood of Manhattan in New York City. It is a black cube, 8 feet (2.4 m) long on each side, mounted on a corner. The cube is made of Cor-Ten steel and weighs about 1,800 pounds (820 kg). The faces of the cube are not flat but have various indentations, protrusions, and ledges. The sculpture's name, Alamo, is designated on a small plaque on the base and was selected by the artist's wife because its scale and mass reminded her of the Alamo…"
+        },
+        {
+          "source_id": "source:wikipedia:768472:research-dq-nyc-001",
+          "provider": "wikipedia",
+          "external_id": "768472",
+          "url": "https://en.wikipedia.org/?curid=768472",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“It is a black cube, 8 feet (2.4 m) long on each side, mounted on a corner.” Also: “The faces of the cube are not flat but have various indentations, protrusions, and ledges.”"
         }
       ],
       "legacy_editorial_context": {
@@ -13825,8 +14851,8 @@
     },
     {
       "id": "place:wikipedia:9046237",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "23 Wall Street",
       "location": {
         "lat": 40.706944444444446,
@@ -13843,7 +14869,25 @@
       "prohibited_aliases": [
         "23 Wall Street"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-9046237:dq-nyc-029-observable-target",
+          "claim": "Surviving exterior damage in the pink Tennessee marble associated with the 1920 Wall Street bombing.",
+          "observable_target": "material",
+          "source_ids": [
+            "source:wikipedia:9046237:research-dq-nyc-029"
+          ],
+          "viewpoint": "Busy sidewalk/security area; no touching, loitering at entrances, or obstruction. Exact publicly visible marks must be field-confirmed.",
+          "stability": "stable",
+          "seasonality": "**Low-medium**; marks are longstanding, but barricades, grime, restoration, or events can affect visibility.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -13870,6 +14914,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "23 Wall Street (also known as the J.P. Morgan Building) is a four-story office building in the Financial District of Manhattan in New York City, United States. Located at the southeast corner of Wall Street and Broad Street, it was designed by Trowbridge & Livingston in the neoclassical style and constructed from 1913 to 1914. It was originally the headquarters of J.P. Morgan & Co. Since the late 2000s, the building has remained unoccupied for long periods, although it has occasionally been used for events. The building has a facade of ashlar masonry and pink Tennessee marble. The first floor…"
+        },
+        {
+          "source_id": "source:wikipedia:9046237:research-dq-nyc-029",
+          "provider": "wikipedia",
+          "external_id": "9046237",
+          "url": "https://en.wikipedia.org/?curid=9046237",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "after damage in the 1920 Wall Street bombing, “J.P. Morgan & Co. refused to make repairs”; the facade is “ashlar masonry and pink Tennessee marble.”"
         }
       ],
       "legacy_editorial_context": {
@@ -14390,8 +15443,8 @@
     },
     {
       "id": "place:wikipedia:9809645",
-      "record_version": 1,
-      "lifecycle": "needs_source_review",
+      "record_version": 2,
+      "lifecycle": "needs_field_verification",
       "name": "Doyers Street",
       "location": {
         "lat": 40.714354,
@@ -14409,7 +15462,25 @@
       "prohibited_aliases": [
         "Doyers Street"
       ],
-      "observable_evidence": [],
+      "observable_evidence": [
+        {
+          "evidence_id": "evidence:wikipedia-9809645:dq-nyc-020-observable-target",
+          "claim": "The one-block street’s sharp central bend.",
+          "observable_target": "shape",
+          "source_ids": [
+            "source:wikipedia:9809645:research-dq-nyc-020"
+          ],
+          "viewpoint": "Remain on sidewalk/pedestrianized areas and respect businesses. Pavement, curb cuts, deliveries, and crowding require field audit.",
+          "stability": "stable",
+          "seasonality": "**Low** for geometry; **medium** for paving/paint treatments.",
+          "verification": {
+            "status": "source_verified",
+            "method": "source_review",
+            "verified_by": "source-candidate-artifact:1.0.0",
+            "verified_at": null
+          }
+        }
+      ],
       "viewpoint_approach": {
         "public_approach": null,
         "exterior_visible": "unknown",
@@ -14436,6 +15507,15 @@
           "license": null,
           "review_status": "unreviewed",
           "excerpt": "Doyers Street is a 200-foot-long (61 m) street in the Chinatown neighborhood of Manhattan in New York City. It is one block long with a sharp bend in the middle. The street runs south and then southeast from a terminus at Pell Street to the intersection of Bowery, Chatham Square, and Division Street. Doyers Street contains several restaurants, barber shops, and hair stylists, as well as the Chinatown branch of the United States Postal Service. The Nom Wah Tea Parlor opened at 13 Doyers Street in 1920, and is still in operation. Longstanding business Ting's Gift Shop at 18 Doyers opened in…"
+        },
+        {
+          "source_id": "source:wikipedia:9809645:research-dq-nyc-020",
+          "provider": "wikipedia",
+          "external_id": "9809645",
+          "url": "https://en.wikipedia.org/?curid=9809645",
+          "license": null,
+          "review_status": "reviewed",
+          "excerpt": "“It is one block long with a sharp bend in the middle.”"
         }
       ],
       "legacy_editorial_context": {
@@ -14532,6 +15612,2608 @@
       }
     }
   ],
-  "hunt_ideas": [],
-  "clue_packages": []
+  "hunt_ideas": [
+    {
+      "id": "idea:nyc:dq-nyc-001",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Cube on One Toe",
+      "concept": "The eight-foot black cube balanced on one corner, with visibly uneven faces. The riddle’s impossible-sounding geometry resolves into a large, unmistakable object.",
+      "place_ids": [
+        "place:wikipedia:768472"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-768472:dq-nyc-001-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-002",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Clock That Refuses to Read Normally",
+      "concept": "The orange LED clock paired with the concentric brick-wave wall and circular void. Players first see an apparently indecipherable number, then recognize an artwork about time.",
+      "place_ids": [
+        "place:wikipedia:4683905"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-4683905:dq-nyc-002-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-003",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Manhattan Before Manhattan",
+      "concept": "The small rectangular plot of native vegetation representing stages of forest growth. An apparently untended patch becomes a living time machine amid hard-edged city blocks.",
+      "place_ids": [
+        "place:wikipedia:24851322"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-24851322:dq-nyc-003-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-004",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Six Stories, No Rooms",
+      "concept": "Knox Martin’s six-story wall painting. “Six stories” misdirects toward a building interior before resolving into the scale of a painted wall.",
+      "place_ids": [
+        "place:wikipedia:18935597"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-18935597:dq-nyc-004-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-005",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Elder at the Park’s Corner",
+      "concept": "The mature English elm in the northwest portion of Washington Square Park. Players must distinguish one living landmark from an entire canopy.",
+      "place_ids": [
+        "place:wikipedia:5028262"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-5028262:dq-nyc-005-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-006",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Marble at the End of the Avenue",
+      "concept": "The white marble triumphal arch terminating Fifth Avenue. Direction, material, and Roman form converge on one strong silhouette.",
+      "place_ids": [
+        "place:wikipedia:1364440"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-1364440:dq-nyc-006-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-007",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Judgment by Shakespeare",
+      "concept": "The courthouse-like clock tower and tympanum depicting a scene from *The Merchant of Venice*. A church-shaped building offers a secular “judgment” scene hidden in its ornament.",
+      "place_ids": [
+        "place:wikipedia:2021948"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-2021948:dq-nyc-007-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-008",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Street Behind a Gate",
+      "concept": "The gated cul-de-sac and its ten three-story brick row houses. A whole street hides behind what can look like a private doorway.",
+      "place_ids": [
+        "place:wikipedia:11927283"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-11927283:dq-nyc-008-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-009",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Where the Horses Left",
+      "concept": "Former stable buildings along the private gated mews. Players identify the equestrian origin of a lane now embedded in NYU’s urban campus.",
+      "place_ids": [
+        "place:wikipedia:6133057"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-6133057:dq-nyc-009-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-010",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Court Called a Cage",
+      "concept": "The unusually compact basketball court enclosed by fencing. The nickname is readable in the court’s physical proportions rather than on a plaque.",
+      "place_ids": [
+        "place:wikipedia:1607875"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-1607875:dq-nyc-010-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-011",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Brass Ancestor of Cappuccino",
+      "concept": "The 1902 espresso machine against the café’s back wall. An ornate machine becomes a café treasure hunt with a precise date and location.",
+      "place_ids": [
+        "place:wikipedia:27621733"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-27621733:dq-nyc-011-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-012",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Pink Palazzo",
+      "concept": "The bold pink Venetian-palazzo-style building above a former stable. The building is deliberately theatrical and radically unlike its neighbors.",
+      "place_ids": [
+        "place:wikipedia:28352081"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-28352081:dq-nyc-012-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-013",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Half an Address, Half a House",
+      "concept": "The exceptionally narrow townhouse and its half-number address. The fractional address becomes a fair clue to the building’s squeezed dimensions.",
+      "place_ids": [
+        "place:wikipedia:32319261"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-32319261:dq-nyc-013-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-014",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Houses Stacked in the Sky",
+      "concept": "The tower’s irregular, cantilevered stack of floors—the “Jenga” silhouette. A tabletop game metaphor becomes obvious only when players look up.",
+      "place_ids": [
+        "place:wikipedia:17564567"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-17564567:dq-nyc-014-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-015",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Skyscraper That Cannot Look Out",
+      "concept": "The tall, largely windowless telecommunications building. A familiar skyscraper expectation—thousands of windows—is completely inverted.",
+      "place_ids": [
+        "place:wikipedia:11495361"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-11495361:dq-nyc-015-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-016",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Gothic Giant in Terracotta",
+      "concept": "The Neo-Gothic tower whose exterior is largely architectural terracotta over a limestone base. What reads as carved stone at skyline scale is revealed as a different material.",
+      "place_ids": [
+        "place:wikipedia:269156"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-269156:dq-nyc-016-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-017",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Fame Above City Hall",
+      "concept": "The gilded *Civic Fame* statue at the building’s summit. Players must find a small golden figure at enormous scale rather than another street-level monument.",
+      "place_ids": [
+        "place:wikipedia:4282471"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-4282471:dq-nyc-017-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-018",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Piece of Ireland on a Manhattan Roof",
+      "concept": "Irish stones, native vegetation, and the reconstructed cottage integrated into the sloping memorial. The reveal is a transported landscape rather than a conventional statue or plaque.",
+      "place_ids": [
+        "place:wikipedia:1453080"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-1453080:dq-nyc-018-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-019",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Loire Château for Fire Engines",
+      "concept": "The former firehouse styled after an early-sixteenth-century Loire Valley château. The building type and its aristocratic visual costume are charmingly mismatched.",
+      "place_ids": [
+        "place:wikipedia:22521183"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-22521183:dq-nyc-019-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-020",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Street That Changes Its Mind",
+      "concept": "The one-block street’s sharp central bend. The answer is a street’s physical shape, not a building or sign.",
+      "place_ids": [
+        "place:wikipedia:9809645"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-9809645:dq-nyc-020-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-021",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Rose Between Two Towers",
+      "concept": "The facade’s rose window framed by two stair towers and arched openings. “Rose” is a fair visual metaphor whose architectural meaning becomes clear at arrival.",
+      "place_ids": [
+        "place:wikipedia:2976321"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-2976321:dq-nyc-021-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-022",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Bank’s Returned Crown",
+      "concept": "The reconstructed rooftop tempietto and dome. The target is a classical “little temple” that disappeared and later returned.",
+      "place_ids": [
+        "place:wikipedia:22408670"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-22408670:dq-nyc-022-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-023",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Odd Roof Out",
+      "concept": "The later mansard roof sitting above the earlier Italianate building. Players identify an architectural “hat” added decades after the body beneath it.",
+      "place_ids": [
+        "place:wikipedia:28435530"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-28435530:dq-nyc-023-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-024",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Memorial at Eight Roads",
+      "concept": "The Kimlau memorial arch amid Chatham Square’s unusually complex street convergence. The calm stone arch contrasts with a knot of moving streets.",
+      "place_ids": [
+        "place:wikipedia:3134198"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-3134198:dq-nyc-024-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-025",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Wall That Opens Like a Deck of Cards",
+      "concept": "The facade’s differently oriented rotating panels. A building edge appears neither fully wall nor fully door.",
+      "place_ids": [
+        "place:wikipedia:3638870"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-3638870:dq-nyc-025-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-026",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Iron on Two Faces",
+      "concept": "Cast-iron facades wrapping two street fronts. The corner reveals that an industrial material is masquerading as a classical masonry facade.",
+      "place_ids": [
+        "place:wikipedia:12341870"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-12341870:dq-nyc-026-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-027",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Police Palace",
+      "concept": "The central portico topped by a clocked cupola and gilded dome. A former police headquarters looks more like an ornate palace.",
+      "place_ids": [
+        "place:wikipedia:19502719"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-19502719:dq-nyc-027-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-028",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Seven Thousand Pounds Mid-Charge",
+      "concept": "The large bronze bull posed in a charge. Static bronze communicates unmistakable movement and force.",
+      "place_ids": [
+        "place:wikipedia:446394"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-446394:dq-nyc-028-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-029",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Scars They Chose to Keep",
+      "concept": "Surviving exterior damage in the pink Tennessee marble associated with the 1920 Wall Street bombing. The answer is not a commemorative plaque but physical scars deliberately left in place.",
+      "place_ids": [
+        "place:wikipedia:9046237"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-9046237:dq-nyc-029-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-030",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Building in Three Colors",
+      "concept": "Its polychrome brick, brownstone, and terracotta exterior with rounded arches. A narrow historic building offers rich, close-range visual detail amid larger neighbors.",
+      "place_ids": [
+        "place:wikipedia:22511365"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-22511365:dq-nyc-030-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-031",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Columns Said to Come from Pompeii",
+      "concept": "The pair of entrance columns long claimed to have come from Pompeii. A restaurant entrance prompts a miniature provenance mystery.",
+      "place_ids": [
+        "place:wikipedia:4305609"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-4305609:dq-nyc-031-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-032",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Doctors Above the Door",
+      "concept": "Terracotta busts of medical figures on the former hospital facade. Faces emerge from ornament only after players deliberately scan upward.",
+      "place_ids": [
+        "place:wikipedia:22526150"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-22526150:dq-nyc-032-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-033",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "A Picasso You Can Walk Around",
+      "concept": "The large concrete *Bust of Sylvette* in the central plaza among three towers. A Picasso-linked portrait becomes an inhabitable-scale object rather than a framed image.",
+      "place_ids": [
+        "place:wikipedia:23461591"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-23461591:dq-nyc-033-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-034",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Bank’s Beehive",
+      "concept": "The carved beehive atop the projecting two-faced clock sign. A tiny symbol of thrift hides above a highly trafficked corner.",
+      "place_ids": [
+        "place:wikipedia:28234236"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-28234236:dq-nyc-034-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-035",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Stone Lace for the Telephone Company",
+      "concept": "Elaborate exterior ornament around the massive buttress-like piers and setbacks. A telecommunications building combines fortress-like mass with intricate decoration.",
+      "place_ids": [
+        "place:wikipedia:13189498"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-13189498:dq-nyc-035-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-036",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Fortress with Handmade Iron",
+      "concept": "Samuel Yellin’s decorative ironwork against the fortress-like bank exterior. The delicacy of handcrafted metal contrasts with a building associated with vaults and security.",
+      "place_ids": [
+        "place:wikipedia:12129089"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-12129089:dq-nyc-036-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-037",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "The Building with One Blank Side Too Many",
+      "concept": "The contrast between ornate cast-iron fronts and the long exposed blank brick wall created by street widening. The clue is about a city-planning “scar” visible in a building’s mismatched sides.",
+      "place_ids": [
+        "place:wikipedia:14534547"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-14534547:dq-nyc-037-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-038",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Four Columns Up a Restored Stair",
+      "concept": "The Chambers Street portico with four Corinthian columns above the restored granite stair. The apparently original grand entrance is partly a careful reconstruction responding to a changed street.",
+      "place_ids": [
+        "place:wikipedia:7547059"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-7547059:dq-nyc-038-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-039",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Pastries Under Colored Glass",
+      "concept": "The adjoining room’s ceiling of stained-glass panels and original pressed tin. A pastry stop unexpectedly rewards players for looking at the ceiling rather than the display case.",
+      "place_ids": [
+        "place:wikipedia:14818028"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-14818028:dq-nyc-039-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "idea:nyc:dq-nyc-040",
+      "record_version": 1,
+      "lifecycle": "needs_field_verification",
+      "title": "Candy Store, Dinner Menu",
+      "concept": "The old-school storefront identifying Ray’s Candy Store, whose offering spans egg creams, soft serve, beignets, fries, and coffee. The word “candy” is playfully contradicted by an eccentric, meal-sized menu.",
+      "place_ids": [
+        "place:wikipedia:25850609"
+      ],
+      "observable_target_ids": [
+        "evidence:wikipedia-25850609:dq-nyc-040-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    }
+  ],
+  "clue_packages": [
+    {
+      "id": "clue:nyc:wikipedia-11495361:dq-nyc-015",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:11495361",
+      "hunt_idea_id": "idea:nyc:dq-nyc-015",
+      "language": "en-US",
+      "clue": "I stand taller than many buildings that watch the city, yet I have almost no eyes.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Search for telecommunications architecture, not apartments.",
+          "evidence_refs": [
+            "evidence:wikipedia-11495361:dq-nyc-015-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find Tribeca’s 550-foot windowless skyscraper.",
+          "evidence_refs": [
+            "evidence:wikipedia-11495361:dq-nyc-015-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-11495361:dq-nyc-015-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-11927283:dq-nyc-008",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:11927283",
+      "hunt_idea_id": "idea:nyc:dq-nyc-008",
+      "language": "en-US",
+      "clue": "Ten brick siblings share a street that goes nowhere. Their smallest traffic jam is a locked gate.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for a cul-de-sac tucked off a Village cross street.",
+          "evidence_refs": [
+            "evidence:wikipedia-11927283:dq-nyc-008-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the gate through which ten three-story brick row houses are visible.",
+          "evidence_refs": [
+            "evidence:wikipedia-11927283:dq-nyc-008-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-11927283:dq-nyc-008-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-12129089:dq-nyc-036",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:12129089",
+      "hunt_idea_id": "idea:nyc:dq-nyc-036",
+      "language": "en-US",
+      "clue": "My gold sleeps far below, but the treasure you can see was drawn in iron by hand.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look at the exterior of New York’s Federal Reserve.",
+          "evidence_refs": [
+            "evidence:wikipedia-12129089:dq-nyc-036-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the decorative ironwork credited to Samuel Yellin.",
+          "evidence_refs": [
+            "evidence:wikipedia-12129089:dq-nyc-036-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-12129089:dq-nyc-036-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-12341870:dq-nyc-026",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:12341870",
+      "hunt_idea_id": "idea:nyc:dq-nyc-026",
+      "language": "en-US",
+      "clue": "My stone-looking columns came from an ironworks, and I wear the disguise on two faces.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Stand where Broadway meets Broome and study the corner.",
+          "evidence_refs": [
+            "evidence:wikipedia-12341870:dq-nyc-026-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the Haughwout Building’s twin cast-iron facades.",
+          "evidence_refs": [
+            "evidence:wikipedia-12341870:dq-nyc-026-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-12341870:dq-nyc-026-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-13189498:dq-nyc-035",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:13189498",
+      "hunt_idea_id": "idea:nyc:dq-nyc-035",
+      "language": "en-US",
+      "clue": "I was built for voices carried by wire: heavy as a fortress, yet trimmed like stone lace.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for an early Art Deco telephone building.",
+          "evidence_refs": [
+            "evidence:wikipedia-13189498:dq-nyc-035-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Study 100 Barclay’s buttress-like piers, setbacks, and exterior ornament.",
+          "evidence_refs": [
+            "evidence:wikipedia-13189498:dq-nyc-035-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-13189498:dq-nyc-035-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-1364440:dq-nyc-006",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:1364440",
+      "hunt_idea_id": "idea:nyc:dq-nyc-006",
+      "language": "en-US",
+      "clue": "An avenue ends where Rome appears in white stone, built for a president who never walked beneath it.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Follow Fifth Avenue south to its ceremonial full stop.",
+          "evidence_refs": [
+            "evidence:wikipedia-1364440:dq-nyc-006-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find Stanford White’s marble arch in Washington Square.",
+          "evidence_refs": [
+            "evidence:wikipedia-1364440:dq-nyc-006-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-1364440:dq-nyc-006-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-1453080:dq-nyc-018",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:1453080",
+      "hunt_idea_id": "idea:nyc:dq-nyc-018",
+      "language": "en-US",
+      "clue": "Every county sent a stone, the western coast sent its green, and an abandoned cottage crossed an ocean.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for a memorial designed as terrain.",
+          "evidence_refs": [
+            "evidence:wikipedia-1453080:dq-nyc-018-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the Irish cottage among soil, stones, and native vegetation.",
+          "evidence_refs": [
+            "evidence:wikipedia-1453080:dq-nyc-018-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-1453080:dq-nyc-018-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-14534547:dq-nyc-037",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:14534547",
+      "hunt_idea_id": "idea:nyc:dq-nyc-037",
+      "language": "en-US",
+      "clue": "Two faces dressed in cast iron; one enormous brick side was never meant to be seen.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "A widened street exposed the surprise.",
+          "evidence_refs": [
+            "evidence:wikipedia-14534547:dq-nyc-037-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Compare the Cary Building’s ornate facades with its long unadorned east wall.",
+          "evidence_refs": [
+            "evidence:wikipedia-14534547:dq-nyc-037-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-14534547:dq-nyc-037-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-14818028:dq-nyc-039",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:14818028",
+      "hunt_idea_id": "idea:nyc:dq-nyc-039",
+      "language": "en-US",
+      "clue": "Come for cannoli, then look away from the sweets: colored glass and pressed tin serve dessert overhead.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "The clue is inside a family bakery founded in the nineteenth century.",
+          "evidence_refs": [
+            "evidence:wikipedia-14818028:dq-nyc-039-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Look up in Veniero’s adjoining room for stained-glass ceiling panels.",
+          "evidence_refs": [
+            "evidence:wikipedia-14818028:dq-nyc-039-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-14818028:dq-nyc-039-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-1607875:dq-nyc-010",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:1607875",
+      "hunt_idea_id": "idea:nyc:dq-nyc-010",
+      "language": "en-US",
+      "clue": "My hoops are famous, my boundaries are cramped, and my nickname belongs to something built to keep you in.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Listen for bouncing beneath a web of Village fencing.",
+          "evidence_refs": [
+            "evidence:wikipedia-1607875:dq-nyc-010-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the non-regulation streetball courts known as The Cage.",
+          "evidence_refs": [
+            "evidence:wikipedia-1607875:dq-nyc-010-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-1607875:dq-nyc-010-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-17564567:dq-nyc-014",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:17564567",
+      "hunt_idea_id": "idea:nyc:dq-nyc-014",
+      "language": "en-US",
+      "clue": "A giant began a game of blocks, then walked away before the tower could fall.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look above Tribeca for deliberately uneven stacking.",
+          "evidence_refs": [
+            "evidence:wikipedia-17564567:dq-nyc-014-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the skyscraper nicknamed the Jenga Building.",
+          "evidence_refs": [
+            "evidence:wikipedia-17564567:dq-nyc-014-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-17564567:dq-nyc-014-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-18935597:dq-nyc-004",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:18935597",
+      "hunt_idea_id": "idea:nyc:dq-nyc-004",
+      "language": "en-US",
+      "clue": "I rise six stories but contain no rooms. A woman and her wheels travel without moving.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Your answer is painted, not built.",
+          "evidence_refs": [
+            "evidence:wikipedia-18935597:dq-nyc-004-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Look for Knox Martin’s towering wall work.",
+          "evidence_refs": [
+            "evidence:wikipedia-18935597:dq-nyc-004-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-18935597:dq-nyc-004-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-19502719:dq-nyc-027",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:19502719",
+      "hunt_idea_id": "idea:nyc:dq-nyc-027",
+      "language": "en-US",
+      "clue": "A police headquarters put on a gilded dome, a clock, and enough columns to impersonate a palace.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for law-enforcement history in Baroque dress.",
+          "evidence_refs": [
+            "evidence:wikipedia-19502719:dq-nyc-027-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the central portico and gilded dome at 240 Centre.",
+          "evidence_refs": [
+            "evidence:wikipedia-19502719:dq-nyc-027-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-19502719:dq-nyc-027-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-2021948:dq-nyc-007",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:2021948",
+      "hunt_idea_id": "idea:nyc:dq-nyc-007",
+      "language": "en-US",
+      "clue": "I wear a church’s tower, but over my door Shakespeare—not scripture—sits in judgment.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look at the former courthouse now filled with books.",
+          "evidence_refs": [
+            "evidence:wikipedia-2021948:dq-nyc-007-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Inspect the tympanum for a scene from *The Merchant of Venice*.",
+          "evidence_refs": [
+            "evidence:wikipedia-2021948:dq-nyc-007-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-2021948:dq-nyc-007-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-22408670:dq-nyc-022",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:22408670",
+      "hunt_idea_id": "idea:nyc:dq-nyc-022",
+      "language": "en-US",
+      "clue": "A tiny temple lost its perch for thirty years, then climbed back onto a banker’s roof.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look above a former Lower East Side bank.",
+          "evidence_refs": [
+            "evidence:wikipedia-22408670:dq-nyc-022-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the replica tempietto completed around 2020.",
+          "evidence_refs": [
+            "evidence:wikipedia-22408670:dq-nyc-022-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-22408670:dq-nyc-022-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-22511365:dq-nyc-030",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:22511365",
+      "hunt_idea_id": "idea:nyc:dq-nyc-030",
+      "language": "en-US",
+      "clue": "Brick, brownstone, and fired clay take turns around my rounded arches. Find the narrow building wearing all three.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look beside a major Broadway transit entrance.",
+          "evidence_refs": [
+            "evidence:wikipedia-22511365:dq-nyc-030-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the Corbin Building’s polychrome arched facade.",
+          "evidence_refs": [
+            "evidence:wikipedia-22511365:dq-nyc-030-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-22511365:dq-nyc-030-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-22521183:dq-nyc-019",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:22521183",
+      "hunt_idea_id": "idea:nyc:dq-nyc-019",
+      "language": "en-US",
+      "clue": "My doors once welcomed engines, but my architects dressed me for a French noble beside the Loire.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "This château was built for firefighters, not royalty.",
+          "evidence_refs": [
+            "evidence:wikipedia-22521183:dq-nyc-019-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find former Engine Company 31.",
+          "evidence_refs": [
+            "evidence:wikipedia-22521183:dq-nyc-019-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-22521183:dq-nyc-019-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-22526150:dq-nyc-032",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:22526150",
+      "hunt_idea_id": "idea:nyc:dq-nyc-032",
+      "language": "en-US",
+      "clue": "The doctors left the hospital, but several still keep watch from the fired-clay facade.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look beside the historic Ottendorfer library.",
+          "evidence_refs": [
+            "evidence:wikipedia-22526150:dq-nyc-032-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the terracotta busts on the former polyclinic.",
+          "evidence_refs": [
+            "evidence:wikipedia-22526150:dq-nyc-032-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-22526150:dq-nyc-032-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-23461591:dq-nyc-033",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:23461591",
+      "hunt_idea_id": "idea:nyc:dq-nyc-033",
+      "language": "en-US",
+      "clue": "A portrait escaped its canvas, grew taller than you, and settled among three modern towers.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Search the central plaza of University Village.",
+          "evidence_refs": [
+            "evidence:wikipedia-23461591:dq-nyc-033-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the concrete *Bust of Sylvette*, credited to Carl Nesjar and Pablo Picasso.",
+          "evidence_refs": [
+            "evidence:wikipedia-23461591:dq-nyc-033-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-23461591:dq-nyc-033-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-24851322:dq-nyc-003",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:24851322",
+      "hunt_idea_id": "idea:nyc:dq-nyc-003",
+      "language": "en-US",
+      "clue": "No cabin, no road, no skyline: I rehearse this island before the city arrived, one forest age at a time.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for an artwork that grows rather than hangs.",
+          "evidence_refs": [
+            "evidence:wikipedia-24851322:dq-nyc-003-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the native-plant plot at University Village.",
+          "evidence_refs": [
+            "evidence:wikipedia-24851322:dq-nyc-003-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-24851322:dq-nyc-003-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-25850609:dq-nyc-040",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:25850609",
+      "hunt_idea_id": "idea:nyc:dq-nyc-040",
+      "language": "en-US",
+      "clue": "My sign promises candy; my counter answers with egg creams, beignets, Belgian fries, and coffee.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for a tiny East Village business operating since 1974.",
+          "evidence_refs": [
+            "evidence:wikipedia-25850609:dq-nyc-040-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find Ray’s Candy Store and confirm its unlikely mix of treats.",
+          "evidence_refs": [
+            "evidence:wikipedia-25850609:dq-nyc-040-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-25850609:dq-nyc-040-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-269156:dq-nyc-016",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:269156",
+      "hunt_idea_id": "idea:nyc:dq-nyc-016",
+      "language": "en-US",
+      "clue": "I dressed a modern steel giant like a Gothic cathedral, mostly in fired earth instead of carved stone.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look toward the early skyscraper once tallest in the world.",
+          "evidence_refs": [
+            "evidence:wikipedia-269156:dq-nyc-016-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Inspect the Woolworth Building’s terracotta facade above its limestone base.",
+          "evidence_refs": [
+            "evidence:wikipedia-269156:dq-nyc-016-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-269156:dq-nyc-016-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-27621733:dq-nyc-011",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:27621733",
+      "hunt_idea_id": "idea:nyc:dq-nyc-011",
+      "language": "en-US",
+      "clue": "Long before countertop pods, this brass elder helped teach America to drink a cloud of milk over coffee.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Your answer is inside a longstanding MacDougal Street café.",
+          "evidence_refs": [
+            "evidence:wikipedia-27621733:dq-nyc-011-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Look against the back wall for the espresso machine made in 1902.",
+          "evidence_refs": [
+            "evidence:wikipedia-27621733:dq-nyc-011-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-27621733:dq-nyc-011-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-28234236:dq-nyc-034",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:28234236",
+      "hunt_idea_id": "idea:nyc:dq-nyc-034",
+      "language": "en-US",
+      "clue": "A hive with no bees crowns a clock with two faces—the old banker’s lesson in patient saving.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for a former marble bank near the Village’s northern edge.",
+          "evidence_refs": [
+            "evidence:wikipedia-28234236:dq-nyc-034-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Inspect the triangular clock sign for a carved beehive.",
+          "evidence_refs": [
+            "evidence:wikipedia-28234236:dq-nyc-034-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-28234236:dq-nyc-034-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-28352081:dq-nyc-012",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:28352081",
+      "hunt_idea_id": "idea:nyc:dq-nyc-012",
+      "language": "en-US",
+      "clue": "Venice sailed to the Village, landed on a horse stable, and blushed bright pink.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for a palazzo where no canal runs.",
+          "evidence_refs": [
+            "evidence:wikipedia-28352081:dq-nyc-012-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find Julian Schnabel’s bold pink building.",
+          "evidence_refs": [
+            "evidence:wikipedia-28352081:dq-nyc-012-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-28352081:dq-nyc-012-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-28435530:dq-nyc-023",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:28435530",
+      "hunt_idea_id": "idea:nyc:dq-nyc-023",
+      "language": "en-US",
+      "clue": "I was born Italianate, then decades later received a steep French hat.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "The answer’s hat is younger than the building.",
+          "evidence_refs": [
+            "evidence:wikipedia-28435530:dq-nyc-023-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the mansard roof added to Odd Fellows Hall.",
+          "evidence_refs": [
+            "evidence:wikipedia-28435530:dq-nyc-023-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-28435530:dq-nyc-023-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-2976321:dq-nyc-021",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:2976321",
+      "hunt_idea_id": "idea:nyc:dq-nyc-021",
+      "language": "en-US",
+      "clue": "A glass rose blooms between twin stair towers, watered only by city light.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "The flower is circular architecture, not a plant.",
+          "evidence_refs": [
+            "evidence:wikipedia-2976321:dq-nyc-021-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the rose window on the Eldridge Street facade.",
+          "evidence_refs": [
+            "evidence:wikipedia-2976321:dq-nyc-021-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-2976321:dq-nyc-021-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-3134198:dq-nyc-024",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:3134198",
+      "hunt_idea_id": "idea:nyc:dq-nyc-024",
+      "language": "en-US",
+      "clue": "Eight roads argue around me while I quietly remember Chinese American service members.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Find the Chinatown square where many streets converge.",
+          "evidence_refs": [
+            "evidence:wikipedia-3134198:dq-nyc-024-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Your target is the Kimlau memorial arch.",
+          "evidence_refs": [
+            "evidence:wikipedia-3134198:dq-nyc-024-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-3134198:dq-nyc-024-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-32319261:dq-nyc-013",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:32319261",
+      "hunt_idea_id": "idea:nyc:dq-nyc-013",
+      "language": "en-US",
+      "clue": "My address needed half a number because my house received barely a whole share of the street.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Search Bedford Street for a fraction.",
+          "evidence_refs": [
+            "evidence:wikipedia-32319261:dq-nyc-013-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the townhouse documented as only 9 feet 6 inches wide.",
+          "evidence_refs": [
+            "evidence:wikipedia-32319261:dq-nyc-013-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-32319261:dq-nyc-013-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-3638870:dq-nyc-025",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:3638870",
+      "hunt_idea_id": "idea:nyc:dq-nyc-025",
+      "language": "en-US",
+      "clue": "My wall is a hand of mismatched cards; turn the pieces and the street enters the gallery.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for architecture designed to blur inside and outside.",
+          "evidence_refs": [
+            "evidence:wikipedia-3638870:dq-nyc-025-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the row of rotating facade panels at Storefront.",
+          "evidence_refs": [
+            "evidence:wikipedia-3638870:dq-nyc-025-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-3638870:dq-nyc-025-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-4282471:dq-nyc-017",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:4282471",
+      "hunt_idea_id": "idea:nyc:dq-nyc-017",
+      "language": "en-US",
+      "clue": "Fame stands on the city’s shoulders, dressed in gold and too high to hear applause.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look above a building whose base contains a subway station.",
+          "evidence_refs": [
+            "evidence:wikipedia-4282471:dq-nyc-017-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the gilded figure named *Civic Fame*.",
+          "evidence_refs": [
+            "evidence:wikipedia-4282471:dq-nyc-017-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-4282471:dq-nyc-017-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-4305609:dq-nyc-031",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:4305609",
+      "hunt_idea_id": "idea:nyc:dq-nyc-031",
+      "language": "en-US",
+      "clue": "New Yorkers were told my doorway carried two survivors from a buried Roman city. Find the restaurant between them.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "The buried city was Pompeii.",
+          "evidence_refs": [
+            "evidence:wikipedia-4305609:dq-nyc-031-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Inspect the entrance columns at Delmonico’s.",
+          "evidence_refs": [
+            "evidence:wikipedia-4305609:dq-nyc-031-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-4305609:dq-nyc-031-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-446394:dq-nyc-028",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:446394",
+      "hunt_idea_id": "idea:nyc:dq-nyc-028",
+      "language": "en-US",
+      "clue": "I weigh 7,100 pounds but have been caught forever in the instant before I rush.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Financial optimism has horns.",
+          "evidence_refs": [
+            "evidence:wikipedia-446394:dq-nyc-028-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the bronze bull just north of Bowling Green.",
+          "evidence_refs": [
+            "evidence:wikipedia-446394:dq-nyc-028-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-446394:dq-nyc-028-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-4683905:dq-nyc-002",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:4683905",
+      "hunt_idea_id": "idea:nyc:dq-nyc-002",
+      "language": "en-US",
+      "clue": "My orange numbers race in two directions while a stone ripple waits beside them. What time am I trying to tell?",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Search the south side of Union Square, above eye level.",
+          "evidence_refs": [
+            "evidence:wikipedia-4683905:dq-nyc-002-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the orange LED digits beside a circular void in a rippling brick wall.",
+          "evidence_refs": [
+            "evidence:wikipedia-4683905:dq-nyc-002-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-4683905:dq-nyc-002-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-5028262:dq-nyc-005",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:5028262",
+      "hunt_idea_id": "idea:nyc:dq-nyc-005",
+      "language": "en-US",
+      "clue": "Stone arches arrived after me, and generations passed beneath my limbs. Find Manhattan’s elder Englishman.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "The answer is alive and rooted in Washington Square.",
+          "evidence_refs": [
+            "evidence:wikipedia-5028262:dq-nyc-005-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Seek the English elm in the park’s northwest corner.",
+          "evidence_refs": [
+            "evidence:wikipedia-5028262:dq-nyc-005-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-5028262:dq-nyc-005-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-6133057:dq-nyc-009",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:6133057",
+      "hunt_idea_id": "idea:nyc:dq-nyc-009",
+      "language": "en-US",
+      "clue": "The horses moved out, the scholars moved in, and the little street kept its stable name.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "A mews was built to serve horses.",
+          "evidence_refs": [
+            "evidence:wikipedia-6133057:dq-nyc-009-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Look through the gate just north of Washington Square.",
+          "evidence_refs": [
+            "evidence:wikipedia-6133057:dq-nyc-009-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-6133057:dq-nyc-009-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-7547059:dq-nyc-038",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:7547059",
+      "hunt_idea_id": "idea:nyc:dq-nyc-038",
+      "language": "en-US",
+      "clue": "Four Corinthian guards stand above stairs removed for traffic, then returned when the street made room again.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look beside City Hall for the courthouse associated with Boss Tweed.",
+          "evidence_refs": [
+            "evidence:wikipedia-7547059:dq-nyc-038-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the four-column portico approached by the restored granite stair.",
+          "evidence_refs": [
+            "evidence:wikipedia-7547059:dq-nyc-038-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-7547059:dq-nyc-038-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-768472:dq-nyc-001",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:768472",
+      "hunt_idea_id": "idea:nyc:dq-nyc-001",
+      "language": "en-US",
+      "clue": "I weigh nearly a ton, yet balance on one toe. My six dark faces refuse to lie flat. Find me.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Look for geometry where the Village meets Astor Place.",
+          "evidence_refs": [
+            "evidence:wikipedia-768472:dq-nyc-001-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "You need the large black cube mounted on a corner.",
+          "evidence_refs": [
+            "evidence:wikipedia-768472:dq-nyc-001-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-768472:dq-nyc-001-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-9046237:dq-nyc-029",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:9046237",
+      "hunt_idea_id": "idea:nyc:dq-nyc-029",
+      "language": "en-US",
+      "clue": "My pink marble remembers an explosion because its owners refused to let the wounds disappear.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Study the low stone facade rather than the towers.",
+          "evidence_refs": [
+            "evidence:wikipedia-9046237:dq-nyc-029-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Look for unrepaired impact marks on 23 Wall Street.",
+          "evidence_refs": [
+            "evidence:wikipedia-9046237:dq-nyc-029-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-9046237:dq-nyc-029-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    },
+    {
+      "id": "clue:nyc:wikipedia-9809645:dq-nyc-020",
+      "record_version": 1,
+      "lifecycle": "candidate",
+      "place_id": "place:wikipedia:9809645",
+      "hunt_idea_id": "idea:nyc:dq-nyc-020",
+      "language": "en-US",
+      "clue": "I am only one block long, yet halfway through I abruptly change my mind.",
+      "hints": [
+        {
+          "rung": 1,
+          "text": "Follow a Chinatown lane too short for a gentle curve.",
+          "evidence_refs": [
+            "evidence:wikipedia-9809645:dq-nyc-020-observable-target"
+          ]
+        },
+        {
+          "rung": 2,
+          "text": "Find the sharp bend in Doyers Street.",
+          "evidence_refs": [
+            "evidence:wikipedia-9809645:dq-nyc-020-observable-target"
+          ]
+        }
+      ],
+      "evidence_refs": [
+        "evidence:wikipedia-9809645:dq-nyc-020-observable-target"
+      ],
+      "editorial_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "reviewed_at": null,
+        "notes": null
+      },
+      "field_review": {
+        "status": "not_started",
+        "reviewer": null,
+        "verified_at": null,
+        "notes": null
+      }
+    }
+  ]
 }

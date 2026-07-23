@@ -5,8 +5,9 @@ The v1 bank is an **offline authoring artifact**. It is not read by `lib/quest.j
 ## Files and commands
 
 - Contract: `content/nyc/schema/content-bank.schema.v1.json`
+- Versioned source candidates: `content/nyc/source-candidates.v1.json`
 - NYC data: `content/nyc/content-bank.v1.json`
-- Approved-POI migration: `scripts/import-nyc-content-bank.js`
+- Approved-POI + candidate build: `scripts/import-nyc-content-bank.js`
 - Validator: `scripts/validate-content-bank.js`
 
 ```bash
@@ -15,14 +16,17 @@ npm run content:validate  # validate the committed NYC bank
 npm test                  # built-in Node tests
 ```
 
-The importer selects only legacy rows with `status: "approved"`. It derives place IDs from `(source, ext_id)`, preserves source identity and source text, and deliberately creates:
+The importer selects only legacy rows with `status: "approved"`. It derives place IDs from `(source, ext_id)`, preserves source identity and source text, then deterministically merges the separately versioned source-candidate artifact. The 40 researched records add source-reviewed-but-not-field-verified evidence, `needs_field_verification` hunt ideas, and `candidate` clue packages containing the report's draft riddle and two hints. The artifact also records rejected/deferred alternatives so rebuilds never need to guess at them.
+
+For approved POIs without a mapped candidate, the importer deliberately creates:
 
 - places in `needs_source_review`;
 - empty `observable_evidence` arrays;
-- unknown access, approach, and seasonality fields;
-- empty `hunt_ideas` and `clue_packages` collections.
+- unknown access, approach, and seasonality fields.
 
-It never turns legacy lore or blurbs into observable claims and never generates or publishes clues. Re-running it produces byte-identical output for identical input. Because it is a migration/rebuild command, do not run it over hand-edited content without first preserving those edits.
+For mapped source candidates, it preserves the exact catalog place ID, cited URL/excerpt, and observable claim. Evidence uses `verification.status: "source_verified"` with `method: "source_review"`; this means desk research only and never a current human site check. No imported record is `field_verified` or `published`.
+
+Re-running the importer produces byte-identical output for identical inputs and never writes the source-candidate artifact. Edit the source artifact rather than hand-editing generated bank records, then rebuild.
 
 ## Identity and versions
 
@@ -78,7 +82,7 @@ A source excerpt, map photo, model output, or prior legacy approval is not a hum
 
 Create a hunt idea only from existing place and evidence IDs. `observable_target_ids` should show a varied target mix rather than a history-only theme.
 
-A clue package remains `candidate` while empty or being drafted. It must reference one place and only the evidence IDs used by its clue and hints. The v1 structure reserves three ordered hint rungs, but this migration intentionally creates none.
+A clue package remains `candidate` while being drafted. It must reference one place and only the evidence IDs used by its clue and hints. The v1 structure allows up to three ordered hint rungs; the source-candidate tranche preserves its two researched draft hints without inventing a third. Publication still requires exactly three reviewed rungs.
 
 Before publishing a clue package, editors must verify:
 

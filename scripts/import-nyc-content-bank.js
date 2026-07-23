@@ -8,11 +8,13 @@ function option(name, fallback) {
 }
 
 const input = option("--in", new URL("../db/nyc-pois-labeled.json", import.meta.url));
+const candidatesInput = option("--candidates", new URL("../content/nyc/source-candidates.v1.json", import.meta.url));
 const output = option("--out", new URL("../content/nyc/content-bank.v1.json", import.meta.url));
 
 try {
   const rows = JSON.parse(readFileSync(input, "utf8"));
-  const bank = importApprovedPois(rows);
+  const sourceCandidates = JSON.parse(readFileSync(candidatesInput, "utf8"));
+  const bank = importApprovedPois(rows, sourceCandidates);
   const result = validateContentBank(bank);
   if (!result.valid) throw new Error(`generated bank is invalid:\n${result.errors.join("\n")}`);
   writeFileSync(output, JSON.stringify(bank, null, 2) + "\n");

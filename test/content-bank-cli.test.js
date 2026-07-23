@@ -11,9 +11,11 @@ function run(script, args = []) {
   return spawnSync(process.execPath, [script, ...args], { cwd: root, encoding: "utf8" });
 }
 
-test("importer CLI writes deterministic validated content", () => {
+test("importer CLI writes deterministic validated content without changing source candidates", () => {
   const dir = mkdtempSync(join(tmpdir(), "dayquest-bank-"));
   const output = join(dir, "bank.json");
+  const candidatePath = new URL("../content/nyc/source-candidates.v1.json", import.meta.url);
+  const candidateBytes = readFileSync(candidatePath, "utf8");
   const args = ["scripts/import-nyc-content-bank.js", "--out", output];
   const first = run(...[args[0], args.slice(1)]);
   assert.equal(first.status, 0, first.stderr);
@@ -21,7 +23,8 @@ test("importer CLI writes deterministic validated content", () => {
   const second = run(...[args[0], args.slice(1)]);
   assert.equal(second.status, 0, second.stderr);
   assert.equal(readFileSync(output, "utf8"), bytes);
-  assert.match(first.stdout, /206 places; 0 hunt ideas; 0 clue packages/);
+  assert.equal(readFileSync(candidatePath, "utf8"), candidateBytes);
+  assert.match(first.stdout, /206 places; 40 hunt ideas; 40 clue packages/);
 });
 
 test("validator CLI exits nonzero for invalid content", () => {
