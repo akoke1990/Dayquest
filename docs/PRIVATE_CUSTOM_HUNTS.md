@@ -2,6 +2,8 @@
 
 ## Firm recommendation
 
+**Owner decision: approved for the second deployment on 2026-07-22.**
+
 Launch **Private Custom Hunts immediately post-launch**, not before or inside DayQuest 1.0.
 
 Use a **creator-paid, single consumable in-app purchase**:
