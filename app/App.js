@@ -88,6 +88,7 @@ import Constants from "expo-constants";
 import mapStyle from "./mapStyle";
 import QuestScanner from "./QuestScanner";
 import CameraCatch from "./CameraCatch";
+import { normalizeStopHints } from "./lib/hintFlow";
 
 // True only when running inside Expo Go. In a real build `appOwnership` is
 // null/undefined, so this is false and Google + the custom style activate.
@@ -125,9 +126,9 @@ const FOLLOW_DELTA = 0.008;
 // the map to space or into the pavement.
 const MAP_MIN_ZOOM = 12;
 const MAP_MAX_ZOOM = 19;
-// After this long on one clue we surface the manual "reveal anyway" escape, so a
-// GPS/accessibility issue can never trap the user on a clue.
-const ESCAPE_AFTER_MS = 45000;
+// After this long on one clue we make exact guidance available. It helps players
+// reach the place but never resolves the stop; GPS arrival still has to fire.
+const GUIDANCE_AFTER_MS = 45000;
 const FALLBACK_ITEM = "🎁"; // virtual_item when the server hasn't supplied one
 
 // Warmer/colder proximity bands (metal-detector feel). Ordered cold→hot. Each
@@ -1011,7 +1012,7 @@ function Celebration({ play = true, points, streakWeeks, newSpots, elapsedS, isB
 
 // A game-like numbered map pin with a little scale-pop when it becomes the
 // selected stop. Hand-rolled Animated (no gesture stack) — Expo-Go safe.
-function MapPin({ orderIndex, completed, selected }) {
+function MapPin({ orderIndex, completed, selected, guided }) {
   const scale = useRef(new Animated.Value(selected ? 1 : 0.92)).current;
   useEffect(() => {
     Animated.spring(scale, {
@@ -1026,11 +1027,12 @@ function MapPin({ orderIndex, completed, selected }) {
       style={[
         styles.pin,
         completed && styles.pinDone,
+        guided && styles.pinGuided,
         selected && styles.pinSelected,
         { transform: [{ scale }] },
       ]}
     >
-      <Text style={styles.pinText}>{completed ? "✓" : orderIndex}</Text>
+      <Text style={styles.pinText}>{completed ? "✓" : guided ? "?" : orderIndex}</Text>
     </Animated.View>
   );
 }
@@ -1168,7 +1170,7 @@ export default function App() {
   // --- HUNT state (scavenger hunt = Level 2) ----------------------------------
   // The order_index of the target currently being REVEALED (the "You found it!"
   // moment), or null when none is showing. Set on a find (GPS ≤ find radius or
-  // manual reveal); cleared when the user taps "Next clue" — which advances the
+  // in-zone tap); cleared when the user taps "Next clue" — which advances the
   // hunt to the next not-found target. Gates the completion auto-present so the
   // final reveal isn't covered.
   const [findReveal, setFindReveal] = useState(null);
@@ -1177,13 +1179,10 @@ export default function App() {
   // the catch is structurally geo-gated to the solved place — it can't be opened
   // from anywhere else. Reset in nextClue() when the find completes.
   const [catching, setCatching] = useState(false);
-  // Hint-ladder rung currently unlocked on the CURRENT target:
-  //   0 = clue only · 1 = nudge revealed · 2 = strong hint (stop.hint) revealed.
-  // Rung 3 (reveal) is the existing `escapeArmed` give-up path — never a counter
-  // value, so the no-trap reveal logic below stays exactly as it was. Reset per
-  // target in nextClue() and the per-target reset effect.
+  // Number of authored semantic hints revealed on the CURRENT target. Movement
+  // guidance stays separate in the directive line and guide state below.
   const [hintRung, setHintRung] = useState(0);
-  const [escapeArmed, setEscapeArmed] = useState(false); // the "reveal anyway" fallback shown after a while
+  const [guideArmed, setGuideArmed] = useState(false); // 45s no-trap: offer guidance, not solving
   // Warmer/colder TREND (closer/farther since the last *significant* move),
   // folded into the directive line. "warmer" | "colder" | null (no reading yet /
   // move too small to trust). GPS-noise-safe: only updates on ≥ TREND_MOVE_M of
@@ -1237,7 +1236,7 @@ export default function App() {
 
   // Bottom clue-sheet rest state. The sheet has two rest states:
   //   false = PEEK (default): clue + directive + action row, map owns the screen.
-  //   true  = EXPANDED: full clue + the 3-rung hint ladder.
+  //   true  = EXPANDED: full clue + authored hints + optional guide action.
   // Tap the header (or the grabber) toggles; a PanResponder swipe is an
   // enhancement on top. A "collapse to slim tab" power-user state is kept too.
   const [sheetExpanded, setSheetExpanded] = useState(false);
@@ -1813,20 +1812,20 @@ export default function App() {
     progress,
   ]);
 
-  // Arm the manual "reveal anyway" escape after a while on the SAME clue, so a
-  // GPS/accessibility issue can never trap the user. Resets per target (keyed on
-  // the current target's order_index + findReveal).
+  // Make exact guidance available after a while on the SAME clue, so GPS,
+  // accessibility, or content issues never trap the user. Guidance shows where
+  // to go, but it never marks the stop found. Resets per target.
   useEffect(() => {
     if (screen !== "ready" || !quest || findReveal != null) {
       return;
     }
     const target = quest.stops.find((s) => !progress[s.order_index]?.found);
     if (!target) return;
-    setEscapeArmed(false);
+    setGuideArmed(false);
     setHintRung(0); // re-collapse the hint ladder when the active target changes
     setTrend(null); // and clear the warmer/colder trend
     prevHeatDistRef.current = null;
-    const id = setTimeout(() => setEscapeArmed(true), ESCAPE_AFTER_MS);
+    const id = setTimeout(() => setGuideArmed(true), GUIDANCE_AFTER_MS);
     return () => clearTimeout(id);
     // Re-arm when the active target changes (its order_index) or a reveal closes.
   }, [
@@ -1853,9 +1852,10 @@ export default function App() {
       // live (see checkIn). To avoid double-counting, completion only banks the
       // +100 completion BONUS. The recap badge still SHOWS the full quest value
       // (check-ins + bonus) so the celebration reflects everything earned.
-      // Only GENUINE in-geofence finds banked find-points in checkIn — give-up
-      // reveals are `found` but `itemless` and earned NO find-points. Count those
-      // (not raw foundCount) so the recap badge matches what was actually banked.
+      // Only GENUINE in-geofence finds banked find-points in checkIn. Legacy
+      // itemless reveals are `found` but earned NO find-points. Count the
+      // earning finds (not raw foundCount) so the recap badge matches what was
+      // actually banked.
       const earnedFindCount = quest.stops.filter(
         (s) => progress[s.order_index]?.found && !progress[s.order_index]?.itemless
       ).length;
@@ -2018,11 +2018,11 @@ export default function App() {
     setSelectedStop(null);
     setRecapOpen(false);
     recapAutoPresentedRef.current = false;
-    // Fresh hunt: no reveal showing, hint ladder collapsed, escape disarmed,
+    // Fresh hunt: no reveal showing, hint ladder collapsed, guidance disarmed,
     // sheet back to peek, trend cleared, bands/finds reset.
     setFindReveal(null);
     setHintRung(0);
-    setEscapeArmed(false);
+    setGuideArmed(false);
     setSheetExpanded(false);
     setSheetCollapsed(false);
     setTrend(null);
@@ -2262,7 +2262,7 @@ export default function App() {
     preQuestDiscoveredRef.current = resumeDiscovered;
     setFindReveal(null);
     setHintRung(0);
-    setEscapeArmed(false);
+    setGuideArmed(false);
     setSheetExpanded(false);
     setSheetCollapsed(false);
     setTrend(null);
@@ -2316,8 +2316,8 @@ export default function App() {
     setFeedbackSent(true);
   }
 
-  // The single CHOKEPOINT for banking a FIND. Called by findStop() on every find
-  // path (GPS-triggered, "found it" tap, or manual reveal fallback). The find is
+  // The single CHOKEPOINT for banking a FIND. Called by findStop() on every
+  // in-geofence find path (GPS-triggered or "found it" tap). The find is
   // now the CORE earning event: it banks points immediately, marks the target
   // FOUND, records the place into Visited AND its virtual_item into Collections,
   // and persists synchronously — all guarded so finding the same target twice
@@ -2356,7 +2356,7 @@ export default function App() {
       JSON.stringify({ quest, progress: next, startedAt: startedAtRef.current, routePath: routePathRef.current })
     ).catch(() => {});
 
-    track("stop_found", { order_index: orderIndex });
+    track("stop_found", { order_index: orderIndex, guided: !!progress[orderIndex]?.guided });
 
     // Bank the per-find points (lifetime total only — not quests_completed or
     // streak). Then push the fresh total to the cloud profile if signed in.
@@ -2390,30 +2390,31 @@ export default function App() {
   }
 
   // Trigger a FIND: the animated reveal moment. Called when the user reaches the
-  // find radius (GPS auto), taps "I found it!" (in-zone), or uses the manual
-  // reveal escape. Guarded by foundFiredRef so GPS jitter can't double-fire.
+  // find radius (GPS auto) or taps "I found it!" while in-zone. Guarded by
+  // foundFiredRef so GPS jitter can't double-fire.
   //
   // ITEM-INTEGRITY GATE (`awardItem`): the virtual ITEM + its find-points are
   // granted ONLY when the user was physically inside the geofence (auto-find, or
-  // "I found it!" while in-zone). The give-up escape (`viaEscape`, `awardItem`
-  // false) reveals the place NAME and ADVANCES the hunt — the no-trap safety —
-  // but grants NO item and NO points, because they didn't actually go there.
+  // "I found it!" while in-zone). A legacy itemless reveal path can still mark a
+  // stop resolved without points/items, but the current guide action does not
+  // route through findStop at all.
   //
   // Either way the stop becomes `found:true` so it's resolved (no longer the
   // current target, counts toward completion, and the auto-find effect can never
-  // re-grant it if they later wander near). A give-up stop additionally carries
-  // `itemless:true` so the reveal renders without the catch/collect step and its
-  // dot never falsely shows the collected item.
+  // re-grant it if they later wander near). An itemless stop additionally
+  // carries `itemless:true` so the reveal renders without the catch/collect step
+  // and its dot never falsely shows the collected item.
   function findStop(orderIndex, { viaEscape = false, awardItem = true } = {}) {
     if (foundFiredRef.current.has(orderIndex)) return;
     foundFiredRef.current.add(orderIndex);
     setSelectedStop(null); // close any open card so the reveal owns the screen
-    setEscapeArmed(false);
+    setGuideArmed(false);
     setFindReveal(orderIndex); // show the reveal overlay for this target
     track("stop_revealed", {
       order_index: orderIndex,
       via: viaEscape ? "escape" : "found",
       awarded: awardItem,
+      guided: !!progress[orderIndex]?.guided,
     });
     if (awardItem) {
       // GENUINE in-geofence find. Bank points + visited + collect the item
@@ -2423,7 +2424,7 @@ export default function App() {
       // layer on top.
       checkIn(orderIndex);
     } else {
-      // GIVE-UP reveal. Resolve the stop WITHOUT routing through checkIn: no
+      // Legacy itemless reveal. Resolve the stop WITHOUT routing through checkIn: no
       // points, no Visited record (they weren't there), no collected item. Mark
       // it found+itemless and persist synchronously so a crash can't lose the
       // resolution. Seed awardedRef as cheap insurance so nothing re-awards it.
@@ -2443,7 +2444,7 @@ export default function App() {
     // session re-plays the animation. The item "collect-fly" (collectAnim) is NOT
     // played here — it's deferred until the user CATCHES the item (camera catch /
     // skip / fallback) via completeCatch(), so the collectible visibly stays "in
-    // the place" until caught. (Unused on the give-up path — no item shows.)
+    // the place" until caught. (Unused on legacy itemless reveals — no item shows.)
     revealCardAnim.setValue(0);
     collectAnim.setValue(0);
     Animated.spring(revealCardAnim, { toValue: 1, friction: 6, tension: 60, useNativeDriver: true }).start();
@@ -2494,12 +2495,38 @@ export default function App() {
     setCatching(false); // tear down the camera-catch overlay if it was up
     completingRef.current = false; // re-arm the catch-completion guard for the next find
     setHintRung(0); // re-collapse the hint ladder for the new target
-    setEscapeArmed(false);
+    setGuideArmed(false);
     setSheetExpanded(false); // drop the clue sheet back to peek for the new clue
     setSheetCollapsed(false);
     setTrend(null); // clear the warmer/colder trend for the new target
     prevHeatDistRef.current = null;
     lastBandRef.current = null; // re-arm warmer/colder for the new target
+  }
+
+  function activateGuidance(orderIndex) {
+    const target = quest?.stops.find((s) => !progress[s.order_index]?.found);
+    if (!target?.place || target.order_index !== orderIndex) return;
+    setSelectedStop(null);
+    setGuideArmed(true);
+    const next = {
+      ...progress,
+      [orderIndex]: { ...progress[orderIndex], guided: true },
+    };
+    setProgress(next);
+    AsyncStorage.setItem(
+      STORE_KEY,
+      JSON.stringify({ quest, progress: next, startedAt: startedAtRef.current, routePath: routePathRef.current })
+    ).catch(() => {});
+    track("guidance_enabled", { order_index: orderIndex });
+    mapRef.current?.animateToRegion(
+      {
+        latitude: target.place.lat,
+        longitude: target.place.lng,
+        latitudeDelta: 0.004,
+        longitudeDelta: 0.004,
+      },
+      500
+    );
   }
 
   // Manual recenter (the 📍 FAB): re-frame the current target's search zone + the
@@ -4224,7 +4251,7 @@ export default function App() {
       { icon: "🧭", title: "Start a quest", body: "Tap Start a Quest and we build a fresh hunt around you — a loop of hidden spots you've never been sent to before. Bring someone along with Start a Quest with Friends to race the same clues." },
       { icon: "🔍", title: "Crack the clue", body: "Every stop is a secret. You get one short, punchy riddle — no name, no pin on the map. A compass arrow points you the right way; the riddle tells you where to stop." },
       { icon: "🔥", title: "Warmer, colder", body: "As you walk, the map edges glow red when you're closing in and blue when you're way off. Follow the heat — and the buzz — toward the hidden spot." },
-      { icon: "💡", title: "Stuck? Climb the hint ladder", body: "Tap for a nudge, then a hint, then a full reveal of where it is. Hints help you solve it, but they won't walk you there — you still have to show up." },
+      { icon: "💡", title: "Stuck? Climb the hint ladder", body: "Reveal authored hints first. If you're still stuck, Guide me there drops an unnamed marker, but you still have to reach the spot to find it." },
       { icon: "📸", title: "Prove you found it", body: "Reach the spot to catch its area-exclusive item through the camera, or snap a photo we verify. That's the only way the next clue unlocks — no fake skips." },
       { icon: "📖", title: "Collect the story", body: "The second you find a place, its history unlocks as your reward. Every find banks points and drops the spot into your Collections and Places Visited." },
       { icon: "🏅", title: "Finish, then beat yourself", body: "Complete the hunt for a shareable recap card saved to My Quests. Chase personal bests on your Scorecard, keep your weekly streak alive, and never get the same quest twice." },
@@ -4397,7 +4424,7 @@ export default function App() {
             </>
           ) : null}
 
-          <Text style={styles.revealHint}>Follow the clues. No pins — you have to hunt.</Text>
+          <Text style={styles.revealHint}>Follow the clues. Pins stay hidden unless you ask for guidance.</Text>
         </Animated.View>
       </View>
     );
@@ -4450,33 +4477,12 @@ export default function App() {
   }
 
   // --- Hint-ladder content ----------------------------------------------------
-  // Difficulty pip ("◆◆◇ HARD") — sets expectations (a hard clue SHOULD feel
-  // hard). Reads quest/target difficulty defensively (server-supplied), default
-  // "hard" (the only difficulty the app currently requests).
-  const difficulty = (quest.difficulty || currentTarget?.difficulty || "hard").toLowerCase();
-  const diffPip =
-    difficulty === "impossible"
-      ? "◆◆◆ IMPOSSIBLE"
-      : difficulty === "hard"
-      ? "◆◆◇ HARD"
-      : difficulty === "medium"
-      ? "◆◇◇ MEDIUM"
-      : "◇◇◇ EASY";
-  // Rung 1 = system-derived NUDGE: place.kind (when present) + the warmer/colder
-  // steer. Degrades gracefully when kind is blank (Wikipedia-sourced places have
-  // kind: "") — drop the category clause and use the steer alone.
-  const targetKind = (currentTarget?.place?.kind || "").trim();
-  const steer =
-    trend === "warmer"
-      ? "you're getting warmer — keep heading the way the glow brightened"
-      : trend === "colder"
-      ? "you've cooled off — double back toward where the glow was warmer"
-      : band?.id === "warm" || band?.id === "hot"
-      ? "you're close — move around to feel the glow warm up"
-      : "move a bit to feel the warmer/colder glow steer you";
-  const nudgeText = targetKind
-    ? `It's a ${targetKind}, and ${steer}.`
-    : `${steer.charAt(0).toUpperCase()}${steer.slice(1)}.`;
+  // Semantic hints are authored content only. Directional movement guidance
+  // stays in `directive`; the ladder never invents a place-kind or heat nudge.
+  const currentHints = normalizeStopHints(currentTarget);
+  const guidanceActive = !!currentTarget && !!progress[currentTarget.order_index]?.guided;
+  const allHintsRevealed = currentHints.length > 0 && hintRung >= currentHints.length;
+  const guideUnlocked = guidanceActive || guideArmed || allHintsRevealed;
 
   // ITEM-INTEGRITY GATE: are we physically inside the current target's geofence
   // RIGHT NOW? Uses RAW live `coords` (not the movement-gated `heatCoords`) so it
@@ -4511,7 +4517,7 @@ export default function App() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.foundBanner}>
-          {/* A give-up-revealed stop is `found` but item-less — show it honestly
+          {/* An itemless stop is `found` but item-less — show it honestly
               (no collected item) so the dot never implies you collected it. */}
           <Text style={styles.foundBannerText}>
             {state.itemless ? "👁 Revealed — visit to collect the item" : `✓ Found it!  ${item}`}
@@ -4577,8 +4583,8 @@ export default function App() {
     const item = s.virtual_item || FALLBACK_ITEM;
     const remaining = quest.stops.filter((st) => !progress[st.order_index]?.found).length;
     const isLast = remaining === 0;
-    // Did this find grant the item? A give-up reveal marks the stop `itemless`
-    // (setProgress + setFindReveal batch, so this render already sees it). When
+    // Did this find grant the item? Legacy itemless reveals mark the stop
+    // `itemless` (setProgress + setFindReveal batch, so this render already sees it). When
     // itemless we render a NAME-only reveal: no collectible, no camera-catch, no
     // collect-step — and "Next clue" advances via nextClue() (NOT completeCatch,
     // which would collect the item). This is the no-trap, item-less safety path.
@@ -4649,7 +4655,7 @@ export default function App() {
               </View>
             </>
           ) : (
-            // GIVE-UP (itemless) reveal: name + lore only, NO collectible and NO
+            // Itemless reveal: name + lore only, NO collectible and NO
             // camera-catch step. Advancing goes through nextClue() directly —
             // NOT completeCatch (which would collect the item). The stop is
             // already resolved (found+itemless) so this just clears the overlay.
@@ -4667,7 +4673,7 @@ export default function App() {
         {/* Full-screen camera-catch overlay (the COLLECT step). Mounted only
             while `catching`, only from inside this reveal → structurally
             geo-gated. Both outcomes route through completeCatch. Never mounts on
-            the itemless give-up path (no catch step there). */}
+            the itemless path (no catch step there). */}
         {catching && awardItem ? (
           <View style={StyleSheet.absoluteFill}>
             <CameraCatch
@@ -4711,7 +4717,7 @@ export default function App() {
         })()}
 
         {/* Hunt framing: N places found, N items collected. Items collected can
-            be FEWER than places found — give-up reveals resolve a place without
+            be FEWER than places found — legacy itemless reveals resolve a place without
             granting its item (you weren't physically there). */}
         {(() => {
           const itemCount = quest.stops.filter(
@@ -4857,8 +4863,8 @@ export default function App() {
             strokeWidth={7}
           />
         ) : null}
-        {/* FOUND targets get a pin (revealed already — safe to show). Unfound
-            targets are NEVER pinned, so the hunt stays a hunt. */}
+        {/* FOUND targets get a named pin (revealed already — safe to show).
+            The current target gets an unnamed marker only after guidance is on. */}
         {quest.stops
           .filter((s) => progress[s.order_index]?.found)
           .map((s) => {
@@ -4875,6 +4881,15 @@ export default function App() {
               </Marker>
             );
           })}
+        {guidanceActive && currentTarget?.place ? (
+          <Marker
+            key={`${currentTarget.order_index}-guided`}
+            coordinate={{ latitude: currentTarget.place.lat, longitude: currentTarget.place.lng }}
+            anchor={{ x: 0.5, y: 0.5 }}
+          >
+            <MapPin orderIndex={currentTarget.order_index} guided />
+          </Marker>
+        ) : null}
       </MapView>
 
       {/* ===== PERIPHERAL EDGE-GLOW: the warmer/colder signal as a soft colored
@@ -4992,10 +5007,10 @@ export default function App() {
               opaque cream + ink (legible in sun, NOT translucent), re-readable —
               the clue is the product. Replaces the old left-docked rail AND the
               standalone bottom warmth meter (now folded into the directive line).
-                • PEEK (default): kicker + difficulty pip + clue + directive +
-                  [💡 Nudge] + [I found it!].
-                • EXPANDED (tap header / swipe up): full clue + the 3-rung hint
-                  ladder.
+                • PEEK (default): kicker + clue + directive +
+                  [💡 Hint] + [I found it!].
+                • EXPANDED (tap header / swipe up): full clue + authored hints
+                  and optional guidance.
                 • COLLAPSED: a slim 📜 tab for a clean map.
               Tap-to-toggle is the reliable baseline; the grabber + header are the
               tap targets. pointerEvents box-none on the wrap so map gaps still
@@ -5073,7 +5088,6 @@ export default function App() {
                   <Text style={styles.clueKicker}>
                     CLUE {doneCount + 1} OF {quest.stops.length}
                   </Text>
-                  <Text style={styles.diffPip}>{diffPip}</Text>
                 </View>
               </TouchableOpacity>
               {/* Explicit ✕ while expanded — belt-and-braces close (field
@@ -5092,7 +5106,7 @@ export default function App() {
               ) : null}
 
               {sheetExpanded ? (
-                // EXPANDED: full clue (scrollable) + the 3-rung hint ladder.
+                // EXPANDED: full clue (scrollable) + authored hints + guidance.
                 <ScrollView
                   style={styles.sheetScroll}
                   contentContainerStyle={styles.sheetScrollContent}
@@ -5105,65 +5119,60 @@ export default function App() {
 
                   <Text style={styles.ladderHeading}>HINT LADDER</Text>
 
-                  {/* Rung 1 — system-derived NUDGE (place.kind + warmer/colder
-                      steer; degrades gracefully when kind is blank). */}
-                  {hintRung >= 1 ? (
-                    <View style={styles.rungOpen}>
-                      <Text style={styles.rungLabel}>① 💡 Nudge</Text>
-                      <Text style={styles.rungBody}>{nudgeText}</Text>
-                    </View>
+                  {currentHints.length === 0 ? (
+                    <Text style={styles.noHintsText}>No extra hints for this stop yet.</Text>
                   ) : (
-                    <TouchableOpacity
-                      style={styles.rungBtn}
-                      onPress={() => setHintRung(1)}
-                      activeOpacity={0.8}
-                    >
-                      <Text style={styles.rungLabel}>① 💡 Nudge</Text>
-                      <Text style={styles.rungAction}>tap to reveal</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* Rung 2 — the strong hint (stop.hint). Locked until rung 1. */}
-                  {hintRung >= 2 ? (
-                    <View style={styles.rungOpen}>
-                      <Text style={styles.rungLabel}>② 🔦 Big hint</Text>
-                      <Text style={styles.rungBody}>
-                        {currentTarget.hint ||
-                          currentTarget.description ||
-                          "No extra hint for this one — trust the clue and the glow."}
-                      </Text>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
-                      style={[styles.rungBtn, hintRung < 1 && styles.rungBtnLocked]}
-                      onPress={() => hintRung >= 1 && setHintRung(2)}
-                      activeOpacity={hintRung >= 1 ? 0.8 : 1}
-                    >
-                      <Text style={styles.rungLabel}>② 🔦 Big hint</Text>
-                      <Text style={styles.rungAction}>
-                        {hintRung >= 1 ? "tap to reveal" : "locked → tap ①"}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* Rung 3 — REVEAL. The existing never-trap give-up: reveals the
-                      place NAME and ADVANCES, grants NO item/points. Surfaces once
-                      rung 2 is open, OR auto-arms at ESCAPE_AFTER_MS (the 45s
-                      never-trap, unchanged). */}
-                  {hintRung >= 2 || escapeArmed ? (
-                    <TouchableOpacity
-                      style={styles.rungReveal}
-                      onPress={() =>
-                        findStop(currentTarget.order_index, { viaEscape: true, awardItem: false })
+                    currentHints.map((hint, idx) => {
+                      const rung = idx + 1;
+                      const glyph = rung === 1 ? "①" : "②";
+                      const icon = rung === 1 ? "💡" : "🔦";
+                      const isOpen = hintRung >= rung;
+                      const isLocked = idx > 0 && hintRung < idx;
+                      const label = `${glyph} ${icon} Hint ${rung}`;
+                      if (isOpen) {
+                        return (
+                          <View key={label} style={styles.rungOpen}>
+                            <Text style={styles.rungLabel}>{label}</Text>
+                            <Text style={styles.rungBody}>{hint}</Text>
+                          </View>
+                        );
                       }
+                      return (
+                        <TouchableOpacity
+                          key={label}
+                          style={[styles.rungBtn, isLocked && styles.rungBtnLocked]}
+                          onPress={() => !isLocked && setHintRung(rung)}
+                          activeOpacity={isLocked ? 1 : 0.8}
+                        >
+                          <Text style={styles.rungLabel}>{label}</Text>
+                          <Text style={styles.rungAction}>
+                            {isLocked ? "locked → tap ①" : "tap to reveal"}
+                          </Text>
+                        </TouchableOpacity>
+                      );
+                    })
+                  )}
+
+                  {/* Guide: exact unnamed marker only. It never resolves the stop;
+                      GPS/geofence find still has to happen through findStop. */}
+                  {guideUnlocked ? (
+                    <TouchableOpacity
+                      style={[styles.rungReveal, guidanceActive && styles.rungRevealActive]}
+                      onPress={() => activateGuidance(currentTarget.order_index)}
                       activeOpacity={0.8}
                     >
-                      <Text style={styles.rungRevealText}>③ 🗺️ Show me where (still counts)</Text>
+                      <Text style={styles.rungRevealText}>
+                        ③ 🗺️ {guidanceActive ? "Guidance is on" : "Guide me there"}
+                      </Text>
                     </TouchableOpacity>
                   ) : (
                     <View style={[styles.rungBtn, styles.rungBtnLocked]}>
-                      <Text style={styles.rungLabel}>③ 🗺️ Show me where</Text>
-                      <Text style={styles.rungAction}>locked → tap ②</Text>
+                      <Text style={styles.rungLabel}>③ 🗺️ Guide me there</Text>
+                      <Text style={styles.rungAction}>
+                        {currentHints.length > 0
+                          ? `locked → tap ${currentHints.length === 1 ? "①" : "②"}`
+                          : "available after 45s"}
+                      </Text>
                     </View>
                   )}
                 </ScrollView>
@@ -5180,7 +5189,7 @@ export default function App() {
                 </View>
               )}
 
-              {/* Action row — always present in both rest states. [💡 Nudge]
+              {/* Action row — always present in both rest states. [💡 Hint]
                   jumps the user to the expanded ladder at rung ≥1; [I found it!]
                   grants the item ONLY when physically in the geofence (out of
                   zone → friendly "get closer" nudge, never a grant). */}
@@ -5189,11 +5198,11 @@ export default function App() {
                   style={styles.nudgeBtn}
                   activeOpacity={0.8}
                   onPress={() => {
-                    setHintRung((r) => Math.max(r, 1));
+                    if (currentHints.length > 0) setHintRung((r) => Math.max(r, 1));
                     setSheetExpanded(true);
                   }}
                 >
-                  <Text style={styles.nudgeBtnText}>💡 Nudge</Text>
+                  <Text style={styles.nudgeBtnText}>💡 Hint</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.foundItBtn, !inGeofence && styles.foundItBtnDim]}
@@ -5564,7 +5573,7 @@ const styles = StyleSheet.create({
   // --- Bottom CLUE SHEET (peek / expanded / collapsed) ------------------------
   // Full-width, docked at the very bottom. Opaque cream/ink (sunlight-legible,
   // NOT translucent). The peek state shows ~2 lines of clue + the directive; the
-  // expanded state scrolls the full clue + the 3-rung ladder.
+  // expanded state scrolls the full clue + authored hints + optional guide action.
   sheetWrap: { position: "absolute", left: 0, right: 0, bottom: 0 },
   clueSheet: {
     backgroundColor: CARD,
@@ -5597,7 +5606,6 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   sheetHeaderRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  diffPip: { fontSize: 12, fontWeight: "900", color: MUTE, letterSpacing: 1 },
   clueKicker: { fontSize: 12, fontWeight: "900", color: ACCENT, letterSpacing: 1.5, textTransform: "uppercase" },
   // Peek clue text (2-line clamp) + the full-size expanded clue text.
   sheetPeekBody: { marginTop: 6 },
@@ -5634,6 +5642,7 @@ const styles = StyleSheet.create({
   rungLabel: { fontSize: 15, fontWeight: "900", color: INK },
   rungAction: { fontSize: 13, fontWeight: "800", color: ACCENT },
   rungBody: { fontSize: 15, fontWeight: "700", color: INK, marginTop: 6, lineHeight: 21 },
+  noHintsText: { fontSize: 14, fontWeight: "800", color: MUTE, marginBottom: 10, lineHeight: 20 },
   rungReveal: {
     backgroundColor: ACCENT,
     borderRadius: 16,
@@ -5644,6 +5653,7 @@ const styles = StyleSheet.create({
     borderColor: OUTLINE,
     alignItems: "center",
   },
+  rungRevealActive: { backgroundColor: GREEN },
   rungRevealText: { fontSize: 15, fontWeight: "900", color: "#fff" },
   // Action row (both rest states)
   sheetActions: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginTop: 14, gap: 12 },
@@ -5894,6 +5904,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
   },
   pinDone: { backgroundColor: GREEN },
+  pinGuided: { backgroundColor: AMBER },
   pinSelected: {
     backgroundColor: AMBER, // brighter gold for the active stop
     borderColor: "#fff",
