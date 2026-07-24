@@ -1,0 +1,723 @@
+{
+  "artifact_type": "dayquest_nyc_launch_canary_cohort",
+  "contract_version": "launch-cohort-v1",
+  "artifact_version": "1.0.0",
+  "artifact_id": "nyc-launch-canary-cohort-v1",
+  "site_id": "nyc",
+  "state": {
+    "research_mode": "remote_only",
+    "current_gate": "needs_field_check",
+    "field_verified": false,
+    "publication_claimed": false,
+    "published": false,
+    "live": false,
+    "interpretation": "Selection is a scout queue only. Detailed remote canary eligibility is not field verification, publication approval, or a live-content claim."
+  },
+  "source_artifacts": [
+    "content/nyc/content-bank.v1.json",
+    "content/nyc/source-candidates.v2.json",
+    "content/nyc/remote-verification.v1.json",
+    "content/nyc/remote-verification/villages.remote-v1.json",
+    "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+    "content/nyc/remote-verification/downtown.remote-v1.json",
+    "content/nyc/source-registry.v1.json"
+  ],
+  "selection_policy": {
+    "goal": "Smallest credible first canary scout packet: one neutral four-stop West Village architecture-and-public-space route plus one four-stop Greenwich Village reserve route.",
+    "admission": "Detailed villages remote decision must be canary_eligible; low risk is required for this cohort; every item remains remote-only and scout-gated.",
+    "exclusions": [
+      "Remote decisions hold or reject",
+      "Volatile events",
+      "Interior, purchase, operator-permission, or private-access dependencies",
+      "Known business dependency",
+      "Any field-verified, published, or live claim",
+      "Sensitive memorials in the first recreational canary route; review separately under an explicit respectful editorial policy"
+    ],
+    "other_area_remote_artifacts_reviewed_as_scope_context": [
+      "content/nyc/remote-verification/east-chinatown.remote-v1.json",
+      "content/nyc/remote-verification/downtown.remote-v1.json"
+    ],
+    "secondary_discovery_only": [
+      "content/nyc/research/travel-discovery-leads.v1.json",
+      "content/nyc/events/nyc-events.v1.json"
+    ]
+  },
+  "routes": [
+    {
+      "route_id": "route:nyc-launch-v1:west-village-primary",
+      "role": "primary",
+      "area": "West Village",
+      "cohort_status": "scout_required",
+      "stop_count": 4,
+      "candidate_ids": [
+        "idea:nyc:dq-nyc-034",
+        "idea:nyc:dq-nyc-village-047",
+        "idea:nyc:dq-nyc-village-048",
+        "idea:nyc:dq-nyc-village-050"
+      ],
+      "walkability": {
+        "status": "requires_scout",
+        "basis": "ordered straight-line distances derived only from source-bank coordinates; not a pedestrian route or access claim",
+        "source_coordinate_sequence_length_m": 684,
+        "source_coordinate_max_span_m": 627,
+        "network_route_distance_status": "unknown",
+        "crossing_barrier_status": "unknown",
+        "route_geometry_claimed": false
+      }
+    },
+    {
+      "route_id": "route:nyc-launch-v1:greenwich-village-reserve",
+      "role": "reserve",
+      "area": "Greenwich Village",
+      "cohort_status": "scout_required",
+      "stop_count": 4,
+      "candidate_ids": [
+        "idea:nyc:dq-nyc-006",
+        "idea:nyc:dq-nyc-village-053",
+        "idea:nyc:dq-nyc-village-055",
+        "idea:nyc:dq-nyc-010"
+      ],
+      "walkability": {
+        "status": "requires_scout",
+        "basis": "ordered straight-line distances derived only from source-bank coordinates; not a pedestrian route or access claim",
+        "source_coordinate_sequence_length_m": 345,
+        "source_coordinate_max_span_m": 315,
+        "network_route_distance_status": "unknown",
+        "crossing_barrier_status": "unknown",
+        "route_geometry_claimed": false
+      }
+    }
+  ],
+  "candidates": [
+    {
+      "candidate_id": "idea:nyc:dq-nyc-034",
+      "route_id": "route:nyc-launch-v1:west-village-primary",
+      "route_order": 1,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-034",
+        "bank_place_id": "place:wikipedia:28234236",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-034-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-034",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-034",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-034-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-034-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision and durable exterior architecture target support a compact neutral first-canary route; current viewpoint, access, obstruction, and safety conditions remain unverified.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://en.wikipedia.org/?curid=28234236",
+          "https://en.wikipedia.org/wiki/New_York_Savings_Bank_Building",
+          "https://www.openstreetmap.org/?mlat=40.74&mlon=-74.00261111111111#map=19/40.74/-74.00261111111111"
+        ]
+      },
+      "observable_target_to_verify": "Look up at the former New York Savings Bank and find the beehive emblem on its facade.",
+      "field_questions": {
+        "access": "Can the beehive and two-faced clock be seen from a legal public sidewalk position without stopping at the subway entrance?",
+        "safety": "Can completion use signalized crossings and avoid the curb, subway flow, and crowded corner pinch points?",
+        "closure": "Are scaffolding, trees, retail signs, construction, or temporary barriers obscuring the high facade detail?",
+        "staleness": "Are the carved beehive and projecting two-faced clock still present and uniquely observable from the intended viewpoint?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, interference, or residential intrusion.",
+          "Scout records actual access, mobility, closure, obstruction, route, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-006",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, interference, or residential intrusion.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-village-047",
+      "route_id": "route:nyc-launch-v1:west-village-primary",
+      "route_order": 2,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-VILLAGE-047",
+        "bank_place_id": "place:wikipedia:30604303",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-village-047-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-village-047",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-village-047",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-village-047-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-village-047-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision and durable triangular public-space geometry complete the compact northbound sequence; the clearest safe viewpoint, gates, and street crossings remain unverified.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://www.nycgovparks.org/parks/jackson-square-park",
+          "https://en.wikipedia.org/?curid=30604303",
+          "https://en.wikipedia.org/wiki/Jackson_Square_Park",
+          "https://www.openstreetmap.org/?mlat=40.7389&mlon=-74.002886#map=19/40.7389/-74.002886"
+        ]
+      },
+      "observable_target_to_verify": "Find the triangular park where Greenwich Avenue, Horatio Street, and Eighth Avenue meet.",
+      "field_questions": {
+        "access": "Can the triangular park geometry be recognized from a legal public park or sidewalk viewpoint during posted hours?",
+        "safety": "Can the stop be completed using marked crossings without standing in a roadway or traffic island?",
+        "closure": "Are gates, renovation fencing, foliage, or an event preventing the intended observation?",
+        "staleness": "Do Greenwich Avenue, Horatio Street, and Eighth Avenue still make the target uniquely resolvable on site?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, or interference.",
+          "Scout records actual access, mobility, closure, obstruction, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-village-053",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, or interference.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions.",
+        "Recognizing the triangle requires standing in traffic or an unmarked crossing."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-village-048",
+      "route_id": "route:nyc-launch-v1:west-village-primary",
+      "route_order": 3,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-VILLAGE-048",
+        "bank_place_id": "place:wikipedia:8189363",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-village-048-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-village-048",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-village-048",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-village-048-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-village-048-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision and durable exterior park_garden target support a compact neutral first-canary route; current viewpoint, access, obstruction, and safety conditions remain unverified.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://www.nycgovparks.org/parks/abingdon-square",
+          "https://en.wikipedia.org/?curid=8189363",
+          "https://en.wikipedia.org/wiki/Abingdon_Square_Park",
+          "https://www.openstreetmap.org/?mlat=40.737084&mlon=-74.005782#map=19/40.737084/-74.005782"
+        ]
+      },
+      "observable_target_to_verify": "Find the quarter-acre park bordered by Eighth Avenue, Bank Street, Hudson Street, and West 12th Street.",
+      "field_questions": {
+        "access": "Can the quarter-acre footprint and four street edges be understood from a legal public sidewalk or step-free park entrance during posted hours?",
+        "safety": "Can completion avoid unsafe crossings, gate pinch points, and blocking park or sidewalk circulation?",
+        "closure": "Are locked gates, renovation, seasonal planting, an event, or temporary barriers preventing the intended observation?",
+        "staleness": "Do Eighth Avenue, Bank Street, Hudson Street, and West 12th Street still define the small park as scoped?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, interference, or residential intrusion.",
+          "Scout records actual access, mobility, closure, obstruction, route, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-village-055",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, interference, or residential intrusion.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-village-050",
+      "route_id": "route:nyc-launch-v1:west-village-primary",
+      "route_order": 4,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-VILLAGE-050",
+        "bank_place_id": "place:wikipedia:4789409",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-village-050-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-village-050",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-village-050",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-village-050-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-village-050-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision and durable exterior architecture target support a compact neutral first-canary route; current viewpoint, access, obstruction, and safety conditions remain unverified.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://westbeth.org/",
+          "https://en.wikipedia.org/?curid=4789409",
+          "https://en.wikipedia.org/wiki/Westbeth_Artists_Community",
+          "https://www.openstreetmap.org/?mlat=40.736666666666665&mlon=-74.00861111111111#map=19/40.736666666666665/-74.00861111111111"
+        ]
+      },
+      "observable_target_to_verify": "Find the full-block artists’ complex named by combining West Street and Bethune Street.",
+      "field_questions": {
+        "access": "Can a public-facing Westbeth name marker and full-block footprint be observed from public perimeter sidewalks without entering residential space?",
+        "safety": "Can completion avoid photographing residents, lingering at entrances, or obstructing perimeter sidewalks and crossings?",
+        "closure": "Are facade work, scaffolding, temporary signs, or access restrictions obscuring the public-facing marker or block view?",
+        "staleness": "Is the Westbeth name visibly confirmable on site and is the West-plus-Bethune wordplay independently resolvable from public space?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, interference, or residential intrusion.",
+          "Scout records actual access, mobility, closure, obstruction, route, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-010",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, interference, or residential intrusion.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-006",
+      "route_id": "route:nyc-launch-v1:greenwich-village-reserve",
+      "route_order": 1,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-006",
+        "bank_place_id": "place:wikipedia:1364440",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-006-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-006",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-006",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-006-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-006-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision, permanent large exterior monument, and strong remote observability make this a robust reserve-route anchor; current barriers, crowding, and approach still need a scout.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://www.nycgovparks.org/parks/washington-square-park/monuments/1657",
+          "https://en.wikipedia.org/?curid=1364440",
+          "https://en.wikipedia.org/wiki/Washington_Square_Arch",
+          "https://www.openstreetmap.org/?mlat=40.7312355&mlon=-73.9971028#map=19/40.7312355/-73.9971028"
+        ]
+      },
+      "observable_target_to_verify": "At Fifth Avenue’s southern end, find the white marble triumphal arch built to honor George Washington.",
+      "field_questions": {
+        "access": "Is the arch fully observable from a legal public step-free park approach?",
+        "safety": "Can completion avoid climbing, crowd pinch points, and conflict with park circulation?",
+        "closure": "Is scaffolding, conservation work, an event, or a temporary barrier obscuring the arch?",
+        "staleness": "Does the white marble triumphal arch remain uniquely identifiable from the intended approach?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, or interference.",
+          "Scout records actual access, mobility, closure, obstruction, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-034",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, or interference.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions.",
+        "The target is materially scaffolded or the only completion point conflicts with crowd circulation."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-village-053",
+      "route_id": "route:nyc-launch-v1:greenwich-village-reserve",
+      "route_order": 2,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-VILLAGE-053",
+        "bank_place_id": "place:wikipedia:745249",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-village-053-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-village-053",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-village-053",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-village-053-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-village-053-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision, permanent central fountain structure, and proximity to other reserve stops support route resilience without depending on water operation; current access and obstruction require scouting.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://www.nycgovparks.org/parks/washington-square-park",
+          "https://en.wikipedia.org/?curid=745249",
+          "https://en.wikipedia.org/?curid=745249#Location_and_features",
+          "https://en.wikipedia.org/wiki/Washington_Square_Park",
+          "https://www.openstreetmap.org/?mlat=40.73083333333334&mlon=-73.9975#map=19/40.73083333333334/-73.9975"
+        ]
+      },
+      "observable_target_to_verify": "At Washington Square Park’s center, find the circular Tisch Fountain; it need not be operating.",
+      "field_questions": {
+        "access": "Is the circular fountain structure observable from a legal public step-free park path?",
+        "safety": "Can completion avoid entering the basin, climbing, or obstructing the central gathering area?",
+        "closure": "Are maintenance, barriers, an event, snow, or crowding blocking the target?",
+        "staleness": "Is the circular Tisch Fountain uniquely identifiable even if it is not operating?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, or interference.",
+          "Scout records actual access, mobility, closure, obstruction, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-village-047",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, or interference.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions.",
+        "Completion depends on the fountain operating or entering/climbing the basin."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-village-055",
+      "route_id": "route:nyc-launch-v1:greenwich-village-reserve",
+      "route_order": 3,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-VILLAGE-055",
+        "bank_place_id": "place:wikipedia-section:745249%23Giuseppe_Garibaldi",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-village-055-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-village-055",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-village-055",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-village-055-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-village-055-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision, permanent exterior statue, and close proximity within the reserve loop provide target diversity; foliage, differentiation, and step-free sightline remain field questions.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://www.nycgovparks.org/parks/washington-square-park/monuments/571",
+          "https://en.wikipedia.org/?curid=745249#Location_and_features",
+          "https://en.wikipedia.org/wiki/Washington_Square_Park",
+          "https://www.openstreetmap.org/way/22899302",
+          "https://www.openstreetmap.org/?mlat=40.7308955&mlon=-73.9976#map=19/40.7308955/-73.9976"
+        ]
+      },
+      "observable_target_to_verify": "Find the statue of Italian patriot Giuseppe Garibaldi in Washington Square Park.",
+      "field_questions": {
+        "access": "Is the Garibaldi statue visible from a legal public step-free park path during posted hours?",
+        "safety": "Can completion avoid climbing, touching, small-inscription reading, and interference with gatherings?",
+        "closure": "Are foliage, conservation barriers, an event, or snow materially obscuring the statue?",
+        "staleness": "Can a scout distinguish this statue from nearby monuments without relying on a small inscription?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, or interference.",
+          "Scout records actual access, mobility, closure, obstruction, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-village-048",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, or interference.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions.",
+        "The target is not uniquely resolvable without small-text reading or crossing a barrier."
+      ]
+    },
+    {
+      "candidate_id": "idea:nyc:dq-nyc-010",
+      "route_id": "route:nyc-launch-v1:greenwich-village-reserve",
+      "route_order": 4,
+      "existing_ids": {
+        "source_candidate_id": "DQ-NYC-010",
+        "bank_place_id": "place:wikipedia:1607875",
+        "bank_evidence_id": "evidence:candidate:dq-nyc-010-observable-target",
+        "bank_hunt_idea_id": "idea:nyc:dq-nyc-010",
+        "bank_clue_package_id": "clue:nyc:candidate:dq-nyc-010",
+        "foundation_remote_verification_id": "verification:nyc:candidate-dq-nyc-010-observable-target",
+        "detailed_remote_evidence_id": "evidence:candidate:dq-nyc-010-observable-target"
+      },
+      "current_state": {
+        "research_mode": "remote_only",
+        "bank_place_lifecycle": "needs_field_verification",
+        "bank_idea_lifecycle": "needs_field_verification",
+        "bank_clue_lifecycle": "candidate",
+        "foundation_remote_decision": "needs_scout",
+        "detailed_remote_decision": "canary_eligible",
+        "launch_gate": "needs_field_check",
+        "field_verified": false,
+        "publication_claimed": false,
+        "published": false,
+        "live": false
+      },
+      "risk": {
+        "remote_tier": "low",
+        "risk_weight": 1,
+        "known_business_dependency": false
+      },
+      "selection_rationale": "Low-risk detailed remote decision, durable fenced-court form, and proximity to Washington Square provide a reserve endpoint; active play, privacy, event, and perimeter conditions require scouting.",
+      "evidence_refs": {
+        "content_bank": "content/nyc/content-bank.v1.json",
+        "source_candidates": "content/nyc/source-candidates.v2.json",
+        "foundation_remote": "content/nyc/remote-verification.v1.json",
+        "detailed_remote": "content/nyc/remote-verification/villages.remote-v1.json",
+        "source_urls": [
+          "https://www.nycgovparks.org/parks/west-fourth-street-courts",
+          "https://en.wikipedia.org/?curid=1607875",
+          "https://en.wikipedia.org/wiki/West_Fourth_Street_Courts",
+          "https://www.openstreetmap.org/?mlat=40.731388888888894&mlon=-74.00083333333333#map=19/40.731388888888894/-74.00083333333333"
+        ]
+      },
+      "observable_target_to_verify": "Find the compact fenced streetball court known as “The Cage”.",
+      "field_questions": {
+        "access": "Is the compact fenced court identifiable from a legal public step-free sidewalk viewpoint without entering the playing area?",
+        "safety": "Can completion avoid interrupting games, blocking gates, or photographing identifiable players?",
+        "closure": "Are resurfacing, an event, barriers, or dense activity preventing a non-interfering observation?",
+        "staleness": "Does the court remain plainly identifiable as the compact fenced West Fourth Street Courts target?"
+      },
+      "accessibility_status": "unknown",
+      "accessibility_evidence_note": "Detailed remote review records step-free approach evidence, but launch accessibility remains unknown until a scout checks the actual completion viewpoint and route conditions.",
+      "required_scout_outcome": {
+        "status": "pending",
+        "allowed_dispositions": [
+          "pass_to_evidence_review",
+          "replace_with_paired_reserve",
+          "pause"
+        ],
+        "pass_requirements": [
+          "Target is currently present, uniquely resolvable, and observable exactly as scoped.",
+          "A legal public completion viewpoint exists without purchase, entry, touching, climbing, or interference.",
+          "Scout records actual access, mobility, closure, obstruction, and safety observations with evidence references.",
+          "An authorized reviewer accepts the evidence before any field_verified transition or canary use."
+        ]
+      },
+      "replacement_pair": {
+        "candidate_id": "idea:nyc:dq-nyc-village-050",
+        "activation": "explicit evidence review required; never automatic"
+      },
+      "disqualifiers": [
+        "Target is missing, materially altered, covered, or not uniquely resolvable.",
+        "No legal public completion viewpoint exists without entry, purchase, touching, climbing, or interference.",
+        "Current closure, construction, crowding, traffic, or barrier conditions make completion unsafe or impractical.",
+        "No workable completion experience exists for the observed mobility/access conditions.",
+        "Completion would interfere with active play or depend on identifiable people being present."
+      ]
+    }
+  ]
+}

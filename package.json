@@ -17,6 +17,7 @@
     "content:validate": "node scripts/validate-content-bank.js",
     "content:compile:remote:nyc": "node scripts/compile-remote-verification.js",
     "content:validate:remote:nyc": "node scripts/validate-remote-verification.js",
+    "content:validate:launch-cohort:nyc": "node scripts/validate-launch-cohort.js",
     "test": "node --test"
   },
   "dependencies": {
